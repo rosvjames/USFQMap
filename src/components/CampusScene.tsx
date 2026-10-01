@@ -1,10 +1,11 @@
-import { Edges, Line, OrbitControls } from '@react-three/drei'
-import { Canvas, useThree } from '@react-three/fiber'
-import { useEffect, useMemo } from 'react'
-import { DoubleSide, type PerspectiveCamera, Shape, Vector2, Vector3 } from 'three'
+import { Edges, Line } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { type Ref, useMemo } from 'react'
+import { DoubleSide, Shape, Vector2 } from 'three'
 import { CAMPUS_BUILDINGS, CAMPUS_PATHS, findCampusBuilding, type CampusBuilding } from '../lib/campus'
 import type { OutdoorRoute } from '../lib/outdoor'
 import type { BuildingPlan, GraphNode, Route, Vec2 } from '../types'
+import { INITIAL_VIEW, MapCamera, type MapCameraHandle, type MapFocus } from './MapCamera'
 import { MapLabel } from './MapLabel'
 
 const LEVEL_HEIGHT = 3.5
@@ -14,12 +15,17 @@ const USFQ_RED = '#c8102e'
 const USER_BLUE = '#1a73e8'
 
 const DEFAULT_FOCUS = findCampusBuilding('hall-principal')?.center ?? ([0, 0] as Vec2)
-const CAMERA_OFFSET = new Vector3(65, 140, 170)
 // Meters of ground that should fit on screen when looking at a single building.
 const BUILDING_SPAN = 110
+
+// North up, tilted like the 3D view of a maps app.
+const INITIAL_CAMERA: [number, number, number] = [
+  DEFAULT_FOCUS[0],
+  INITIAL_VIEW.distance * Math.cos(INITIAL_VIEW.tilt),
+  -DEFAULT_FOCUS[1] + INITIAL_VIEW.distance * Math.sin(INITIAL_VIEW.tilt),
+]
 // Zoomed out past this, only the origin and destination keep their name so labels do not pile up.
 const CROWDED_SPAN = 260
-const PANEL_SHIFT = 0.3
 
 // Map frame (x east, y north, height) -> three.js frame (x, y up, z south).
 function toScene(x: number, y: number, height = 0): [number, number, number] {
@@ -43,27 +49,29 @@ interface SceneProps {
   userPosition?: Vec2
   activeFloor: number
   onSelectBuilding: (buildingId: string) => void
+  cameraRef: Ref<MapCameraHandle>
+  onViewChange: (azimuth: number, tilted: boolean) => void
 }
 
 export function CampusScene(props: SceneProps) {
   const { selectedBuildingId, plan } = props
-  const focus = useMemo(() => {
+  const focus = useMemo((): MapFocus => {
+    const aboveThePanel = !!selectedBuildingId
     // With a route, frame the whole walk; otherwise just the selected building.
     const points = props.outdoorRoute ? [...props.outdoorRoute.path, ...props.outdoorRoute.links.flat()] : []
     if (points.length === 0) {
       const center = (selectedBuildingId && findCampusBuilding(selectedBuildingId)?.center) || DEFAULT_FOCUS
-      return { center, span: BUILDING_SPAN }
+      return { center, span: BUILDING_SPAN, aboveThePanel }
     }
     const xs = points.map((p) => p[0])
     const ys = points.map((p) => p[1])
     const center: Vec2 = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2]
     const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys))
-    return { center, span: Math.max(BUILDING_SPAN, span * 1.25) }
+    return { center, span: Math.max(BUILDING_SPAN, span * 1.25), aboveThePanel }
   }, [selectedBuildingId, props.outdoorRoute])
-  const initialCamera = useMemo(() => new Vector3(...toScene(...DEFAULT_FOCUS)).add(CAMERA_OFFSET), [])
 
   return (
-    <Canvas camera={{ position: initialCamera, fov: 45, near: 1, far: 4000 }} dpr={[1, 2]}>
+    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 1, far: 4000 }} dpr={[1, 2]} frameloop="demand">
       <color attach="background" args={['#f4f1ec']} />
       <ambientLight intensity={1.1} />
       <directionalLight position={[120, 200, 80]} intensity={1.6} />
@@ -98,8 +106,7 @@ export function CampusScene(props: SceneProps) {
         </mesh>
       )}
 
-      <OrbitControls makeDefault target={toScene(...DEFAULT_FOCUS)} maxPolarAngle={Math.PI / 2.1} minDistance={20} maxDistance={1500} />
-      <CameraFocus center={focus.center} span={focus.span} />
+      <MapCamera ref={props.cameraRef} focus={focus} onViewChange={props.onViewChange} />
     </Canvas>
   )
 }
@@ -117,6 +124,8 @@ function BuildingMesh(props: { building: CampusBuilding; selected: boolean; labe
         onClick={
           info &&
           ((event) => {
+            // Ignore the release of a drag that happened to end on a building.
+            if (event.delta > 5) return
             event.stopPropagation()
             onSelect(info.id)
           })
@@ -193,25 +202,4 @@ function IndoorPlan({ plan, route, activeFloor }: { plan: BuildingPlan; route: R
       {route && route.nodes.length > 1 && <Line points={route.nodes.map((n) => at(n, 0.5))} color={USFQ_RED} lineWidth={5} />}
     </group>
   )
-}
-
-/** Recenters the orbit camera so `span` meters around `center` fit on screen, keeping the viewing angle. */
-function CameraFocus({ center, span }: { center: Vec2; span: number }) {
-  const camera = useThree((state) => state.camera) as PerspectiveCamera
-  const controls = useThree((state) => state.controls) as { target: Vector3; update: () => void } | null
-
-  useEffect(() => {
-    if (!controls) return
-    const target = new Vector3(...toScene(...center))
-    // Phones are taller than wide, so the horizontal field of view is the tight one.
-    const visibleRatio = 2 * Math.tan((camera.fov * Math.PI) / 360) * Math.min(1, camera.aspect)
-    const offset = camera.position.clone().sub(controls.target).setLength(span / visibleRatio)
-    // Aim a bit in front of the subject so it sits in the upper half, clear of the bottom panel.
-    target.add(new Vector3(offset.x, 0, offset.z).setLength(span * PANEL_SHIFT))
-    controls.target.copy(target)
-    camera.position.copy(target).add(offset)
-    controls.update()
-  }, [center, span, camera, controls])
-
-  return null
 }

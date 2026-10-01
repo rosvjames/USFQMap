@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CampusScene } from './components/CampusScene'
+import type { MapCameraHandle } from './components/MapCamera'
 import { BUILDING_BY_ID, BUILDINGS } from './data/buildings'
 import { PLANS } from './data/plans'
 import { endpointForBuilding, endpointForPosition, findOutdoorRoute } from './lib/outdoor'
@@ -35,6 +36,20 @@ export default function App() {
   const [originId, setOriginId] = useState(initialOrigin)
   const [activeFloor, setActiveFloor] = useState(1)
   const gps = useGeolocation(originId === GPS)
+  const [tilted, setTilted] = useState(true)
+  const mapCamera = useRef<MapCameraHandle>(null)
+  const compassNeedle = useRef<SVGSVGElement>(null)
+
+  // The compass turns on every frame of a rotation, so it is moved directly instead of through state.
+  const handleViewChange = useCallback((azimuth: number, isTilted: boolean) => {
+    if (compassNeedle.current) compassNeedle.current.style.rotate = `${azimuth}rad`
+    setTilted(isTilted)
+  }, [])
+
+  const followingMe = originId === GPS && !destination
+  useEffect(() => {
+    if (followingMe && gps.position) mapCamera.current?.flyTo({ center: gps.position, span: 140, aboveThePanel: false })
+  }, [followingMe, gps.position])
 
   const results = useMemo(() => search(query), [query])
   const building = destination ? BUILDING_BY_ID.get(destination.buildingId) : undefined
@@ -92,6 +107,8 @@ export default function App() {
         userPosition={gps.position}
         activeFloor={activeFloor}
         onSelectBuilding={selectBuilding}
+        cameraRef={mapCamera}
+        onViewChange={handleViewChange}
       />
 
       <header className="search">
@@ -125,6 +142,40 @@ export default function App() {
           ))}
         </nav>
       )}
+
+      <div className="map-controls">
+        <button onClick={() => mapCamera.current?.faceNorth()} aria-label="Orientar al norte" title="Orientar al norte">
+          <svg ref={compassNeedle} viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M12 2.5 16 12H8z" fill="var(--red)" />
+            <path d="M12 21.5 8 12h8z" fill="#b8b4ae" />
+          </svg>
+        </button>
+        <button onClick={() => mapCamera.current?.setTilted(!tilted)} aria-label={tilted ? 'Ver en 2D' : 'Ver en 3D'}>
+          {tilted ? '2D' : '3D'}
+        </button>
+        <button
+          className={originId === GPS ? 'active' : ''}
+          onClick={() => {
+            setOriginId(GPS)
+            if (gps.position) mapCamera.current?.flyTo({ center: gps.position, span: 140, aboveThePanel: !!destination })
+          }}
+          aria-label="Ir a mi ubicación"
+          title="Ir a mi ubicación"
+        >
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+          </svg>
+        </button>
+        <button className="zoom" onClick={() => mapCamera.current?.zoomBy(0.6)} aria-label="Acercar">
+          +
+        </button>
+        <button className="zoom" onClick={() => mapCamera.current?.zoomBy(1.6)} aria-label="Alejar">
+          −
+        </button>
+      </div>
+      {!destination && originId === GPS && gps.error && <p className="toast">{gps.error}</p>}
 
       {destination && (
         <section className="panel">
