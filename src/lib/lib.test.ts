@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { BUILDINGS } from '../data/buildings'
 import { PLANS } from '../data/plans'
+import { hallPrincipal } from '../data/plans/hallPrincipal'
 import { findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
 import { endpointForBuilding, endpointForPosition, findOutdoorRoute } from './outdoor'
@@ -8,7 +9,7 @@ import { findRoute } from './pathfinding'
 import { parseRoomCode, search } from './search'
 
 describe('findRoute', () => {
-  const plan = PLANS['hall-principal']
+  const plan = hallPrincipal
 
   it('stays on one floor when origin and destination share it', () => {
     const route = findRoute(plan, 'hp-entrada', 'hp-ej101')
@@ -28,7 +29,7 @@ describe('findRoute', () => {
 })
 
 describe('plans', () => {
-  it.each(Object.values(PLANS))('$buildingId keeps every node inside its footprint and reachable', (plan) => {
+  it.each([hallPrincipal, ...Object.values(PLANS)])('$buildingId keeps every node inside its footprint and reachable', (plan) => {
     const building = findCampusBuilding(plan.buildingId)
     expect(building).toBeDefined()
     const start = plan.nodes[0]
@@ -47,9 +48,26 @@ describe('search', () => {
   })
 
   it('finds rooms, buildings without accents, and bare codes', () => {
-    expect(search('ej201')[0]).toMatchObject({ kind: 'room', buildingId: 'hall-principal' })
+    expect(search('ej201')).toEqual([])
     expect(search('ciceron')[0]).toMatchObject({ kind: 'building', buildingId: 'ciceron' })
     expect(search('G206')[0]).toMatchObject({ kind: 'building', buildingId: 'galileo', floor: 2 })
+  })
+
+  it('never offers invented indoor plans as real destinations', () => {
+    expect(Object.values(PLANS).some((plan) => plan.placeholder)).toBe(false)
+    expect(search('Hall')[0]).toMatchObject({ kind: 'building' })
+  })
+
+  it('distinguishes a sourced location from an unconfirmed room code', () => {
+    expect(search('G-111')[0]).toMatchObject({ buildingId: 'galileo', floor: 1, reference: { label: 'Counter de Registro' } })
+    expect(search('M399')[0]).toMatchObject({ buildingId: 'maxwell', floor: 3, inferred: true })
+    expect(search('registro')[0]).toMatchObject({ buildingId: 'galileo', floor: 1 })
+  })
+
+  it('handles suffixes and additional documented prefixes', () => {
+    expect(parseRoomCode('H-100F')).toMatchObject({ building: { id: 'hayek' }, floor: 1, code: 'H100F' })
+    expect(parseRoomCode('N104A')).toMatchObject({ building: { id: 'newton' }, floor: 1 })
+    expect(parseRoomCode('CB-110')).toMatchObject({ building: { id: 'casa-blanca' }, floor: 1 })
   })
 })
 

@@ -1,7 +1,6 @@
 import type { BuildingPlan } from '../../types'
-import { hallPrincipal } from './hallPrincipal'
 
 /** Indoor plans keyed by building id. Add a file per building and register it here. */
-export const PLANS: Record<string, BuildingPlan> = {
-  [hallPrincipal.buildingId]: hallPrincipal,
-}
+// Register only surveyed, non-placeholder plans. The Hall example stays in its
+// own file as a modelling template, never as a real navigation destination.
+export const PLANS: Record<string, BuildingPlan> = {}

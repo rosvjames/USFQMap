@@ -16,6 +16,8 @@ export interface CampusBuilding {
   ring: Vec2[]
   center: Vec2
   levels: number
+  /** Explicit OSM height, where available, in metres. */
+  heightMeters?: number
   /** Inside the university grounds, or listed in data/buildings.ts. */
   onCampus: boolean
   /** Present only for buildings listed in data/buildings.ts. */
@@ -48,6 +50,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = inLayer('building').map((f) =>
     ring,
     center,
     levels: Number(f.properties['building:levels']) || 1,
+    heightMeters: Number.parseFloat(f.properties.height ?? '') > 0 ? Number.parseFloat(f.properties.height!) : undefined,
     onCampus: !!info || pointInPolygon(center, CAMPUS_BOUNDARY),
     info,
   }
