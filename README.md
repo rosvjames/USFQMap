@@ -15,7 +15,7 @@ npm run build   # verificación de tipos + build de producción en dist/
 
 | Ruta | Contenido |
 |---|---|
-| `src/data/campus.json` | Huellas de edificios y senderos del campus (OpenStreetMap) |
+| `src/data/campus.json` | Mapa del campus: edificios, senderos, calles, áreas verdes, canchas y laguna. Lo genera `npm run data` desde OpenStreetMap |
 | `src/data/buildings.ts` | Catálogo de edificios: nombre, prefijo de aulas, id de OpenStreetMap |
 | `src/data/plans/` | Un archivo por edificio con su grafo interior (nodos y aristas) |
 | `src/lib/pathfinding.ts` | A* sobre el grafo interior e instrucciones en texto |
@@ -43,7 +43,7 @@ El usuario elige desde dónde sale en el panel: un edificio o su ubicación por 
 
 ## Senderos
 
-Las rutas exteriores siguen los senderos de OpenStreetMap, que cubren bien la mitad sur del campus pero casi nada del sector norte (Maxwell, Darwin, Da Vinci, Cicerón, Epicuro). Donde no hay sendero, la ruta se completa con una línea recta punteada y la app lo avisa. Para corregirlo hay que añadir los caminos que faltan a `src/data/campus.json` (o mapearlos en OpenStreetMap y volver a descargar).
+Las rutas exteriores siguen los senderos de OpenStreetMap, que cubren bien la mitad sur del campus pero casi nada del sector norte (Maxwell, Darwin, Da Vinci, Cicerón, Epicuro). Donde no hay sendero, la ruta se completa con una línea recta punteada y la app lo avisa. Para corregirlo hay que mapear los caminos que faltan en openstreetmap.org y volver a descargar con `npm run data`.
 
 ## Datos
 

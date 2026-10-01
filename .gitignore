@@ -7,6 +7,5 @@ dist
 .env*
 
 # Material de referencia con derechos de terceros (mapas oficiales, tesis): se queda solo en local
-referencias/*
-!referencias/usfq-osm.geojson
+referencias/
 .claude
