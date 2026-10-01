@@ -8,6 +8,11 @@ import { findRoute, floorName } from './lib/pathfinding'
 import { search, type SearchResult } from './lib/search'
 import { useGeolocation } from './lib/useGeolocation'
 import type { BuildingPlan } from './types'
+import { CampusGuide, SourcesDialog } from './components/CampusGuide'
+import { LOCATIONS, MAP_NUMBERS, SOURCES } from './data/references'
+import type { WalkAction } from './components/WalkCamera'
+import { CAMPUS_BOUNDARY, findCampusBuilding } from './lib/campus'
+import { pointInPolygon } from './lib/geo'
 
 const GPS = 'gps'
 // Building next to the main gate on the official campus map.
@@ -44,6 +49,10 @@ export default function App() {
   const [activeFloor, setActiveFloor] = useState(1)
   const gps = useGeolocation(originId === GPS)
   const [tilted, setTilted] = useState(true)
+  const [walking, setWalking] = useState(false)
+  const [sourcesOpen, setSourcesOpen] = useState(false)
+  const walkInput = useRef(new Set<WalkAction>())
+  const exitWalk = useCallback(() => setWalking(false), [])
   const mapCamera = useRef<MapCameraHandle>(null)
   const compassNeedle = useRef<SVGSVGElement>(null)
 
@@ -75,6 +84,10 @@ export default function App() {
   const results = useMemo(() => search(query), [query])
   const building = destination ? BUILDING_BY_ID.get(destination.buildingId) : undefined
   const plan = destination ? PLANS[destination.buildingId] : undefined
+  const reference = destination?.kind === 'building' ? destination.reference : undefined
+  const buildingLocations = LOCATIONS.filter((location) => location.buildingId === destination?.buildingId)
+  const footprint = building && findCampusBuilding(building.id)
+  const canWalkHere = footprint && pointInPolygon(footprint.center, CAMPUS_BOUNDARY)
   const route = useMemo(
     () => (plan && destination?.kind === 'room' ? findRoute(plan, pickIndoorOrigin(plan), destination.node.id) : null),
     [plan, destination],
@@ -105,8 +118,8 @@ export default function App() {
   const roomCode = destination?.kind === 'room' ? destination.node.code : destination?.floor !== undefined ? destination.title : undefined
   const floor = destination?.kind === 'room' ? destination.node.floor : destination?.floor
   const floorLabel = floorName(floor ?? 1).replace(/^./, (letter) => letter.toUpperCase())
-  const heading = destination?.kind === 'room' ? (destination.node.label ?? destination.title) : roomCode ? `Edificio ${building?.name}` : building?.name
-  const place = destination?.kind === 'room' ? `${building?.name}, ${floorName(floor ?? 1)}` : roomCode ? floorLabel : 'Edificio'
+  const heading = destination?.kind === 'room' ? (destination.node.label ?? destination.title) : reference ? reference.label : roomCode ? `Edificio ${building?.name}` : building?.name
+  const place = destination?.kind === 'room' ? `${building?.name}, ${floorName(floor ?? 1)}` : roomCode ? `${building?.name} · ${floorLabel}` : 'Edificio'
 
   const steps: string[] = []
   if (outdoorRoute && building) {
@@ -119,11 +132,11 @@ export default function App() {
   if (route) {
     steps.push(...(outdoorRoute ? route.steps.slice(1) : route.steps))
   } else if (floor !== undefined) {
-    steps.push(floor > 1 ? `Sube al ${floorName(floor)}.` : floor === 0 ? 'Baja al subsuelo.' : 'El aula está en la planta baja.')
+    steps.push(`${reference ? 'La referencia publicada indica' : 'El código se interpreta como'}: ${floorName(floor)}. La puerta y el recorrido interior están pendientes de verificar.`)
   }
 
   return (
-    <div className="app">
+    <div className={`app${walking ? ' walking' : ''}`}>
       <CampusScene
         selectedBuildingId={destination?.buildingId}
         plan={plan}
@@ -135,8 +148,14 @@ export default function App() {
         onSelectBuilding={selectBuilding}
         cameraRef={mapCamera}
         onViewChange={handleViewChange}
+        walking={walking}
+        walkInput={walkInput}
+        onExitWalk={exitWalk}
       />
 
+      <div className="brand-bar"><div className="brand"><span className="brand-mark">U</span><div><strong>USFQ<span>Explora</span></strong><small>Campus Santiago Gangotena</small></div></div><span className="exhibit-label">Cumbayá, Ecuador <i /> Casa abierta</span></div>
+
+      {!walking && <>
       <header className="search">
         <div className="search-field">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
@@ -147,6 +166,7 @@ export default function App() {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => { if (event.key === 'Enter' && results[0]) choose(results[0]) }}
             placeholder="¿A dónde vas? Prueba M302 o Galileo"
             aria-label="Buscar aula o edificio"
           />
@@ -163,6 +183,7 @@ export default function App() {
             ))}
           </ul>
         )}
+        {query && results.length === 0 && <p className="empty-results" role="status">No encontramos ese lugar. Prueba con un edificio o un código como M302.</p>}
         {!query && !destination && (
           <div className="shortcuts">
             {SHORTCUTS.map((shortcut) => (
@@ -173,6 +194,8 @@ export default function App() {
           </div>
         )}
       </header>
+
+      {!destination && !query && <CampusGuide onSelectBuilding={selectBuilding} onWalk={() => setWalking(true)} />}
 
       {plan && plan.floors.length > 1 && (
         <nav className="floors" aria-label="Piso">
@@ -231,6 +254,10 @@ export default function App() {
             </div>
           </div>
 
+          {MAP_NUMBERS[building?.id ?? ''] && <p className="official-number">N.º {MAP_NUMBERS[building!.id]} en el mapa oficial USFQ de 2023</p>}
+          {reference && <div className="reference-note"><span className="status-tag">{reference.historical ? 'Referencia histórica' : 'Referencia publicada por USFQ'}</span><a href={SOURCES[reference.source].url} target="_blank" rel="noreferrer">{SOURCES[reference.source].title} ↗</a>{reference.historical && <p>Confirma que el código siga vigente. La fuente es anterior a esta versión del mapa.</p>}</div>}
+          {destination.kind === 'building' && destination.inferred && <p className="warning">Código interpretado por su prefijo y numeración. La existencia de esta aula no está confirmada.</p>}
+
           {outdoorRoute && (
             <p className="walk">
               <strong>{outdoorRoute.minutes} min</strong> a pie, unos {Math.round(outdoorRoute.distance / 10) * 10} m
@@ -257,10 +284,28 @@ export default function App() {
               ))}
             </ol>
           )}
-          {!plan && <p className="note">Todavía no tenemos el plano interior de este edificio.</p>}
+          {!plan && <p className="note">La ruta llega al exterior del edificio, a un acceso aproximado. El plano interior aún no está disponible.</p>}
           {plan?.placeholder && <p className="warning">Plano de ejemplo: las aulas y pasillos aún no son los reales.</p>}
+          {buildingLocations.length > 0 && !roomCode && <div className="location-list"><h2>Aulas y oficinas documentadas</h2>{buildingLocations.map((location) => <button key={location.code} onClick={() => choose(search(location.code)[0])}><strong>{location.code}</strong><span>{floorName(location.floor)} · {location.historical ? 'histórica' : location.label}</span><span aria-hidden="true">↗</span></button>)}</div>}
+          {!canWalkHere && <p className="note">Este lugar queda fuera del perímetro del recorrido a pie. Puedes explorar el campus principal.</p>}
+          <button className="walk-button panel-walk" onClick={() => { if (!canWalkHere) setDestination(null); setWalking(true) }}>{canWalkHere ? 'Explorar este sector a pie' : 'Recorrer el campus principal'} <span aria-hidden="true">↗</span></button>
         </section>
       )}
+      </>}
+
+      {walking && <>
+        <div className="walking-banner"><span className="status-tag">Recorrido exterior</span><h1>Camina por el campus</h1><p>WASD para caminar · flechas para girar<br />Arrastra para mirar · Esc para volver</p><button onClick={exitWalk}>Volver al mapa <span aria-hidden="true">↗</span></button></div>
+        <div className="crosshair" aria-hidden="true">＋</div>
+        <nav className="walk-pad" aria-label="Controles para caminar">
+          {([['turnLeft', '↶', 'Girar a la izquierda'], ['forward', '↑', 'Avanzar'], ['turnRight', '↷', 'Girar a la derecha'], ['left', '←', 'Mover a la izquierda'], ['back', '↓', 'Retroceder'], ['right', '→', 'Mover a la derecha']] as const).map(([action, label, name]) => <button key={action} aria-label={name}
+            onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); walkInput.current.add(action) }}
+            onPointerUp={() => walkInput.current.delete(action)} onPointerCancel={() => walkInput.current.delete(action)} onLostPointerCapture={() => walkInput.current.delete(action)}
+            onKeyDown={(event) => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); walkInput.current.add(action) } }}
+            onKeyUp={() => walkInput.current.delete(action)} onBlur={() => walkInput.current.delete(action)}>{label}</button>)}
+        </nav>
+      </>}
+      <footer className="map-footer"><span><i className="legend-dot" /> {walking ? 'Exterior · edificios y agua con colisión' : 'Modelo 3D · detalles visuales aproximados'}</span><button onClick={() => setSourcesOpen(true)}>Fuentes y cobertura ↗</button><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></footer>
+      {sourcesOpen && <SourcesDialog onClose={() => setSourcesOpen(false)} />}
     </div>
   )
 }

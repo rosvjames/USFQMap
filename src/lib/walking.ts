@@ -1,0 +1,39 @@
+import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, findCampusBuilding } from './campus'
+import { pointInPolygon } from './geo'
+import type { Vec2 } from '../types'
+
+const obstacles = [...CAMPUS_BUILDINGS.map((b) => b.ring), ...CAMPUS_AREAS.filter((a) => a.kind === 'water').map((a) => a.ring)]
+const clearance: Vec2[] = [[0, 0], [0.55, 0], [-0.55, 0], [0, 0.55], [0, -0.55]]
+
+/** Exterior simulation only: footprints and water are solid, interiors are not surveyed. */
+export function isWalkable(point: Vec2): boolean {
+  return clearance.every(([dx, dy]) => {
+    const sample: Vec2 = [point[0] + dx, point[1] + dy]
+    return pointInPolygon(sample, CAMPUS_BOUNDARY) && !obstacles.some((ring) => pointInPolygon(sample, ring))
+  })
+}
+
+export function walkingStart(buildingId = 'hall-principal'): Vec2 {
+  const target = findCampusBuilding(buildingId)?.center ?? [0, 0]
+  // Leave enough space to see the building rather than spawn against its wall.
+  const candidates = CAMPUS_PATHS.flat().filter((point) =>
+    Math.hypot(point[0] - target[0], point[1] - target[1]) >= 20 && isWalkable(point),
+  )
+  candidates.sort((a, b) => Math.hypot(a[0] - target[0], a[1] - target[1]) - Math.hypot(b[0] - target[0], b[1] - target[1]))
+  if (candidates[0]) return [...candidates[0]]
+  throw new Error('No hay un punto exterior disponible para iniciar el recorrido.')
+}
+
+/** Small substeps stop fast frames from tunnelling through narrow walls. */
+export function moveWalker(start: Vec2, movement: Vec2): Vec2 {
+  let point: Vec2 = [...start]
+  const steps = Math.max(1, Math.ceil(Math.hypot(...movement) / 0.25))
+  const dx = movement[0] / steps
+  const dy = movement[1] / steps
+  for (let i = 0; i < steps; i++) {
+    const next: Vec2 = [point[0] + dx, point[1] + dy]
+    if (!isWalkable(next)) break
+    point = next
+  }
+  return point
+}

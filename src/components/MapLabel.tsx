@@ -45,7 +45,7 @@ function drawLabel(text: string, variant: Variant) {
 }
 
 /** Text that always faces the camera, keeps the same size on screen and is never hidden by buildings. */
-export function MapLabel({ text, position, variant = 'plain' }: { text: string; position: [number, number, number]; variant?: Variant }) {
+export function MapLabel({ text, position, variant = 'plain', depthTest = false }: { text: string; position: [number, number, number]; variant?: Variant; depthTest?: boolean }) {
   // Canvas text falls back to a system font until the web font has loaded, so labels are redrawn then.
   const [fontReady, setFontReady] = useState(() => document.fonts.check(FONT))
   useEffect(() => {
@@ -65,7 +65,7 @@ export function MapLabel({ text, position, variant = 'plain' }: { text: string; 
   const height = variant === 'plain' ? 0.021 : 0.025
   return (
     <sprite position={position} scale={[height * aspect, height, 1]} renderOrder={10} raycast={() => null}>
-      <spriteMaterial map={texture} sizeAttenuation={false} depthTest={false} transparent />
+      <spriteMaterial map={texture} sizeAttenuation={false} depthTest={depthTest} transparent />
     </sprite>
   )
 }

@@ -5,7 +5,7 @@ import { MathUtils, type PerspectiveCamera, Spherical, Vector3 } from 'three'
 import type { Vec2 } from '../types'
 
 // Camera angles in radians: 0 looks straight down, like a flat map.
-const TILT_3D = 0.9
+const TILT_3D = 1.02
 // Not exactly 0: looking straight down, the camera has no defined heading and the map would spin.
 const TILT_2D = 0.06
 const MAX_TILT = 1.25
@@ -17,14 +17,14 @@ const PAN_LIMIT = 450
 // aims PANEL_SHIFT spans in front of the subject, so the subject lands in the half that stays visible.
 const PANEL_ZOOM = 1.5
 const PANEL_SHIFT = 0.6
-const CARD_SHIFT = 0.3
+const CARD_SHIFT = 0.18
 // From this width the panel is a card at the side and no longer covers the map.
 const WIDE_SCREEN = 760
 const FLY_SPEED = 5
 // A camera move that has not arrived by then is dropped, so it can never hold the map hostage.
 const FLY_TIMEOUT_MS = 3000
 
-export const INITIAL_VIEW = { tilt: TILT_3D, distance: 330 }
+export const INITIAL_VIEW = { tilt: TILT_3D, distance: 330, azimuth: -0.45 }
 
 export interface MapFocus {
   center: Vec2
@@ -65,6 +65,7 @@ interface Props {
 export function MapCamera({ ref, focus, focusKey, onViewChange }: Props) {
   const camera = useThree((state) => state.camera) as PerspectiveCamera
   const invalidate = useThree((state) => state.invalidate)
+  const size = useThree((state) => state.size)
   const controls = useRef<ComponentRef<typeof MapControls>>(null)
   const goal = useRef<Goal | null>(null)
   // Only the starting point: handing the controls a new target later would swing the camera around it.
@@ -85,7 +86,7 @@ export function MapCamera({ ref, focus, focusKey, onViewChange }: Props) {
     const visibleRatio = 2 * Math.tan(MathUtils.degToRad(camera.fov) / 2) * Math.min(1, camera.aspect)
     const target = new Vector3(center[0], 0, -center[1])
     const covered = aboveThePanel && window.innerWidth < WIDE_SCREEN
-    if (aboveThePanel && controls.current) {
+    if ((aboveThePanel || window.innerWidth >= WIDE_SCREEN) && controls.current) {
       const azimuth = goal.current?.azimuth ?? controls.current.getAzimuthalAngle()
       // On a phone the panel is below the subject; on a wide screen it is a card to its left.
       const away = covered ? new Vector3(Math.sin(azimuth), 0, Math.cos(azimuth)) : new Vector3(-Math.cos(azimuth), 0, Math.sin(azimuth))
@@ -107,7 +108,7 @@ export function MapCamera({ ref, focus, focusKey, onViewChange }: Props) {
   }))
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- flyTo only reads refs and the camera
-  useEffect(() => flyTo(focus), [focusKey])
+  useEffect(() => flyTo(focus), [focusKey, size.width, size.height])
 
   useFrame((_, delta) => {
     const current = goal.current

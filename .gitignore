@@ -7,5 +7,7 @@ dist
 .env*
 
 # Material de referencia con derechos de terceros (mapas oficiales, tesis): se queda solo en local
-referencias/
+referencias/*
+!referencias/INVESTIGACION.md
+!referencias/plantilla-levantamiento.csv
 .claude
