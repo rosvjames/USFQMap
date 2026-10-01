@@ -42,12 +42,5 @@ export function LandmarkRoof({ building, height, materials }: { building: Campus
     <mesh position={[0, 8.95, 0]} castShadow><cylinderGeometry args={[0.08, 0.18, 0.7, 12]} /><meshStandardMaterial color="#d5cba4" /></mesh>
     <mesh position={[0, 9.4, 0]} castShadow><sphereGeometry args={[0.23, 16, 12]} /><meshStandardMaterial color="#d5cba4" /></mesh>
   </group>
-  if (id === 'pagoda') return <group position={[x, height - 1, -y]}>
-    {[0, 1, 2].map((tier) => <group key={tier} position={[0, tier * 2.2, 0]}>
-      <mesh position={[0, 0.8, 0]} castShadow><boxGeometry args={[4.7 - tier, 1.6, 4.7 - tier]} /><meshStandardMaterial color="#884a39" /></mesh>
-      <mesh position={[0, 1.6, 0]} rotation={[0, Math.PI / 4, 0]} castShadow material={materials.metalRoof}><coneGeometry args={[8 - tier * 1.7, 1.8, 4]} /></mesh>
-      <mesh position={[0, 0.7, 0]} rotation={[0, Math.PI / 4, 0]} castShadow><cylinderGeometry args={[8 - tier * 1.7, 8 - tier * 1.7, 0.12, 4]} /><meshStandardMaterial color="#bba880" /></mesh>
-    </group>)}
-  </group>
   return null
 }

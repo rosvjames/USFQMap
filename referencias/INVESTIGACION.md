@@ -39,8 +39,7 @@ Los techos se triangulan sobre la huella existente, conservando entrantes. Las a
 - 13 referencias documentadas de aulas, oficinas y laboratorio, cada una con enlace y aviso histórico cuando corresponde.
 - Interpretación de códigos, incluidos sufijos (H100F, N104A). Un código interpretable que no está en el catálogo se muestra explícitamente como no confirmado.
 - Rutas exteriores existentes, con accesos aproximados y conexiones no mapeadas punteadas.
-- Recorrido en primera persona dentro del perímetro del campus principal y por el puente elevado hacia Hayek, con colisión contra las huellas de edificios, agua, rejas del campo sintético y bordes de desniveles. La cámara sigue la altura de las gradas y el tablero del puente. No es una validación de transitabilidad real.
-- Zona deportiva corregida a partir de la descripción en sitio del estudiante del 1 de octubre de 2026: arena con dos canchas de vóley, terraza rebajada de césped con mesas circulares y sillas metálicas, dos canchas azules de tenis más abajo, fútbol sintético con cerramiento de malla y fútbol natural a desnivel. Se incluyen gradas a la izquierda de tenis y fútbol natural, y una entrada aproximada a la reja para el recorrido virtual. Se reutilizan las huellas de OSM; alturas, distribución del mobiliario y posición exacta de accesos son estimaciones visuales. El puente y sus accesos ya estaban etiquetados como elevados en OSM, pero antes se dibujaban a ras del suelo; su tablero se representa aproximadamente a 6 metros.
+- Zona deportiva corregida a partir de la descripción en sitio del estudiante del 1 de octubre de 2026: arena con dos canchas de vóley, terraza rebajada de césped con mesas circulares y sillas metálicas, dos canchas azules de tenis más abajo, fútbol sintético con cerramiento de malla y fútbol natural a desnivel. Se incluyen gradas a la izquierda de tenis y fútbol natural, y una entrada aproximada a la reja en el modelo exterior. Se reutilizan las huellas de OSM; alturas, distribución del mobiliario y posición exacta de accesos son estimaciones visuales. El puente y sus accesos ya estaban etiquetados como elevados en OSM, pero antes se dibujaban a ras del suelo; su tablero se representa aproximadamente a 6 metros.
 - Modelo exterior con materiales basados en referencias fotográficas y detalles arquitectónicos aproximados. Los seis árboles originales de OSM se conservan; los árboles decorativos adicionales se sitúan dentro de áreas verdes mapeadas, evitando senderos y edificios.
 - El Hall Principal inventado se conserva como plantilla de modelado y prueba de rutas, pero está fuera de los planos ofrecidos al visitante.
 
@@ -50,7 +49,7 @@ Las tres fotos aportadas por el estudiante el 1 de octubre de 2026 sirven como r
 
 La fachada se ancla al borde de la huella de OSM que mira al cuadrángulo. La plataforma se representa aproximadamente a un metro sobre el camino, con seis gradas y separación simétrica de leones. Las dimensiones, posiciones y altura exterior del Hall son estimaciones de las fotografías, sin valor de levantamiento. El David y los leones se modelan mediante mallas propias suaves; no se descargaron ni incorporaron escaneos de terceros. Las fotos no se redistribuyen en la aplicación.
 
-El recorrido exterior al seleccionar el Hall comienza frente al pórtico. Se puede subir la escalinata y caminar alrededor de la estatua; sus bases y las columnas tienen colisión. El acceso al interior permanece bloqueado por la huella existente y no implica que exista un plano interior verificado.
+El Hall conserva su representación exterior en el mapa. Se retiró el recorrido de primera persona, sus controles y el sistema de colisiones por solicitud del estudiante, para concentrar el proyecto en navegación y GPS. Las referencias a pisos y aulas documentadas y las rutas sobre senderos se mantienen.
 
 ## Cómo completar interiores con datos reales
 
@@ -61,3 +60,9 @@ Conviene empezar por un solo edificio: registrar en una hoja cada aula y punto d
 Convertir esas mediciones al sistema de coordenadas local de `src/lib/geo.ts`, crear un archivo en `src/data/plans/` y registrarlo en `PLANS` solo después de verificarlo. Quitar `placeholder` únicamente tras esa verificación. Las pruebas revisan que los nodos caigan en la huella y sean alcanzables, pero la exactitud física requiere revisión en sitio.
 
 No se han contactado oficinas ni descargado datos privados de Banner. Todos los datos añadidos vienen de páginas públicas o de la referencia compartida por el usuario.
+
+## Pagoda
+
+Las tres fotos aportadas por el estudiante el 1 de octubre de 2026 muestran un pabellón bajo de madera, un solo techo de tejas con aleros curvos, galería de columnas y balaustres, celosías, puente arqueado sobre un pequeño estanque, gradas y muros rojizos con coronación verde. La vista posterior muestra una palmera entre el pabellón y la laguna.
+
+Se conserva la orientación y la huella rectangular principal de OpenStreetMap y se utiliza su saliente occidental como referencia para el puente. La cubierta anterior de varias torres apiladas se reemplazó por cuatro faldones curvos con cumbrera baja. El estanque pequeño, alturas, detalles de madera, gradas y plantación son estimaciones visuales de las fotos. La laguna mayor conserva su huella cartográfica. No se modelan interiores ni se incorporan fotografías a los archivos publicados.

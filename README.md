@@ -1,6 +1,6 @@
 # USFQ · Explora
 
-Mapa 3D del campus de Cumbayá para una casa abierta. Permite buscar edificios y códigos de aula, consultar las fuentes, trazar rutas exteriores aproximadas y recorrer el campus principal y el puente hacia Hayek en primera persona.
+Mapa 3D del campus de Cumbayá para una casa abierta. Permite buscar edificios y códigos de aula, consultar las fuentes, trazar rutas exteriores aproximadas y navegar por el campus mediante el mapa y el GPS.
 
 ## Ejecutar
 
@@ -16,7 +16,6 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 ## Controles
 
 - Mapa: arrastrar para desplazar, rueda/pellizco para acercar y botón derecho/dos dedos para girar. El botón 2D/3D cambia la perspectiva.
-- «Recorrer a pie»: WASD para caminar, flechas arriba/abajo para avanzar/retroceder, izquierda/derecha para girar, arrastrar para mirar y Esc para volver. También hay botones táctiles.
 - Buscar M302, G111, DW010, H100F, un edificio o un servicio como Registro.
 - «Fuentes y cobertura» muestra las referencias y los límites de los datos.
 - «Ver canchas y terrazas» acerca la cámara al sector deportivo. El interruptor «Nombres de edificios», arriba a la derecha, muestra u oculta sus etiquetas, incluida la del edificio seleccionado. Los nombres están activados inicialmente.
@@ -27,7 +26,7 @@ El catálogo contiene 36 lugares con geometría de OpenStreetMap y 13 referencia
 
 Los detalles arquitectónicos son una interpretación visual de fotografías públicas de la USFQ y de la ilustración del campus compartida por el usuario. No son una reconstrucción arquitectónica medida. Los números de las fichas corresponden al mapa oficial de 2023, cuya leyenda difiere de la imagen antigua.
 
-Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. El modo a pie impide atravesar edificios, agua, rejas del campo sintético y bordes de desniveles; permite usar las gradas y el puente elevado hacia Hayek. Fuera del perímetro principal solo permite el corredor del puente.
+Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. Se retiró el recorrido de primera persona para concentrar el proyecto en orientación y GPS; se mantiene el mapa 3D con sus rutas exteriores.
 
 La zona deportiva se corrigió según la descripción del estudiante: dos canchas de vóley sobre arena, terraza inferior de césped con mesas y sillas metálicas, dos canchas de tenis azules más abajo, fútbol sintético con reja y fútbol natural a desnivel. Hay accesos por gradas a la izquierda del tenis y del campo natural. Las huellas se conservan, pero las profundidades, mobiliario, accesos y altura del puente son aproximaciones visuales, no un levantamiento topográfico.
 
@@ -43,14 +42,14 @@ La investigación completa y los próximos pasos están en [referencias/INVESTIG
 | `src/data/plans/` | Planos interiores verificados; el ejemplo del Hall no está registrado |
 | `src/lib/search.ts` | Buscador y lectura de códigos con avisos de procedencia |
 | `src/lib/outdoor.ts` | Rutas sobre el grafo de senderos |
-| `src/lib/walking.ts` | Puntos iniciales y colisiones del recorrido exterior |
 | `src/lib/terrain.ts` | Desniveles deportivos, gradas y alturas del puente |
 | `src/components/SportsGround.tsx` | Arena, tenis, fútbol, redes y mobiliario |
 | `src/components/CampusBridges.tsx` | Tablero, barandillas y soportes del puente a Hayek |
-| `src/lib/hall.ts` | Posición, gradas y obstáculos de la entrada del Hall |
+| `src/lib/hall.ts` | Posición, gradas y alturas de la entrada del Hall |
 | `src/components/HallEntrance.tsx` | Pórtico, escalinata, David y leones según fotos del usuario |
 | `src/lib/sculptures.ts` | Mallas originales aproximadas de las esculturas |
-| `src/components/WalkCamera.tsx` | Cámara de primera persona, teclado y mirada |
+| `src/components/Pagoda.tsx` | Pabellón de madera, galería, puente, gradas, estanque y palmera |
+| `src/lib/pagoda.ts` | Huella orientada y geometría de la cubierta curva |
 | `src/components/IllustratedRoof.tsx` | Cubiertas y detalles de los hitos |
 | `src/lib/architecture.ts` | Superficies de techos y senderos |
 | `src/lib/materials.ts` | Texturas y materiales generados localmente |
@@ -77,6 +76,8 @@ Los materiales se contrastaron con fotografías públicas de USFQ Next y Noticia
 
 El volumen exterior, los detalles y la plantación siguen siendo aproximados. Se conservan las huellas y senderos de OpenStreetMap; no se infiere la distribución interior a partir de las fotografías. Las alturas de OSM se usan cuando existen; en los demás edificios se estiman a partir de pisos o proporciones visuales.
 
-La entrada del Hall Principal utiliza las tres fotos compartidas por el estudiante: fachada roja, frontón gris, columnas, plataforma elevada, seis gradas, estatua central clara y dos leones en bronce sobre bases rojizas. La figura central representa al David de Miguel Ángel, cuya réplica identifica [Alumni USFQ](https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html). Las esculturas se generan como mallas propias y no son escaneos de las piezas reales. Alturas, distancias y proporciones se estiman a partir de las fotos. Al elegir el Hall y «Explorar este sector a pie» se inicia frente a la entrada; se puede subir por las gradas, con colisiones en las bases y columnas.
+La entrada del Hall Principal utiliza las tres fotos compartidas por el estudiante: fachada roja, frontón gris, columnas, plataforma elevada, seis gradas, estatua central clara y dos leones en bronce sobre bases rojizas. La figura central representa al David de Miguel Ángel, cuya réplica identifica [Alumni USFQ](https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html). Las esculturas se generan como mallas propias y no son escaneos de las piezas reales. Alturas, distancias y proporciones se estiman a partir de las fotos.
 
-Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, colisiones, gradas, rejas, alturas del puente, entrada del Hall, mallas de esculturas y geometría de techos cóncavos, pavimentos y terreno rebajado.
+Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, desniveles, alturas del puente, entrada del Hall, mallas de esculturas y geometría de techos cóncavos, pavimentos y terreno rebajado.
+
+La Pagoda se remodeló a partir de las tres fotografías compartidas por el estudiante: pabellón bajo de madera con un único techo de tejas oscuras y aleros curvos, columnas, ventanas de celosía, galería con balaustres y puente arqueado de acceso. Incluye gradas de piedra, muros rojizos con remates verdes, pequeño estanque con piedras y hojas acuáticas, y una palmera en el lado de la laguna. El pabellón y su orientación siguen la huella de OSM; alturas, ornamentos, estanque y vegetación son estimaciones visuales. Las fotos no se redistribuyen. «Ver la Pagoda» abre su ficha en el mapa; no activa un recorrido de primera persona.

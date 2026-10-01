@@ -421,9 +421,9 @@ button {
 .guide h1 { font-family: var(--sign); font-size: 32px; line-height: 1.1; font-weight: 600; letter-spacing: -.025em; margin: 0; }
 .guide h1 span { color: #677663; }
 .guide-intro { font-size: 15px; line-height: 1.55; color: var(--muted); max-width: 30ch; margin: 18px 0 22px; }
-.walk-button { display: flex; justify-content: space-between; align-items: center; gap: 20px; background: var(--red); color: #fff; border: 0; border-radius: 7px; padding: 14px 16px; width: 100%; font-weight: 600; font-size: 15px; transition: background .15s; }
-.walk-button:hover { background: #a70d26; }
-.walk-button span { font-size: 20px; }
+.pagoda-button { display: flex; justify-content: space-between; align-items: center; gap: 20px; background: var(--red); color: #fff; border: 0; border-radius: 7px; padding: 14px 16px; width: 100%; font-weight: 600; font-size: 15px; transition: background .15s; }
+.pagoda-button:hover { background: #a70d26; }
+.pagoda-button span { font-size: 20px; }
 .guide-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 21px 0; font-size: 12px; line-height: 1.4; color: var(--muted); }
 .guide-stats strong { display: block; color: var(--ink); font-size: 27px; font-family: var(--sign); font-weight: 600; margin-bottom: 3px; font-variant-numeric: tabular-nums; }
 .directory { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -448,7 +448,6 @@ button {
 .reference-note a { color: #495e4e; text-underline-offset: 3px; line-height: 1.4; }
 .reference-note p { margin: 0; color: var(--muted); line-height: 1.45; }
 .status-tag { display: inline-block; padding: 5px 8px; font-size: 11px; font-weight: 600; background: #edf2e9; color: #506448; border-radius: 4px; }
-.panel-walk { margin-top: 22px; }
 .location-list { margin-top: 22px; border-top: 1px solid var(--line); }
 .location-list h2 { font-size: 13px; font-weight: 600; margin: 17px 0 7px; }
 .location-list button { display: flex; gap: 10px; align-items: baseline; width: 100%; padding: 11px 0; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); font-size: 13px; }
@@ -472,14 +471,6 @@ button {
 .source-list a { display: flex; gap: 14px; align-items: center; justify-content: space-between; padding: 12px 0; color: #41573f; border-bottom: 1px solid var(--line); font-size: 14px; text-decoration: none; }
 .source-list a:hover { color: var(--red); }
 .osm-credit { font-size: 12px; color: var(--muted); }
-.walking-banner { position: absolute; top: 108px; left: 26px; background: #fffffff2; padding: 22px; width: 285px; border-radius: 10px; z-index: 20; box-shadow: var(--float); }
-.walking-banner h1 { font-family: var(--sign); font-size: 26px; margin: 12px 0; letter-spacing: -.02em; }
-.walking-banner p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 17px; }
-.walking-banner button { background: none; border: 0; padding: 0; font-size: 14px; font-weight: 600; color: var(--red); display: flex; justify-content: space-between; width: 100%; }
-.crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffffe0; text-shadow: 0 1px 4px #243728; font-size: 22px; pointer-events: none; }
-.walk-pad { position: absolute; bottom: 70px; right: 26px; display: grid; grid-template-columns: repeat(3, 46px); gap: 6px; z-index: 20; }
-.walk-pad button { width: 46px; height: 46px; background: #fffffff0; border: 1px solid #d5dfd0; border-radius: 7px; font-size: 24px; touch-action: none; user-select: none; }
-.walk-pad button:active { background: var(--red); color: #fff; }
 @media (min-width: 760px) {
   .panel { top: 172px; left: 26px; width: 360px; max-height: calc(100dvh - 234px); border-radius: 12px; }
   .floors { top: 180px; left: 406px; }
@@ -500,7 +491,7 @@ button {
   .guide h1 br { display: none; }
   .guide h1 span { margin-left: 6px; }
   .guide-intro { font-size: 13px; line-height: 1.45; max-width: none; margin: 9px 0 13px; }
-  .walk-button { padding: 10px 14px; font-size: 14px; }
+  .pagoda-button { padding: 10px 14px; font-size: 14px; }
   .directory { margin-top: 12px; border-bottom: 0; }
   .directory summary { padding-bottom: 0; font-size: 13px; }
   .directory-list { margin-top: 12px; }
@@ -508,10 +499,6 @@ button {
   .map-footer { bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; right: 12px; gap: 12px; font-size: 10px; }
   .map-footer > span { display: none; }
   .map-footer button { margin-left: 0; margin-right: auto; font-size: 11px; }
-  .walking-banner { top: 77px; left: 12px; padding: 15px 17px; width: 240px; }
-  .walking-banner h1 { font-size: 22px; margin: 8px 0; }
-  .walking-banner p { font-size: 12px; margin-bottom: 10px; }
-  .walk-pad { right: 12px; bottom: 60px; }
   .sources-dialog { padding: 26px 22px; }
   .sources-dialog h2 { font-size: 30px; }
 }
