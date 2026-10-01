@@ -66,3 +66,5 @@ No se han contactado oficinas ni descargado datos privados de Banner. Todos los 
 Las tres fotos aportadas por el estudiante el 1 de octubre de 2026 muestran un pabellón bajo de madera, un solo techo de tejas con aleros curvos, galería de columnas y balaustres, celosías, puente arqueado sobre un pequeño estanque, gradas y muros rojizos con coronación verde. La vista posterior muestra una palmera entre el pabellón y la laguna.
 
 Se conserva la orientación y la huella rectangular principal de OpenStreetMap y se utiliza su saliente occidental como referencia para el puente. La cubierta anterior de varias torres apiladas se reemplazó por cuatro faldones curvos con cumbrera baja. El estanque pequeño, alturas, detalles de madera, gradas y plantación son estimaciones visuales de las fotos. La laguna mayor conserva su huella cartográfica. No se modelan interiores ni se incorporan fotografías a los archivos publicados.
+
+Corrección del estudiante: el pequeño estanque rodea toda la Pagoda, conservando su inicio occidental junto al puente. El agua continúa por los cuatro lados bajo el pabellón elevado y el borde de piedras sigue su perímetro completo.
