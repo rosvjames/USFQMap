@@ -75,7 +75,8 @@ interface SceneProps {
   plan?: BuildingPlan
   route: Route | null
   outdoorRoute: OutdoorRoute | null
-  originBuildingId?: string
+  /** A building id, or 'gps'. */
+  originId: string
   userPosition?: Vec2
   activeFloor: number
   onSelectBuilding: (buildingId: string) => void
@@ -127,7 +128,7 @@ export function CampusScene(props: SceneProps) {
             key={building.osmId}
             building={building}
             selected={!!building.info && building.info.id === selectedBuildingId}
-            labelled={focus.span < CROWDED_SPAN || building.info?.id === props.originBuildingId}
+            labelled={focus.span < CROWDED_SPAN || building.info?.id === props.originId}
             onSelect={props.onSelectBuilding}
           />
         ),
@@ -137,7 +138,12 @@ export function CampusScene(props: SceneProps) {
       {props.outdoorRoute && <OutdoorRouteLine route={props.outdoorRoute} />}
       {props.userPosition && <UserMarker position={props.userPosition} />}
 
-      <MapCamera ref={props.cameraRef} focus={focus} onViewChange={props.onViewChange} />
+      <MapCamera
+        ref={props.cameraRef}
+        focus={focus}
+        focusKey={`${selectedBuildingId}|${props.originId}|${!!props.outdoorRoute}`}
+        onViewChange={props.onViewChange}
+      />
     </Canvas>
   )
 }
