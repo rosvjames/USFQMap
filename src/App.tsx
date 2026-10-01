@@ -211,7 +211,10 @@ export default function App() {
       )}
 
       <div className="map-controls">
-        <button aria-label={names ? 'Ocultar nombres' : 'Mostrar nombres'} aria-pressed={names} onClick={() => setNames(!names)}>Aa</button>
+        <button className="building-label-toggle" role="switch" aria-checked={names} onClick={() => setNames((visible) => !visible)}>
+          <span>Nombres de edificios</span>
+          <span className="names-switch" aria-hidden="true" />
+        </button>
         <button onClick={() => mapCamera.current?.faceNorth()} aria-label="Orientar al norte" title="Orientar al norte">
           <svg ref={compassNeedle} viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path d="M12 2.5 16 12H8z" fill="var(--red)" />

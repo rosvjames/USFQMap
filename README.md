@@ -19,7 +19,7 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 - «Recorrer a pie»: WASD para caminar, flechas arriba/abajo para avanzar/retroceder, izquierda/derecha para girar, arrastrar para mirar y Esc para volver. También hay botones táctiles.
 - Buscar M302, G111, DW010, H100F, un edificio o un servicio como Registro.
 - «Fuentes y cobertura» muestra las referencias y los límites de los datos.
-- «Ver canchas y terrazas» acerca la cámara al sector deportivo. El botón Aa muestra u oculta los nombres, visibles inicialmente en todos los edificios del campus.
+- «Ver canchas y terrazas» acerca la cámara al sector deportivo. El interruptor «Nombres de edificios», arriba a la derecha, muestra u oculta sus etiquetas, incluida la del edificio seleccionado. Los nombres están activados inicialmente.
 
 ## Datos y precisión
 
