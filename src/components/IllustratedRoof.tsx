@@ -6,7 +6,7 @@ import type { CampusMaterials } from '../lib/materials'
 
 /** Photo-referenced materials on approximate roofs; the OSM ground footprint is preserved. */
 export function IllustratedRoof({ building, height, materials }: { building: CampusBuilding; height: number; materials: CampusMaterials }) {
-  const geometry = useMemo(() => createRoofGeometry(building.ring, height), [building, height])
+  const geometry = useMemo(() => createRoofGeometry(building.ring, height, building.info?.id === 'hall-principal' ? 0.6 : 3.5), [building, height])
   useEffect(() => () => geometry.dispose(), [geometry])
   const greenMetal = ['maxwell', 'darwin', 'casa-blanca', 'teatro-casa-blanca', 'pagoda', 'coliseo', 'dragon-shop'].includes(building.info?.id ?? '')
   return <mesh geometry={geometry} material={greenMetal ? materials.metalRoof : materials.terracotta} castShadow receiveShadow raycast={() => null} />

@@ -47,6 +47,9 @@ La investigación completa y los próximos pasos están en [referencias/INVESTIG
 | `src/lib/terrain.ts` | Desniveles deportivos, gradas y alturas del puente |
 | `src/components/SportsGround.tsx` | Arena, tenis, fútbol, redes y mobiliario |
 | `src/components/CampusBridges.tsx` | Tablero, barandillas y soportes del puente a Hayek |
+| `src/lib/hall.ts` | Posición, gradas y obstáculos de la entrada del Hall |
+| `src/components/HallEntrance.tsx` | Pórtico, escalinata, David y leones según fotos del usuario |
+| `src/lib/sculptures.ts` | Mallas originales aproximadas de las esculturas |
 | `src/components/WalkCamera.tsx` | Cámara de primera persona, teclado y mirada |
 | `src/components/IllustratedRoof.tsx` | Cubiertas y detalles de los hitos |
 | `src/lib/architecture.ts` | Superficies de techos y senderos |
@@ -74,4 +77,6 @@ Los materiales se contrastaron con fotografías públicas de USFQ Next y Noticia
 
 El volumen exterior, los detalles y la plantación siguen siendo aproximados. Se conservan las huellas y senderos de OpenStreetMap; no se infiere la distribución interior a partir de las fotografías. Las alturas de OSM se usan cuando existen; en los demás edificios se estiman a partir de pisos o proporciones visuales.
 
-Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, colisiones, gradas, rejas, alturas del puente y geometría de techos cóncavos, pavimentos y terreno rebajado.
+La entrada del Hall Principal utiliza las tres fotos compartidas por el estudiante: fachada roja, frontón gris, columnas, plataforma elevada, seis gradas, estatua central clara y dos leones en bronce sobre bases rojizas. La figura central representa al David de Miguel Ángel, cuya réplica identifica [Alumni USFQ](https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html). Las esculturas se generan como mallas propias y no son escaneos de las piezas reales. Alturas, distancias y proporciones se estiman a partir de las fotos. Al elegir el Hall y «Explorar este sector a pie» se inicia frente a la entrada; se puede subir por las gradas, con colisiones en las bases y columnas.
+
+Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, colisiones, gradas, rejas, alturas del puente, entrada del Hall, mallas de esculturas y geometría de techos cóncavos, pavimentos y terreno rebajado.

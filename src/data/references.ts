@@ -10,6 +10,7 @@ export const SOURCES = {
   infrastructure: { title: 'Reporte de infraestructura · USFQ, enero 2019', url: 'https://www.usfq.edu.ec/sites/default/files/inline-files/Reporte_Infraestructura.pdf' },
   campusPhoto: { title: 'Fotografía del campus · USFQ Next', url: 'https://www.usfq.edu.ec/sites/default/files/2024-08/usfq-next-main-slide.jpg' },
   obeliskPhoto: { title: 'Obelisco y jardines · Noticias USFQ, 2021', url: 'https://noticias.usfq.edu.ec/2021/03/usfq-elegida-como-la-universidad-1-del.html' },
+  david: { title: 'El David en la USFQ · Alumni, 2024', url: 'https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html' },
 }
 
 export interface LocationReference {

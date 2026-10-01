@@ -1,6 +1,6 @@
 import { CanvasTexture, CubeTexture, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three'
 
-type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water' | 'sand'
+type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water' | 'sand' | 'stone'
 
 /** Locally generated, seamless textures. No third-party photographs/assets are bundled. */
 function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
@@ -16,10 +16,12 @@ function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
     const joint = kind === 'brick' ? y % 16 < 1.5 || (x + course % 2 * 32) % 64 < 1.5
       : kind === 'tile' ? y % 24 < 2 || (x + Math.floor(y / 24) % 2 * 16) % 32 < 1.5
       : kind === 'metal' ? x % 32 < 1.5
-      : kind === 'paving' ? x % 64 < 1.5 || y % 64 < 1.5 : false
+      : kind === 'paving' ? x % 64 < 1.5 || y % 64 < 1.5
+      : kind === 'stone' ? y % 32 < 1.5 || (x + Math.floor(y / 32) % 2 * 32) % 64 < 1.5 : false
     const pattern = kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 11
-      : kind === 'grass' ? Math.sin(x * 1.7 + y * 2.4) * 10 : 0
-    const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : 155 : 230) + noise * (kind === 'grass' ? 65 : 22) + pattern))
+      : kind === 'grass' ? Math.sin(x * 1.7 + y * 2.4) * 10
+      : kind === 'stone' ? Math.sin(Math.floor(x / 32) * 21 + Math.floor(y / 32) * 17) * 18 : 0
+    const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : kind === 'stone' ? 210 : 155 : 230) + noise * (kind === 'grass' ? 65 : 22) + pattern))
     const i = (y * 256 + x) * 4
     pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = shade
     pixels.data[i + 3] = 255
@@ -43,6 +45,9 @@ export function createCampusMaterials() {
     stucco: material('stucco', '#d5af94'),
     brick: material('brick', '#b65e43', 0.92, 0.045),
     cream: material('stucco', '#e4ddc8'),
+    hallRed: material('stucco', '#c3654f', 0.95, 0.025),
+    entranceStone: material('stone', '#b8b6a8', 0.95, 0.025),
+    redStone: material('stone', '#aa705a', 0.95, 0.025),
     terracotta: material('tile', '#64504a', 0.92, 0.065),
     metalRoof: material('metal', '#708c7e', 0.65, 0.045, 0.25),
     grass: material('grass', '#718554', 1, 0.025),
