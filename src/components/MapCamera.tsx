@@ -1,18 +1,25 @@
 import { MapControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { type ComponentRef, type Ref, useEffect, useImperativeHandle, useRef } from 'react'
+import { type ComponentRef, type Ref, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { MathUtils, type PerspectiveCamera, Spherical, Vector3 } from 'three'
 import type { Vec2 } from '../types'
 
 // Camera angles in radians: 0 looks straight down, like a flat map.
 const TILT_3D = 0.9
+// Not exactly 0: looking straight down, the camera has no defined heading and the map would spin.
+const TILT_2D = 0.06
 const MAX_TILT = 1.25
 const MIN_DISTANCE = 40
 const MAX_DISTANCE = 1400
 // The map cannot be dragged further than this from the campus center, in meters.
 const PAN_LIMIT = 450
-// With the bottom panel open, the subject is pushed up by this fraction of its size.
-const PANEL_SHIFT = 0.3
+// The bottom panel hides about half of a phone screen: the camera pulls back by PANEL_ZOOM and
+// aims PANEL_SHIFT spans in front of the subject, so the subject lands in the half that stays visible.
+const PANEL_ZOOM = 1.5
+const PANEL_SHIFT = 0.6
+const CARD_SHIFT = 0.3
+// From this width the panel is a card at the side and no longer covers the map.
+const WIDE_SCREEN = 760
 const FLY_SPEED = 5
 
 export const INITIAL_VIEW = { tilt: TILT_3D, distance: 330 }
@@ -55,6 +62,8 @@ export function MapCamera({ ref, focus, onViewChange }: Props) {
   const invalidate = useThree((state) => state.invalidate)
   const controls = useRef<ComponentRef<typeof MapControls>>(null)
   const goal = useRef<Goal | null>(null)
+  // Only the starting point: handing the controls a new target later would swing the camera around it.
+  const [initialTarget] = useState((): [number, number, number] => [focus.center[0], 0, -focus.center[1]])
 
   function fly(next: Goal) {
     goal.current = { ...goal.current, ...next }
@@ -65,11 +74,15 @@ export function MapCamera({ ref, focus, onViewChange }: Props) {
     // Phones are taller than wide, so the horizontal field of view is the tight one.
     const visibleRatio = 2 * Math.tan(MathUtils.degToRad(camera.fov) / 2) * Math.min(1, camera.aspect)
     const target = new Vector3(center[0], 0, -center[1])
+    const covered = aboveThePanel && window.innerWidth < WIDE_SCREEN
     if (aboveThePanel && controls.current) {
       const azimuth = goal.current?.azimuth ?? controls.current.getAzimuthalAngle()
-      target.add(new Vector3(Math.sin(azimuth), 0, Math.cos(azimuth)).multiplyScalar(span * PANEL_SHIFT))
+      // On a phone the panel is below the subject; on a wide screen it is a card to its left.
+      const away = covered ? new Vector3(Math.sin(azimuth), 0, Math.cos(azimuth)) : new Vector3(-Math.cos(azimuth), 0, Math.sin(azimuth))
+      target.add(away.multiplyScalar(span * (covered ? PANEL_SHIFT : CARD_SHIFT)))
     }
-    fly({ target, distance: MathUtils.clamp(span / visibleRatio, MIN_DISTANCE, MAX_DISTANCE) })
+    const distance = (span * (covered ? PANEL_ZOOM : 1)) / visibleRatio
+    fly({ target, distance: MathUtils.clamp(distance, MIN_DISTANCE, MAX_DISTANCE) })
   }
 
   useImperativeHandle(ref, () => ({
@@ -79,7 +92,7 @@ export function MapCamera({ ref, focus, onViewChange }: Props) {
       fly({ distance: MathUtils.clamp(current * factor, MIN_DISTANCE, MAX_DISTANCE) })
     },
     faceNorth: () => fly({ azimuth: 0 }),
-    setTilted: (tilted) => fly({ tilt: tilted ? TILT_3D : 0 }),
+    setTilted: (tilted) => fly({ tilt: tilted ? TILT_3D : TILT_2D }),
     flyTo,
   }))
 
@@ -129,7 +142,7 @@ export function MapCamera({ ref, focus, onViewChange }: Props) {
     <MapControls
       ref={controls}
       makeDefault
-      target={[focus.center[0], 0, -focus.center[1]]}
+      target={initialTarget}
       enableDamping
       dampingFactor={0.12}
       zoomToCursor
