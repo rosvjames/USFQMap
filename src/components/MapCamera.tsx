@@ -21,6 +21,8 @@ const CARD_SHIFT = 0.3
 // From this width the panel is a card at the side and no longer covers the map.
 const WIDE_SCREEN = 760
 const FLY_SPEED = 5
+// A camera move that has not arrived by then is dropped, so it can never hold the map hostage.
+const FLY_TIMEOUT_MS = 3000
 
 export const INITIAL_VIEW = { tilt: TILT_3D, distance: 330 }
 
@@ -40,6 +42,7 @@ export interface MapCameraHandle {
 }
 
 interface Goal {
+  deadline?: number
   target?: Vector3
   distance?: number
   azimuth?: number
@@ -49,6 +52,8 @@ interface Goal {
 interface Props {
   ref: Ref<MapCameraHandle>
   focus: MapFocus
+  /** The camera reframes only when this changes, not every time `focus` is recomputed (e.g. on each GPS reading). */
+  focusKey: string
   /** Called when the view turns or tilts, so the compass and the 2D/3D button can follow. */
   onViewChange: (azimuth: number, tilted: boolean) => void
 }
@@ -57,7 +62,7 @@ interface Props {
  * Map-style camera: drag to pan, pinch or scroll to zoom toward the pointer, two fingers
  * (or right-drag) to rotate and tilt. Programmatic moves glide instead of jumping.
  */
-export function MapCamera({ ref, focus, onViewChange }: Props) {
+export function MapCamera({ ref, focus, focusKey, onViewChange }: Props) {
   const camera = useThree((state) => state.camera) as PerspectiveCamera
   const invalidate = useThree((state) => state.invalidate)
   const controls = useRef<ComponentRef<typeof MapControls>>(null)
@@ -66,7 +71,12 @@ export function MapCamera({ ref, focus, onViewChange }: Props) {
   const [initialTarget] = useState((): [number, number, number] => [focus.center[0], 0, -focus.center[1]])
 
   function fly(next: Goal) {
-    goal.current = { ...goal.current, ...next }
+    if (next.target) {
+      // Stay inside the area the user is allowed to pan, or the move would never arrive.
+      next.target.x = MathUtils.clamp(next.target.x, -PAN_LIMIT, PAN_LIMIT)
+      next.target.z = MathUtils.clamp(next.target.z, -PAN_LIMIT, PAN_LIMIT)
+    }
+    goal.current = { ...goal.current, ...next, deadline: performance.now() + FLY_TIMEOUT_MS }
     invalidate()
   }
 
@@ -97,12 +107,16 @@ export function MapCamera({ ref, focus, onViewChange }: Props) {
   }))
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- flyTo only reads refs and the camera
-  useEffect(() => flyTo(focus), [focus])
+  useEffect(() => flyTo(focus), [focusKey])
 
   useFrame((_, delta) => {
     const current = goal.current
     const orbit = controls.current
     if (!current || !orbit) return
+    if (performance.now() > (current.deadline ?? Infinity)) {
+      goal.current = null
+      return
+    }
 
     const ease = 1 - Math.exp(-delta * FLY_SPEED)
     const view = new Spherical().setFromVector3(camera.position.clone().sub(orbit.target))

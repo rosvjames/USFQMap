@@ -53,10 +53,24 @@ export default function App() {
     setTilted(isTilted)
   }, [])
 
-  const followingMe = originId === GPS && !destination
+  // Set by the locate button: the map flies to the user once, on the next GPS reading, and then leaves them free to pan.
+  const locating = useRef(false)
+  const showingDestination = !!destination
   useEffect(() => {
-    if (followingMe && gps.position) mapCamera.current?.flyTo({ center: gps.position, span: 140, aboveThePanel: false })
-  }, [followingMe, gps.position])
+    if (!locating.current || !gps.position) return
+    locating.current = false
+    mapCamera.current?.flyTo({ center: gps.position, span: 140, aboveThePanel: showingDestination })
+  }, [gps.position, showingDestination])
+
+  function locateMe() {
+    // With a destination open, switching the origin to GPS already reframes the route.
+    locating.current = !destination || originId === GPS
+    setOriginId(GPS)
+    if (locating.current && gps.position) {
+      locating.current = false
+      mapCamera.current?.flyTo({ center: gps.position, span: 140, aboveThePanel: showingDestination })
+    }
+  }
 
   const results = useMemo(() => search(query), [query])
   const building = destination ? BUILDING_BY_ID.get(destination.buildingId) : undefined
@@ -115,7 +129,7 @@ export default function App() {
         plan={plan}
         route={route}
         outdoorRoute={outdoorRoute}
-        originBuildingId={originId === GPS ? undefined : originId}
+        originId={originId}
         userPosition={gps.position}
         activeFloor={activeFloor}
         onSelectBuilding={selectBuilding}
@@ -182,10 +196,7 @@ export default function App() {
         </button>
         <button
           className={originId === GPS ? 'active' : ''}
-          onClick={() => {
-            setOriginId(GPS)
-            if (gps.position) mapCamera.current?.flyTo({ center: gps.position, span: 140, aboveThePanel: !!destination })
-          }}
+          onClick={locateMe}
           aria-label="Ir a mi ubicación"
           title="Ir a mi ubicación"
         >
