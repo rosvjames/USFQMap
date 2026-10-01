@@ -29,7 +29,7 @@ Los detalles arquitectónicos son una interpretación visual de fotografías pú
 
 Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. El modo a pie impide atravesar edificios, agua, rejas del campo sintético y bordes de desniveles; permite usar las gradas y el puente elevado hacia Hayek. Fuera del perímetro principal solo permite el corredor del puente.
 
-La zona deportiva se corrigió según la descripción del estudiante: dos canchas de vóley sobre arena, terraza inferior con mesas y sillas metálicas, dos canchas de tenis azules más abajo, fútbol sintético con reja y fútbol natural a desnivel. Hay accesos por gradas a la izquierda del tenis y del campo natural. Las huellas se conservan, pero las profundidades, mobiliario, accesos y altura del puente son aproximaciones visuales, no un levantamiento topográfico.
+La zona deportiva se corrigió según la descripción del estudiante: dos canchas de vóley sobre arena, terraza inferior de césped con mesas y sillas metálicas, dos canchas de tenis azules más abajo, fútbol sintético con reja y fútbol natural a desnivel. Hay accesos por gradas a la izquierda del tenis y del campo natural. Las huellas se conservan, pero las profundidades, mobiliario, accesos y altura del puente son aproximaciones visuales, no un levantamiento topográfico.
 
 La investigación completa y los próximos pasos están en [referencias/INVESTIGACION.md](referencias/INVESTIGACION.md).
 

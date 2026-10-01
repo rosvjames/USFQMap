@@ -138,7 +138,7 @@ export function SportsGround({ materials, names }: { materials: CampusMaterials;
       <shapeGeometry args={[createTerrainShapes(ring, TERRAIN_CUTOUTS)]} onUpdate={(geo) => { const uv = geo.getAttribute('uv'); for (let j = 0; j < uv.count; j++) uv.setXY(j, uv.getX(j) / 2.4, uv.getY(j) / 2.4); uv.needsUpdate = true }} />
     </mesh>)}
     {SPORT_ZONES.map((zone) => {
-      const f = frame(zone.area.ring), material = zone.kind === 'sand' ? materials.sand : zone.kind === 'tennis' ? materials.tennis : zone.kind === 'synthetic' ? materials.synthetic : zone.kind === 'terrace' ? materials.paving : materials.grass
+      const f = frame(zone.area.ring), material = zone.kind === 'sand' ? materials.sand : zone.kind === 'tennis' ? materials.tennis : zone.kind === 'synthetic' ? materials.synthetic : materials.grass
       const shape = new Shape(zone.area.ring.map(([x, y]) => new Vector2(x, y)))
       return <group key={zone.area.osmId}>
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, zone.height, 0]} material={material} receiveShadow>
