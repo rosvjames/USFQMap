@@ -12,6 +12,13 @@ import type { BuildingPlan } from './types'
 const GPS = 'gps'
 // Building next to the main gate on the official campus map.
 const DEFAULT_ORIGIN = 'miguel-de-santiago'
+// Places visitors ask for most, offered before they type anything.
+const SHORTCUTS = [
+  { label: 'Biblioteca', buildingId: 'ciceron' },
+  { label: 'Hall Principal', buildingId: 'hall-principal' },
+  { label: 'Coliseo', buildingId: 'coliseo' },
+  { label: 'Hayek', buildingId: 'hayek' },
+]
 
 // QR codes on site link to "?desde=<building id or indoor node id>" so the route starts where the user is standing.
 const originFromUrl = new URLSearchParams(window.location.search).get('desde')
@@ -80,19 +87,24 @@ export default function App() {
     if (info) choose({ kind: 'building', key: info.id, buildingId, title: info.name, subtitle: 'Edificio' })
   }
 
+  // What the door sign would say, when the destination is a room rather than a whole building.
+  const roomCode = destination?.kind === 'room' ? destination.node.code : destination?.floor !== undefined ? destination.title : undefined
+  const floor = destination?.kind === 'room' ? destination.node.floor : destination?.floor
+  const floorLabel = floorName(floor ?? 1).replace(/^./, (letter) => letter.toUpperCase())
+  const heading = destination?.kind === 'room' ? (destination.node.label ?? destination.title) : roomCode ? `Edificio ${building?.name}` : building?.name
+  const place = destination?.kind === 'room' ? `${building?.name}, ${floorName(floor ?? 1)}` : roomCode ? floorLabel : 'Edificio'
+
   const steps: string[] = []
   if (outdoorRoute && building) {
     const from = originId === GPS ? 'Desde tu ubicación, sigue' : `Sal de ${BUILDING_BY_ID.get(originId)?.name} y sigue`
-    const meters = Math.round(outdoorRoute.distance / 10) * 10
-    steps.push(`${from} la línea roja hasta ${building.name}: unos ${meters} m, ≈ ${outdoorRoute.minutes} min a pie.`)
+    steps.push(`${from} la línea roja hasta ${building.name}.`)
     if (outdoorRoute.unmapped > 0) {
       steps.push('El tramo punteado no está en nuestro mapa de senderos: es una línea recta de guía, busca el camino más cercano.')
     }
   }
   if (route) {
     steps.push(...(outdoorRoute ? route.steps.slice(1) : route.steps))
-  } else if (destination?.kind === 'building' && destination.floor !== undefined) {
-    const floor = destination.floor
+  } else if (floor !== undefined) {
     steps.push(floor > 1 ? `Sube al ${floorName(floor)}.` : floor === 0 ? 'Baja al subsuelo.' : 'El aula está en la planta baja.')
   }
 
@@ -112,13 +124,19 @@ export default function App() {
       />
 
       <header className="search">
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Busca un aula o edificio (ej. M302, Galileo)"
-          aria-label="Buscar aula o edificio"
-        />
+        <div className="search-field">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <path d="m15.5 15.5 5 5" strokeLinecap="round" />
+          </svg>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="¿A dónde vas? Prueba M302 o Galileo"
+            aria-label="Buscar aula o edificio"
+          />
+        </div>
         {results.length > 0 && (
           <ul className="results">
             {results.map((result) => (
@@ -131,13 +149,22 @@ export default function App() {
             ))}
           </ul>
         )}
+        {!query && !destination && (
+          <div className="shortcuts">
+            {SHORTCUTS.map((shortcut) => (
+              <button key={shortcut.buildingId} onClick={() => selectBuilding(shortcut.buildingId)}>
+                {shortcut.label}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       {plan && plan.floors.length > 1 && (
         <nav className="floors" aria-label="Piso">
-          {[...plan.floors].reverse().map((floor) => (
-            <button key={floor} className={floor === activeFloor ? 'active' : ''} onClick={() => setActiveFloor(floor)}>
-              {floor === 0 ? 'S' : floor}
+          {[...plan.floors].reverse().map((level) => (
+            <button key={level} className={level === activeFloor ? 'active' : ''} onClick={() => setActiveFloor(level)}>
+              {level === 0 ? 'S' : level}
             </button>
           ))}
         </nav>
@@ -147,7 +174,7 @@ export default function App() {
         <button onClick={() => mapCamera.current?.faceNorth()} aria-label="Orientar al norte" title="Orientar al norte">
           <svg ref={compassNeedle} viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path d="M12 2.5 16 12H8z" fill="var(--red)" />
-            <path d="M12 21.5 8 12h8z" fill="#b8b4ae" />
+            <path d="M12 21.5 8 12h8z" fill="#b9bdbb" />
           </svg>
         </button>
         <button onClick={() => mapCamera.current?.setTilted(!tilted)} aria-label={tilted ? 'Ver en 2D' : 'Ver en 3D'}>
@@ -180,14 +207,24 @@ export default function App() {
       {destination && (
         <section className="panel">
           <button className="close" onClick={() => setDestination(null)} aria-label="Cerrar">
-            ×
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
           </button>
-          <h1>{destination.title}</h1>
-          <p className="subtitle">
-            {destination.kind === 'building' && destination.floor !== undefined
-              ? `Edificio ${building?.name}, ${floorName(destination.floor)}`
-              : destination.subtitle}
-          </p>
+
+          <div className="destination">
+            {roomCode && <span className="door-sign">{roomCode}</span>}
+            <div>
+              <h1>{heading}</h1>
+              <p>{place}</p>
+            </div>
+          </div>
+
+          {outdoorRoute && (
+            <p className="walk">
+              <strong>{outdoorRoute.minutes} min</strong> a pie, unos {Math.round(outdoorRoute.distance / 10) * 10} m
+            </p>
+          )}
 
           <label className="origin">
             Desde
@@ -200,7 +237,7 @@ export default function App() {
               ))}
             </select>
           </label>
-          {originId === GPS && !gps.position && <p className={gps.error ? 'warning' : 'meta'}>{gps.error ?? 'Buscando tu ubicación…'}</p>}
+          {originId === GPS && !gps.position && <p className={gps.error ? 'warning' : 'note'}>{gps.error ?? 'Buscando tu ubicación…'}</p>}
 
           {steps.length > 0 && (
             <ol className="steps">
@@ -209,8 +246,7 @@ export default function App() {
               ))}
             </ol>
           )}
-          {route && !outdoorRoute && <p className="meta">Recorrido aproximado: {Math.round(route.distance)} m</p>}
-          {!plan && <p className="meta">Todavía no tenemos el plano interior de este edificio.</p>}
+          {!plan && <p className="note">Todavía no tenemos el plano interior de este edificio.</p>}
           {plan?.placeholder && <p className="warning">Plano de ejemplo: las aulas y pasillos aún no son los reales.</p>}
         </section>
       )}

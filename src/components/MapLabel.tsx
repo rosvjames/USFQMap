@@ -1,13 +1,13 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CanvasTexture, SRGBColorSpace } from 'three'
 
 type Variant = 'plain' | 'tag' | 'pill'
 
 const FONT_SIZE = 44
-const FONT = `600 ${FONT_SIZE}px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`
+const FONT = `600 ${FONT_SIZE}px 'Barlow Semi Condensed', system-ui, sans-serif`
 const STYLES: Record<Variant, { color: string; background?: string; halo?: string }> = {
-  plain: { color: '#4a443c', halo: '#ffffff' },
-  tag: { color: '#1d1b19', background: 'rgba(255, 255, 255, 0.92)' },
+  plain: { color: '#3a3330', halo: '#ffffff' },
+  tag: { color: '#1a1a1a', background: 'rgba(255, 255, 255, 0.92)' },
   pill: { color: '#ffffff', background: '#c8102e' },
 }
 
@@ -46,11 +46,23 @@ function drawLabel(text: string, variant: Variant) {
 
 /** Text that always faces the camera, keeps the same size on screen and is never hidden by buildings. */
 export function MapLabel({ text, position, variant = 'plain' }: { text: string; position: [number, number, number]; variant?: Variant }) {
-  const { texture, aspect } = useMemo(() => drawLabel(text, variant), [text, variant])
+  // Canvas text falls back to a system font until the web font has loaded, so labels are redrawn then.
+  const [fontReady, setFontReady] = useState(() => document.fonts.check(FONT))
+  useEffect(() => {
+    if (fontReady) return
+    let mounted = true
+    document.fonts.load(FONT).then(() => mounted && setFontReady(true))
+    return () => {
+      mounted = false
+    }
+  }, [fontReady])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- fontReady is a redraw trigger
+  const { texture, aspect } = useMemo(() => drawLabel(text, variant), [text, variant, fontReady])
   useEffect(() => () => texture.dispose(), [texture])
 
   // With sizeAttenuation off, the scale is a fraction of the view rather than meters.
-  const height = variant === 'plain' ? 0.02 : 0.023
+  const height = variant === 'plain' ? 0.021 : 0.025
   return (
     <sprite position={position} scale={[height * aspect, height, 1]} renderOrder={10} raycast={() => null}>
       <spriteMaterial map={texture} sizeAttenuation={false} depthTest={false} transparent />

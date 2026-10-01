@@ -36,8 +36,8 @@ const ROOMS: SearchResult[] = Object.values(PLANS).flatMap((plan) => {
       key: node.id,
       buildingId: plan.buildingId,
       node,
-      title: [node.code, node.label].filter(Boolean).join(' · '),
-      subtitle: `${building?.name ?? plan.buildingId}, ${floorName(node.floor)}`,
+      title: node.code ?? node.label ?? node.id,
+      subtitle: [node.code && node.label, `${building?.name ?? plan.buildingId}, ${floorName(node.floor)}`].filter(Boolean).join(', '),
     }))
 })
 
@@ -46,7 +46,7 @@ const BUILDING_RESULTS: SearchResult[] = BUILDINGS.map((b) => ({
   key: b.id,
   buildingId: b.id,
   title: b.name,
-  subtitle: b.code ? `Edificio · aulas ${b.code}###` : 'Edificio',
+  subtitle: b.code ? `Edificio, aulas ${b.code}101, ${b.code}102…` : 'Edificio',
 }))
 
 export function search(query: string, limit = 8): SearchResult[] {

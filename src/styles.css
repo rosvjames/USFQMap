@@ -1,10 +1,18 @@
 :root {
   --red: #c8102e;
-  --ink: #1d1b19;
-  --muted: #6b6660;
+  --ink: #1a1a1a;
+  --muted: #5d6360;
+  --line: #e2e6e3;
+  --mist: #e6eae7;
   --surface: #ffffff;
-  --shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --user: #1a73e8;
+  --float: 0 2px 6px rgba(20, 30, 25, 0.1), 0 10px 28px rgba(20, 30, 25, 0.12);
+  --gutter: 12px;
+  --top: max(12px, env(safe-area-inset-top));
+  /* Barlow descends from highway signage lettering: fitting for an app whose job is wayfinding. */
+  --text: 'Barlow', system-ui, sans-serif;
+  --sign: 'Barlow Semi Condensed', 'Barlow', system-ui, sans-serif;
+  font-family: var(--text);
   color: var(--ink);
 }
 
@@ -18,7 +26,23 @@ body,
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background: #f4f1ec;
+  background: var(--mist);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--user);
+  outline-offset: 2px;
 }
 
 .app {
@@ -26,88 +50,150 @@ body,
   height: 100dvh;
 }
 
+/* The map owns every touch gesture; without this the browser would scroll or zoom the page instead. */
+.app canvas {
+  touch-action: none;
+}
+
+/* Search */
+
 .search {
   position: absolute;
-  top: max(12px, env(safe-area-inset-top));
-  left: 12px;
-  right: 12px;
-  max-width: 460px;
-  margin: 0 auto;
+  top: var(--top);
+  left: var(--gutter);
+  right: var(--gutter);
+  max-width: 420px;
   z-index: 20;
 }
 
-.search input {
-  width: 100%;
-  padding: 14px 16px;
-  font-size: 16px;
-  border: 2px solid transparent;
-  border-radius: 14px;
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  color: var(--muted);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  border-radius: 16px;
+  box-shadow: var(--float);
+}
+
+.search-field:focus-within {
+  outline: 3px solid var(--red);
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  padding: 15px 0;
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  background: none;
+  border: 0;
   outline: none;
 }
 
-.search input:focus {
-  border-color: var(--red);
+.search-field input::placeholder {
+  font-weight: 400;
+  color: var(--muted);
 }
 
 .results {
   list-style: none;
   margin: 8px 0 0;
   padding: 6px;
-  background: var(--surface);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
   max-height: 50dvh;
   overflow-y: auto;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--float);
 }
 
 .results button {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   width: 100%;
   padding: 10px 12px;
   text-align: left;
-  font: inherit;
-  color: inherit;
   background: none;
   border: 0;
   border-radius: 10px;
-  cursor: pointer;
 }
 
 .results button:hover,
 .results button:focus-visible {
-  background: #f4f1ec;
+  background: var(--mist);
+}
+
+.results strong {
+  font-family: var(--sign);
+  font-size: 19px;
+  font-weight: 600;
 }
 
 .results span {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
-.floors {
+.shortcuts {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.shortcuts button {
+  flex: none;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 500;
+  background: var(--surface);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(20, 30, 25, 0.16);
+}
+
+/* Buttons floating over the map */
+
+.floors,
+.map-controls {
   position: absolute;
-  left: 12px;
-  top: calc(max(12px, env(safe-area-inset-top)) + 68px);
+  top: calc(var(--top) + 118px);
   display: flex;
   flex-direction: column;
-  gap: 6px;
   z-index: 15;
 }
 
-.floors button {
-  width: 44px;
-  height: 44px;
-  font-size: 16px;
+.floors {
+  left: var(--gutter);
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: var(--float);
+}
+
+.map-controls {
+  right: var(--gutter);
+  gap: 8px;
+}
+
+.floors button,
+.map-controls button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  font-family: var(--sign);
+  font-size: 18px;
   font-weight: 600;
-  color: var(--ink);
   background: var(--surface);
   border: 0;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
+}
+
+.floors button + button {
+  border-top: 1px solid var(--line);
 }
 
 .floors button.active {
@@ -115,125 +201,18 @@ body,
   background: var(--red);
 }
 
-.panel {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  max-width: 460px;
-  margin: 0 auto;
-  padding: 16px 18px;
-  background: var(--surface);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  z-index: 15;
-}
-
-.panel h1 {
-  margin: 0 32px 2px 0;
-  font-size: 20px;
-}
-
-.panel .subtitle,
-.panel .meta {
-  margin: 0;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.panel .close {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  font-size: 24px;
-  line-height: 1;
-  color: var(--muted);
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.steps {
-  margin: 12px 0 8px;
-  padding-left: 22px;
-  font-size: 15px;
-  line-height: 1.45;
-}
-
-.steps li::marker {
-  color: var(--red);
-  font-weight: 700;
-}
-
-.warning {
-  margin: 10px 0 0;
-  padding: 8px 10px;
-  font-size: 13px;
-  color: #6b4a00;
-  background: #fff4d6;
-  border-radius: 10px;
-}
-
-.origin {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.origin select {
-  flex: 1;
-  min-width: 0;
-  padding: 8px 10px;
-  font: inherit;
-  font-size: 16px;
-  color: var(--ink);
-  background: #f4f1ec;
-  border: 0;
-  border-radius: 10px;
-}
-
-.origin + .meta,
-.origin + .warning {
-  margin-top: 8px;
-}
-
-.map-controls {
-  position: absolute;
-  right: 12px;
-  top: calc(max(12px, env(safe-area-inset-top)) + 68px);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 15;
-}
-
 .map-controls button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink);
-  background: var(--surface);
-  border: 0;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
+  border-radius: 14px;
+  box-shadow: var(--float);
 }
 
 .map-controls button.active {
-  color: #1a73e8;
+  color: var(--user);
 }
 
 .map-controls .zoom {
-  font-size: 22px;
+  font-family: var(--text);
+  font-size: 24px;
   font-weight: 400;
 }
 
@@ -244,18 +223,180 @@ body,
   }
 }
 
+/* Destination sheet */
+
+.panel,
 .toast {
   position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  max-width: 460px;
-  margin: 0 auto;
-  padding: 12px 14px;
-  font-size: 14px;
-  color: #6b4a00;
-  background: #fff4d6;
-  border-radius: 14px;
-  box-shadow: var(--shadow);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 15;
+}
+
+.panel {
+  max-height: 50dvh;
+  overflow-y: auto;
+  padding: 20px 20px max(20px, env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -4px 30px rgba(20, 30, 25, 0.16);
+}
+
+.panel .close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--muted);
+  background: var(--mist);
+  border: 0;
+  border-radius: 50%;
+}
+
+.destination {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-right: 44px;
+}
+
+/* The one loud element: the room code set like the plate on the classroom door. */
+.door-sign {
+  flex: none;
+  padding: 6px 12px 7px;
+  font-family: var(--sign);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--red);
+  border-radius: 6px;
+}
+
+.destination h1 {
+  margin: 0;
+  font-family: var(--sign);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.destination p {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.walk {
+  margin: 16px 0 0;
+  font-size: 16px;
+  color: var(--muted);
+}
+
+.walk strong {
+  margin-right: 4px;
+  font-family: var(--sign);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.origin {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.origin select {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--mist);
+  border: 0;
+  border-radius: 12px;
+}
+
+.steps {
+  margin: 16px 0 0;
+  padding: 14px 0 0 24px;
+  font-size: 16px;
+  line-height: 1.4;
+  border-top: 1px solid var(--line);
+}
+
+.steps li + li {
+  margin-top: 8px;
+}
+
+.steps li::marker {
+  font-family: var(--sign);
+  font-weight: 700;
+  color: var(--red);
+}
+
+.note,
+.warning {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+.note {
+  color: var(--muted);
+}
+
+.warning,
+.toast {
+  padding: 10px 12px;
+  color: #5c4300;
+  background: #fff1c9;
+  border-radius: 12px;
+}
+
+.toast {
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: max(12px, env(safe-area-inset-bottom));
+  margin: 0;
+  font-size: 15px;
+  box-shadow: var(--float);
+}
+
+/* Wide screens: the sheet becomes a card under the search box, leaving the map clear. */
+@media (min-width: 760px) {
+  .search {
+    left: 20px;
+  }
+
+  .panel {
+    top: calc(var(--top) + 72px);
+    left: 20px;
+    right: auto;
+    bottom: auto;
+    width: 420px;
+    max-height: calc(100dvh - var(--top) - 92px);
+    padding-bottom: 20px;
+    border-radius: 20px;
+    box-shadow: var(--float);
+  }
+
+  .floors {
+    left: 460px;
+  }
+
+  .toast {
+    left: 20px;
+    right: auto;
+    width: 420px;
+  }
 }
