@@ -17,10 +17,14 @@ export const PAGODA = {
 export function pagodaToCampus([x, z]: Vec2): Vec2 {
   return [PAGODA.center[0] + ux * x + uy * z, PAGODA.center[1] + uy * x - ux * z]
 }
-export const PAGODA_POND = [
-  [-15.4, -3.8], [-13.8, -5.3], [-9.3, -5.5], [-8.8, -3.5],
-  [-8.8, 3.8], [-10.3, 5.2], [-14.2, 4.4], [-15.5, 2.2],
-].map((p) => pagodaToCampus(p as Vec2))
+// Preserve the west bridge approach, then wrap the water around the whole pavilion.
+export const PAGODA_POND_OUTLINE: Vec2[] = [
+  [-15.4, -3.8], [-13.8, -5.3], [-11.5, -8], [-8, -9.3],
+  [8.5, -9.2], [11.7, -8], [12.8, -4], [12.5, 4.8],
+  [10.9, 8.4], [7.8, 9.1], [-8.7, 9.2], [-11.4, 7.1],
+  [-14.2, 4.4], [-15.5, 2.2],
+]
+export const PAGODA_POND = PAGODA_POND_OUTLINE.map(pagodaToCampus)
 
 export function pagodaBridgeHeight(t: number): number {
   return PAGODA.floor + 0.65 * Math.sin(Math.PI * t)

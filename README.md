@@ -81,3 +81,5 @@ La entrada del Hall Principal utiliza las tres fotos compartidas por el estudian
 Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, desniveles, alturas del puente, entrada del Hall, mallas de esculturas y geometría de techos cóncavos, pavimentos y terreno rebajado.
 
 La Pagoda se remodeló a partir de las tres fotografías compartidas por el estudiante: pabellón bajo de madera con un único techo de tejas oscuras y aleros curvos, columnas, ventanas de celosía, galería con balaustres y puente arqueado de acceso. Incluye gradas de piedra, muros rojizos con remates verdes, pequeño estanque con piedras y hojas acuáticas, y una palmera en el lado de la laguna. El pabellón y su orientación siguen la huella de OSM; alturas, ornamentos, estanque y vegetación son estimaciones visuales. Las fotos no se redistribuyen. «Ver la Pagoda» abre su ficha en el mapa; no activa un recorrido de primera persona.
+
+Corrección del estudiante: el pequeño estanque rodea toda la Pagoda, conservando su inicio occidental junto al puente. El agua continúa por los cuatro lados bajo el pabellón elevado y el borde de piedras sigue su perímetro completo.

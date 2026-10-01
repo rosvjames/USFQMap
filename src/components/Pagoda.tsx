@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { CatmullRomCurve3, DoubleSide, InstancedMesh, Object3D, Shape, Vector2, Vector3 } from 'three'
 import { palmFrond } from './LandscapeDetails'
 import type { ThreeEvent } from '@react-three/fiber'
-import { PAGODA, PAGODA_POND, createPagodaRoof, pagodaBridgeHeight } from '../lib/pagoda'
+import { PAGODA, PAGODA_POND, PAGODA_POND_OUTLINE, createPagodaRoof, pagodaBridgeHeight } from '../lib/pagoda'
 import type { CampusMaterials } from '../lib/materials'
 
 type Point = [number, number, number]
@@ -149,12 +149,32 @@ function Balusters({ positions, material }: { positions: Point[]; material: Camp
 }
 
 function PondBorder({ materials }: { materials: CampusMaterials }) {
-  const rocks = useMemo(() => Array.from({ length: 46 }, (_, i) => {
-    const a = i / 46 * Math.PI * 2, r = 1 + Math.sin(i * 17) * 0.04
-    return { p: [-12.15 + Math.cos(a) * 3.4 * r, 0.48, Math.sin(a) * 4.75 * r] as Point, scale: [0.4 + i % 3 * 0.1, 0.25 + i % 2 * 0.12, 0.33 + i % 4 * 0.06] as Point }
-  }), [])
+  const rockMesh = useRef<InstancedMesh>(null)
+  const rocks = useMemo(() => {
+    const items: { p: Point; scale: Point }[] = []
+    PAGODA_POND_OUTLINE.forEach((a, edge) => {
+      const b = PAGODA_POND_OUTLINE[(edge + 1) % PAGODA_POND_OUTLINE.length]
+      const count = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.55)
+      for (let j = 0; j < count; j++) {
+        const t = j / count, i = items.length, offset = Math.sin(i * 17) * 0.1
+        items.push({ p: [a[0] + (b[0] - a[0]) * t + offset, 0.48, a[1] + (b[1] - a[1]) * t - offset],
+          scale: [0.4 + i % 3 * 0.1, 0.25 + i % 2 * 0.12, 0.33 + i % 4 * 0.06] })
+      }
+    })
+    return items
+  }, [])
+  useLayoutEffect(() => {
+    const dummy = new Object3D()
+    rocks.forEach(({ p, scale }, i) => {
+      dummy.position.set(...p); dummy.scale.set(...scale); dummy.rotation.set(i, i * 1.7, 0)
+      dummy.updateMatrix(); rockMesh.current!.setMatrixAt(i, dummy.matrix)
+    })
+    rockMesh.current!.instanceMatrix.needsUpdate = true; rockMesh.current!.computeBoundingSphere()
+  }, [rocks, materials.pondRock])
   return <group>
-    {rocks.map(({ p, scale }, i) => <mesh key={i} position={p} scale={scale} rotation={[i, i * 1.7, 0]} castShadow material={materials.pondRock}><icosahedronGeometry args={[1, 0]} /></mesh>)}
+    <instancedMesh ref={rockMesh} args={[undefined, materials.pondRock, rocks.length]} castShadow receiveShadow>
+      <icosahedronGeometry args={[1, 0]} />
+    </instancedMesh>
     {Array.from({ length: 20 }, (_, i) => <mesh key={i} position={[-13.5 + Math.sin(i * 11) * 1.25, 0.355, (i % 2 ? -1 : 1) * (2 + Math.cos(i * 7) * 1.1)]} rotation={[-Math.PI / 2, 0, i * 2]}>
       <circleGeometry args={[0.22 + i % 3 * 0.07, 12, 0, Math.PI * 1.85]} /><meshStandardMaterial color={i % 2 ? '#526b35' : '#718344'} roughness={0.6} side={DoubleSide} />
     </mesh>)}
