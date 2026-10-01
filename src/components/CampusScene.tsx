@@ -266,7 +266,7 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
       {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={2} worldUnits raycast={() => null} />}
       {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} />}
-      {(selected || props.labelled) && (
+      {props.labelled && (
         <MapLabel text={building.name ?? 'Nombre pendiente'} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={props.walking} />
       )}
     </>

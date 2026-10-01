@@ -435,8 +435,13 @@ button {
 .directory-list button span:last-child { margin-left: auto; }
 .map-number { color: #7c877a; font-size: 12px; font-variant-numeric: tabular-nums; }
 .guide-hint { font-size: 12px; line-height: 1.6; color: #778074; margin: 17px 0 0; }
-.map-controls { top: 105px; right: 26px; }
+.map-controls { top: 105px; right: 26px; align-items: flex-end; }
 .map-controls button { width: 42px; height: 42px; border-radius: 8px; }
+.map-controls .building-label-toggle { width: auto; display: flex; gap: 12px; padding: 0 12px; font-family: var(--text); font-size: 13px; font-weight: 500; }
+.names-switch { position: relative; width: 34px; height: 20px; flex-shrink: 0; border-radius: 10px; background: #a1aaa0; }
+.names-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: white; transition: transform 120ms ease; }
+.building-label-toggle[aria-checked="true"] .names-switch { background: var(--red); }
+.building-label-toggle[aria-checked="true"] .names-switch::after { transform: translateX(14px); }
 .panel { padding: 24px; }
 .official-number { font-size: 12px; color: #68756a; margin: 15px 0 0; }
 .reference-note { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 0 0; font-size: 13px; }
