@@ -512,3 +512,5 @@ button {
 }
 @media (max-width: 420px) { .exhibit-label { display: none; } .guide h1 { font-size: 25px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.sports-button { display: flex; justify-content: space-between; width: 100%; padding: 12px 0 0; border: 0; background: none; color: #45594a; font-size: 14px; font-weight: 500; }

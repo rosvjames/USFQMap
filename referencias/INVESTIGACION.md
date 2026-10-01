@@ -35,11 +35,12 @@ Los techos se triangulan sobre la huella existente, conservando entrantes. Las a
 
 ## Qué está implementado
 
-- 27 lugares seleccionables con huellas ya presentes en la descarga de OpenStreetMap.
+- 36 lugares seleccionables con huellas ya presentes en la descarga de OpenStreetMap. Se incorporan talleres, guardianías, baños, Herbario, GOBE, mantenimiento y los dos sectores COM usando sus nombres registrados. Dos huellas al este del Coliseo, junto a Casa Hannah Arendt, permanecen como «Nombre pendiente».
 - 13 referencias documentadas de aulas, oficinas y laboratorio, cada una con enlace y aviso histórico cuando corresponde.
 - Interpretación de códigos, incluidos sufijos (H100F, N104A). Un código interpretable que no está en el catálogo se muestra explícitamente como no confirmado.
 - Rutas exteriores existentes, con accesos aproximados y conexiones no mapeadas punteadas.
-- Recorrido en primera persona dentro del perímetro del campus principal, con colisión contra las huellas de edificios y el agua. No es una validación de transitabilidad real. Hayek se ve en el mapa general; el modo de caminar no permite cruzar las calles fuera del perímetro principal.
+- Recorrido en primera persona dentro del perímetro del campus principal y por el puente elevado hacia Hayek, con colisión contra las huellas de edificios, agua, rejas del campo sintético y bordes de desniveles. La cámara sigue la altura de las gradas y el tablero del puente. No es una validación de transitabilidad real.
+- Zona deportiva corregida a partir de la descripción en sitio del estudiante del 1 de octubre de 2026: arena con dos canchas de vóley, terraza rebajada con mesas circulares y sillas metálicas, dos canchas azules de tenis más abajo, fútbol sintético con cerramiento de malla y fútbol natural a desnivel. Se incluyen gradas a la izquierda de tenis y fútbol natural, y una entrada aproximada a la reja para el recorrido virtual. Se reutilizan las huellas de OSM; alturas, distribución del mobiliario y posición exacta de accesos son estimaciones visuales. El puente y sus accesos ya estaban etiquetados como elevados en OSM, pero antes se dibujaban a ras del suelo; su tablero se representa aproximadamente a 6 metros.
 - Modelo exterior con materiales basados en referencias fotográficas y detalles arquitectónicos aproximados. Los seis árboles originales de OSM se conservan; los árboles decorativos adicionales se sitúan dentro de áreas verdes mapeadas, evitando senderos y edificios.
 - El Hall Principal inventado se conserva como plantilla de modelado y prueba de rutas, pero está fuera de los planos ofrecidos al visitante.
 

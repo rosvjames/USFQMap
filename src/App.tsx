@@ -50,6 +50,7 @@ export default function App() {
   const gps = useGeolocation(originId === GPS)
   const [tilted, setTilted] = useState(true)
   const [walking, setWalking] = useState(false)
+  const [names, setNames] = useState(true)
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const walkInput = useRef(new Set<WalkAction>())
   const exitWalk = useCallback(() => setWalking(false), [])
@@ -87,7 +88,7 @@ export default function App() {
   const reference = destination?.kind === 'building' ? destination.reference : undefined
   const buildingLocations = LOCATIONS.filter((location) => location.buildingId === destination?.buildingId)
   const footprint = building && findCampusBuilding(building.id)
-  const canWalkHere = footprint && pointInPolygon(footprint.center, CAMPUS_BOUNDARY)
+  const canWalkHere = footprint && (pointInPolygon(footprint.center, CAMPUS_BOUNDARY) || building?.id === 'hayek')
   const route = useMemo(
     () => (plan && destination?.kind === 'room' ? findRoute(plan, pickIndoorOrigin(plan), destination.node.id) : null),
     [plan, destination],
@@ -129,6 +130,7 @@ export default function App() {
       steps.push('El tramo punteado no está en nuestro mapa de senderos: es una línea recta de guía, busca el camino más cercano.')
     }
   }
+  if (outdoorRoute?.usesBridge) steps.push('Cruza por el puente peatonal elevado hacia Hayek; el recorrido pasa por encima de la vía.')
   if (route) {
     steps.push(...(outdoorRoute ? route.steps.slice(1) : route.steps))
   } else if (floor !== undefined) {
@@ -149,6 +151,7 @@ export default function App() {
         cameraRef={mapCamera}
         onViewChange={handleViewChange}
         walking={walking}
+        names={names}
         walkInput={walkInput}
         onExitWalk={exitWalk}
       />
@@ -195,7 +198,7 @@ export default function App() {
         )}
       </header>
 
-      {!destination && !query && <CampusGuide onSelectBuilding={selectBuilding} onWalk={() => setWalking(true)} />}
+      {!destination && !query && <CampusGuide onSelectBuilding={selectBuilding} onWalk={() => setWalking(true)} onSports={() => mapCamera.current?.flyTo({ center: [-25, -97], span: 140, aboveThePanel: false })} />}
 
       {plan && plan.floors.length > 1 && (
         <nav className="floors" aria-label="Piso">
@@ -208,6 +211,7 @@ export default function App() {
       )}
 
       <div className="map-controls">
+        <button aria-label={names ? 'Ocultar nombres' : 'Mostrar nombres'} aria-pressed={names} onClick={() => setNames(!names)}>Aa</button>
         <button onClick={() => mapCamera.current?.faceNorth()} aria-label="Orientar al norte" title="Orientar al norte">
           <svg ref={compassNeedle} viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
             <path d="M12 2.5 16 12H8z" fill="var(--red)" />
@@ -304,7 +308,7 @@ export default function App() {
             onKeyUp={() => walkInput.current.delete(action)} onBlur={() => walkInput.current.delete(action)}>{label}</button>)}
         </nav>
       </>}
-      <footer className="map-footer"><span><i className="legend-dot" /> {walking ? 'Exterior · edificios y agua con colisión' : 'Modelo 3D · detalles visuales aproximados'}</span><button onClick={() => setSourcesOpen(true)}>Fuentes y cobertura ↗</button><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></footer>
+      <footer className="map-footer"><span><i className="legend-dot" /> {walking ? 'Exterior · desniveles y puente peatonal' : 'Modelo 3D · detalles visuales aproximados'}</span><button onClick={() => setSourcesOpen(true)}>Fuentes y cobertura ↗</button><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></footer>
       {sourcesOpen && <SourcesDialog onClose={() => setSourcesOpen(false)} />}
     </div>
   )

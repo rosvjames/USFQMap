@@ -1,6 +1,6 @@
 import { CanvasTexture, CubeTexture, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three'
 
-type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water'
+type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water' | 'sand'
 
 /** Locally generated, seamless textures. No third-party photographs/assets are bundled. */
 function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
@@ -49,6 +49,9 @@ export function createCampusMaterials() {
     garden: material('grass', '#647d45', 1, 0.025),
     paving: material('paving', '#c1b8a2', 0.95, 0.04),
     road: material('stucco', '#aaa9a0', 1, 0.025),
+    sand: material('sand', '#d4bd8b', 1, 0.025),
+    tennis: material('stucco', '#286fa8', 0.95, 0.008),
+    synthetic: material('grass', '#3b6a48', 0.95, 0.009),
     water: material('water', '#557e63', 0.22, 0.035, 0.35),
   }
   // A static sky/ground reflection gives glass and water depth without remote HDR assets.

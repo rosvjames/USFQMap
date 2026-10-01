@@ -30,6 +30,15 @@ export const BUILDINGS: BuildingInfo[] = [
   { id: 'veterinaria', name: 'Clínica Veterinaria', osmId: 'way/1036867750' },
   { id: 'dragon-shop', name: 'Dragon Shop', osmId: 'way/1036853470' },
   { id: 'obelisco', name: 'Obelisco', osmId: 'way/1049503109' },
+  { id: 'taller-metal', name: 'Taller de Metal-Madera', osmId: 'way/395842620' },
+  { id: 'herbario', name: 'Herbario USFQ', osmId: 'way/1036855377' },
+  { id: 'mantenimiento', name: 'Oficinas de Mantenimiento', osmId: 'way/1036860351', aliases: ['Planta Física'] },
+  { id: 'gobe', name: 'GOBE', osmId: 'way/1036865897' },
+  { id: 'guardiania-norte', name: 'Guardianía · entrada principal', osmId: 'way/395853817' },
+  { id: 'guardiania-sur', name: 'Guardianía · acceso al puente', osmId: 'way/1036855779' },
+  { id: 'banos-deportes', name: 'Baños · zona deportiva', osmId: 'way/395853835' },
+  { id: 'com-oeste', name: 'COM · sector oeste', osmId: 'way/1036855378' },
+  { id: 'com-este', name: 'COM · sector este', osmId: 'way/395842621' },
 ]
 
 export const BUILDING_BY_ID = new Map(BUILDINGS.map((b) => [b.id, b]))
