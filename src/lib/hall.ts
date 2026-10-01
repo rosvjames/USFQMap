@@ -37,19 +37,6 @@ export function hallEntranceHeightAt(point: Vec2): number | undefined {
   }
 }
 
-function rectangle(x: number, z: number, width: number, depth: number): Vec2[] {
-  return [[x - width / 2, z - depth / 2], [x + width / 2, z - depth / 2],
-    [x + width / 2, z + depth / 2], [x - width / 2, z + depth / 2]].map((p) => hallToCampus(p as Vec2))
-}
-
-export const HALL_OBSTACLES: Vec2[][] = [
-  rectangle(0, 4, 1.4, 1.3),
-  ...[-8.65, 8.65].map((x) => rectangle(x, 5.5, 1.25, 1.65)),
-  ...[-3.65, 3.65].map((x) => Array.from({ length: 16 }, (_, i): Vec2 => hallToCampus([x + Math.cos(i * Math.PI / 8) * 0.48, 2.8 + Math.sin(i * Math.PI / 8) * 0.48]))),
-  ...[-7.75, 7.75].map((x) => rectangle(x, 1.7, 1.3, 3.4)),
-]
-export const HALL_APPROACH = hallToCampus([0, 20])
-
 export function isHallFrontEdge(start: Vec2, end: Vec2): boolean {
   return Math.hypot(start[0] - a[0], start[1] - a[1]) < 0.01 && Math.hypot(end[0] - b[0], end[1] - b[1]) < 0.01
 }

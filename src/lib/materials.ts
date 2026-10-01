@@ -1,6 +1,6 @@
 import { CanvasTexture, CubeTexture, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three'
 
-type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water' | 'sand' | 'stone'
+type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water' | 'sand' | 'stone' | 'wood'
 
 /** Locally generated, seamless textures. No third-party photographs/assets are bundled. */
 function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
@@ -18,7 +18,8 @@ function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
       : kind === 'metal' ? x % 32 < 1.5
       : kind === 'paving' ? x % 64 < 1.5 || y % 64 < 1.5
       : kind === 'stone' ? y % 32 < 1.5 || (x + Math.floor(y / 32) % 2 * 32) % 64 < 1.5 : false
-    const pattern = kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 11
+    const pattern = kind === 'wood' ? Math.sin(x * 0.48 + Math.sin(y * 0.07) * 3 + Math.sin(y * 0.019) * 4) * 17 + Math.sin(x * 2.2 + Math.sin(y * 0.09)) * 5
+      : kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 11
       : kind === 'grass' ? Math.sin(x * 1.7 + y * 2.4) * 10
       : kind === 'stone' ? Math.sin(Math.floor(x / 32) * 21 + Math.floor(y / 32) * 17) * 18 : 0
     const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : kind === 'stone' ? 210 : 155 : 230) + noise * (kind === 'grass' ? 65 : 22) + pattern))
@@ -42,6 +43,10 @@ export function createCampusMaterials() {
     return new MeshStandardMaterial({ color, map, bumpMap, bumpScale, roughness, metalness })
   }
   const materials = {
+    pagodaWood: material('wood', '#ac7841', 0.83, 0.024),
+    pagodaRoof: material('tile', '#504b43', 0.95, 0.055),
+    pondRock: material('stone', '#767569', 0.98, 0.04),
+    pondWater: material('water', '#656846', 0.19, 0.012, 0.25),
     stucco: material('stucco', '#d5af94'),
     brick: material('brick', '#b65e43', 0.92, 0.045),
     cream: material('stucco', '#e4ddc8'),

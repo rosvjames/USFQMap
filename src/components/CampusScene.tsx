@@ -16,11 +16,11 @@ import type { BuildingPlan, GraphNode, Route, Vec2 } from '../types'
 import { INITIAL_VIEW, MapCamera, type MapCameraHandle, type MapFocus } from './MapCamera'
 import { MapLabel } from './MapLabel'
 import { FacadeDetails } from './FacadeDetails'
-import { WalkCamera, type WalkInput } from './WalkCamera'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
 import { SportsGround } from './SportsGround'
 import { CampusBridges } from './CampusBridges'
 import { HallEntrance } from './HallEntrance'
+import { Pagoda } from './Pagoda'
 import { SPORT_ZONES, TERRAIN_CUTOUTS, terrainHeightAt } from '../lib/terrain'
 import { LandscapeDetails } from './LandscapeDetails'
 import { createWalkwayGeometry, createTerrainShapes } from '../lib/architecture'
@@ -54,7 +54,6 @@ const COLOR = {
 const AREA_COLOR = { green: COLOR.green, pitch: COLOR.pitch, water: COLOR.water }
 
 const OVERVIEW_CENTER: Vec2 = [-5, 0]
-const WALK_OVERVIEW_TARGET: Vec2 = [10, 40]
 // Meters of ground that should fit on screen when looking at a single building.
 const BUILDING_SPAN = 110
 
@@ -89,10 +88,7 @@ interface SceneProps {
   onSelectBuilding: (buildingId: string) => void
   cameraRef: Ref<MapCameraHandle>
   onViewChange: (azimuth: number, tilted: boolean) => void
-  walking: boolean
   names: boolean
-  walkInput: WalkInput
-  onExitWalk: () => void
 }
 
 export function CampusScene(props: SceneProps) {
@@ -115,9 +111,9 @@ export function CampusScene(props: SceneProps) {
   }, [selectedBuildingId, props.outdoorRoute])
 
   return (
-    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1 }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4 }} dpr={[1, 1.75]} frameloop={props.walking ? 'always' : 'demand'} shadows="percentage">
-      <color attach="background" args={[props.walking ? '#dcebf0' : COLOR.city]} />
-      <fog attach="fog" args={[props.walking ? '#dcebf0' : COLOR.city, props.walking ? 160 : 900, props.walking ? 750 : 2400]} />
+    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1 }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4 }} dpr={[1, 1.75]} frameloop="demand" shadows="percentage">
+      <color attach="background" args={[COLOR.city]} />
+      <fog attach="fog" args={[COLOR.city, 900, 2400]} />
       <Sky distance={4500} sunPosition={[-140, 240, 100]} turbidity={4} rayleigh={0.6} mieCoefficient={0.005} />
       <primitive object={materials.environment} attach="environment" />
       <hemisphereLight args={['#e2edf0', '#72654d', 0.75]} />
@@ -150,10 +146,9 @@ export function CampusScene(props: SceneProps) {
             key={building.osmId}
             building={building}
             materials={materials}
-            selected={!props.walking && !!building.info && building.info.id === selectedBuildingId}
+            selected={!!building.info && building.info.id === selectedBuildingId}
             labelled={props.names && building.onCampus}
-            onSelect={props.walking ? () => {} : props.onSelectBuilding}
-            walking={props.walking}
+            onSelect={props.onSelectBuilding}
           />
         ),
       )}
@@ -161,15 +156,15 @@ export function CampusScene(props: SceneProps) {
       <FacadeDetails buildings={CAMPUS_BUILDINGS} />
 
       {plan && <IndoorPlan plan={plan} route={props.route} activeFloor={props.activeFloor} />}
-      {props.outdoorRoute && !props.walking && <OutdoorRouteLine route={props.outdoorRoute} />}
+      {props.outdoorRoute && <OutdoorRouteLine route={props.outdoorRoute} />}
       {props.userPosition && <UserMarker position={props.userPosition} />}
 
-      {props.walking ? <WalkCamera buildingId={selectedBuildingId ?? 'pagoda'} lookAt={selectedBuildingId ? undefined : WALK_OVERVIEW_TARGET} input={props.walkInput} onExit={props.onExitWalk} /> : <MapCamera
+      <MapCamera
         ref={props.cameraRef}
         focus={focus}
         focusKey={`${selectedBuildingId}|${props.originId}|${!!props.outdoorRoute}`}
         onViewChange={props.onViewChange}
-      />}
+      />
     </Canvas>
   )
 }
@@ -188,7 +183,7 @@ function Ground({ materials }: { materials: CampusMaterials }) {
       {CAMPUS_BOUNDARY.length > 0 && <Line points={CAMPUS_BOUNDARY.map(([x, y]) => toScene(x, y, 0.6))} color="#a0b69a" lineWidth={1} />}
       {CAMPUS_AREAS.filter((area) => !SPORT_ZONES.some((zone) => zone.area.osmId === area.osmId)).map((area, i) => (
         <group key={i}>
-          <FlatArea ring={area.ring} height={0.4} color={AREA_COLOR[area.kind]} cutTerrain={area.kind !== 'water'} material={area.kind === 'green' ? materials.garden : area.kind === 'water' ? materials.water : undefined} />
+          <FlatArea ring={area.ring} height={0.4} color={AREA_COLOR[area.kind]} cutTerrain={area.kind !== 'water'} material={area.kind === 'green' ? materials.garden : area.kind === 'water' ? materials.pondWater : undefined} />
           {area.kind === 'water' && <Line points={area.ring.map(([x, y]) => toScene(x, y, 0.6))} color="#a19a82" lineWidth={0.8} worldUnits />}
           {area.kind === 'pitch' && <Line points={area.ring.map(([x, y]) => toScene(x, y, 0.6))} color="#f2f4df" lineWidth={0.2} worldUnits />}
         </group>
@@ -223,12 +218,12 @@ function FlatArea({ ring, height, color, material, cutTerrain = false }: { ring:
   )
 }
 
-function BuildingMesh(props: { building: CampusBuilding; materials: CampusMaterials; selected: boolean; labelled: boolean; walking: boolean; onSelect: (id: string) => void }) {
+function BuildingMesh(props: { building: CampusBuilding; materials: CampusMaterials; selected: boolean; labelled: boolean; onSelect: (id: string) => void }) {
   const { building, selected, onSelect, materials } = props
   const shape = useMemo(() => ringShape(building.ring), [building])
   const info = building.info
   const height = info?.id === 'obelisco' ? 0.6 : building.heightMeters ?? (info?.id === 'coliseo' ? 8 : info?.id === 'hall-principal' ? 5.5 : building.levels * LEVEL_HEIGHT)
-  const roofExtra = info?.id === 'maxwell' ? 13 : info?.id === 'obelisco' ? 20 : info?.id === 'pagoda' ? 8 : 3.5
+  const roofExtra = info?.id === 'maxwell' ? 13 : info?.id === 'obelisco' ? 20 : info?.id === 'pagoda' ? 3 : 3.5
   const geometry = useMemo(() => {
     const body = new ExtrudeGeometry(shape, { depth: height, bevelEnabled: false })
     const uv = body.getAttribute('uv')
@@ -241,7 +236,7 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
   const wallMaterial = info?.id === 'hall-principal' ? materials.hallRed : info?.id === 'maxwell' || info?.id === 'casa-blanca' || info?.id === 'obelisco' ? materials.cream : brick ? materials.brick : materials.stucco
   return (
     <>
-      <mesh
+      {info?.id === 'pagoda' ? <Pagoda materials={materials} onSelect={() => onSelect('pagoda')} /> : <mesh
         geometry={geometry}
         rotation={[-Math.PI / 2, 0, 0]}
         castShadow
@@ -263,21 +258,21 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
           <meshStandardMaterial attach="material-0" color={COLOR.cityRoof} roughness={1} />
           <meshStandardMaterial attach="material-1" color={COLOR.cityBuilding} roughness={1} />
         </>}
-      </mesh>
-      {building.onCampus && info?.id !== 'obelisco' && <IllustratedRoof building={building} height={height} materials={materials} />}
+      </mesh>}
+      {building.onCampus && !['obelisco', 'pagoda'].includes(info?.id ?? '') && <IllustratedRoof building={building} height={height} materials={materials} />}
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
-      {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={2} worldUnits raycast={() => null} />}
-      {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} />}
+      {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
+      {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} scale={info?.id === 'pagoda' ? 0.5 : 1} />}
       {props.labelled && (
-        <MapLabel text={building.name ?? 'Nombre pendiente'} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={props.walking} />
+        <MapLabel text={building.name ?? 'Nombre pendiente'} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={false} />
       )}
     </>
   )
 }
 
-function DestinationPin({ position }: { position: [number, number, number] }) {
+function DestinationPin({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
   return (
-    <group position={position}>
+    <group position={position} scale={scale}>
       <mesh position={[0, 5, 0]} rotation={[Math.PI, 0, 0]}>
         <coneGeometry args={[2.6, 8, 20]} />
         <meshStandardMaterial color={COLOR.red} />

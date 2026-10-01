@@ -1,5 +1,6 @@
 import { CAMPUS_AREAS, CAMPUS_WALKWAYS, type CampusArea, type CampusWalkway } from './campus'
 import { pointInPolygon } from './geo'
+import { PAGODA_POND } from './pagoda'
 import { hallEntranceHeightAt } from './hall'
 import type { Vec2 } from '../types'
 
@@ -103,6 +104,7 @@ export function terrainHeightAt(point: Vec2): number {
 
 /** Top terrain must be cut away so recessed floors remain visible from above and at eye level. */
 export const TERRAIN_CUTOUTS: Vec2[][] = [
+  PAGODA_POND,
   ...SPORT_ZONES.filter((zone) => zone.height < 0).map((zone) => zone.area.ring),
   ...SPORT_STAIRS.map(stairOutline), TENNIS_LANDING, SPORT_GATE,
 ]

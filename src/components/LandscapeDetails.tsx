@@ -29,7 +29,7 @@ function foliageTexture() {
   return texture
 }
 
-function palmFrond() {
+export function palmFrond() {
   const positions: number[] = [], uv: number[] = []
   // A drooping rachis with separate narrow leaflets, rather than a solid cartoon fan.
   for (let i = 0; i < 18; i++) {
