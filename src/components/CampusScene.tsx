@@ -20,6 +20,7 @@ import { WalkCamera, type WalkInput } from './WalkCamera'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
 import { SportsGround } from './SportsGround'
 import { CampusBridges } from './CampusBridges'
+import { HallEntrance } from './HallEntrance'
 import { SPORT_ZONES, TERRAIN_CUTOUTS, terrainHeightAt } from '../lib/terrain'
 import { LandscapeDetails } from './LandscapeDetails'
 import { createWalkwayGeometry, createTerrainShapes } from '../lib/architecture'
@@ -141,6 +142,7 @@ export function CampusScene(props: SceneProps) {
       <LandscapeDetails />
       <SportsGround materials={materials} />
       <CampusBridges />
+      <HallEntrance materials={materials} />
 
       {CAMPUS_BUILDINGS.map((building) =>
         plan && building.info?.id === plan.buildingId ? null : (
@@ -225,7 +227,7 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
   const { building, selected, onSelect, materials } = props
   const shape = useMemo(() => ringShape(building.ring), [building])
   const info = building.info
-  const height = info?.id === 'obelisco' ? 0.6 : building.heightMeters ?? (info?.id === 'coliseo' ? 8 : building.levels * LEVEL_HEIGHT)
+  const height = info?.id === 'obelisco' ? 0.6 : building.heightMeters ?? (info?.id === 'coliseo' ? 8 : info?.id === 'hall-principal' ? 5.5 : building.levels * LEVEL_HEIGHT)
   const roofExtra = info?.id === 'maxwell' ? 13 : info?.id === 'obelisco' ? 20 : info?.id === 'pagoda' ? 8 : 3.5
   const geometry = useMemo(() => {
     const body = new ExtrudeGeometry(shape, { depth: height, bevelEnabled: false })
@@ -236,7 +238,7 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
   }, [shape, height])
   useEffect(() => () => geometry.dispose(), [geometry])
   const brick = ['galileo', 'newton', 'einstein', 'hayek', 'miguel-de-santiago'].includes(info?.id ?? '')
-  const wallMaterial = info?.id === 'maxwell' || info?.id === 'casa-blanca' || info?.id === 'obelisco' ? materials.cream : brick ? materials.brick : materials.stucco
+  const wallMaterial = info?.id === 'hall-principal' ? materials.hallRed : info?.id === 'maxwell' || info?.id === 'casa-blanca' || info?.id === 'obelisco' ? materials.cream : brick ? materials.brick : materials.stucco
   return (
     <>
       <mesh

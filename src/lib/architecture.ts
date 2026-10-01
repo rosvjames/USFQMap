@@ -17,7 +17,7 @@ function distanceToEdge(p: Vec2, a: Vec2, b: Vec2): number {
 }
 
 /** Continuous hipped surface, preserving concave outlines rather than filling their bounding box. */
-export function createRoofGeometry(outline: Vec2[], height: number): BufferGeometry {
+export function createRoofGeometry(outline: Vec2[], height: number, maxRise = 3.5): BufferGeometry {
   const ring = outline.slice()
   if (ring.length > 1 && Math.hypot(ring[0][0] - ring.at(-1)![0], ring[0][1] - ring.at(-1)![1]) < 0.01) ring.pop()
   const faces = ShapeUtils.triangulateShape(ring.map(([x, y]) => new Vector2(x, y)), [])
@@ -30,7 +30,7 @@ export function createRoofGeometry(outline: Vec2[], height: number): BufferGeome
       index = vertices.length / 3
       shared.set(key, index)
       const inset = Math.min(...ring.map((a, i) => distanceToEdge(p, a, ring[(i + 1) % ring.length])))
-      vertices.push(p[0], height + 0.06 + Math.min(3.5, inset * 0.45), -p[1])
+      vertices.push(p[0], height + 0.06 + Math.min(maxRise, inset * 0.45), -p[1])
       uv.push(p[0] / 2.4, p[1] / 2.4)
     }
     return index

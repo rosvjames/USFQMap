@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { BoxGeometry, Color, ExtrudeGeometry, InstancedMesh, Object3D, Shape } from 'three'
 import type { CampusBuilding } from '../lib/campus'
+import { isHallFrontEdge } from '../lib/hall'
 
 type Detail = { x: number; z: number; height: number; angle: number; width: number; tall: number; depth: number }
 
@@ -40,10 +41,11 @@ export function FacadeDetails({ buildings }: { buildings: CampusBuilding[] }) {
       const ring = building.ring
       const signedArea = ring.reduce((sum, a, i) => { const b = ring[(i + 1) % ring.length]; return sum + a[0] * b[1] - b[0] * a[1] }, 0)
       const sign = signedArea > 0 ? 1 : -1
-      const floorHeight = building.info?.id === 'coliseo' ? 8 : (building.heightMeters ?? building.levels * 3.5) / building.levels
+      const floorHeight = building.info?.id === 'coliseo' ? 8 : building.info?.id === 'hall-principal' ? 5.5 : (building.heightMeters ?? building.levels * 3.5) / building.levels
       const curtain = building.info?.id === 'miguel-de-santiago'
       for (let i = 0; i < ring.length; i++) {
         const a = ring[i], b = ring[(i + 1) % ring.length]
+        if (building.info?.id === 'hall-principal' && isHallFrontEdge(a, b)) continue
         const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
         if (length < 0.3) continue
         const angle = Math.atan2(dy, dx)

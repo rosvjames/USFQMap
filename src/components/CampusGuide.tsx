@@ -36,6 +36,7 @@ export function SourcesDialog({ onClose }: { onClose: () => void }) {
       <p>El campus se construye con huellas y senderos de OpenStreetMap. Los números de referencia siguen el mapa de la USFQ de 2023. Los servicios menores conservan los nombres de OpenStreetMap; dos huellas sin identificación se muestran como «Nombre pendiente».</p>
       <div className="coverage-note"><strong>Interiores pendientes de levantar</strong><p>No encontramos planos públicos de distribución de aulas. Las referencias identifican edificio y piso; no la puerta ni el recorrido interior. Las publicaciones antiguas se señalan como históricas.</p></div>
       <p>Los materiales, la cúpula, las ventanas, molduras y vegetación se inspiran en fotografías públicas de la USFQ y en la ilustración del campus. Los detalles y las posiciones de los árboles son aproximados. Usamos alturas de OpenStreetMap cuando existen y estimaciones visuales en los demás casos; no son mediciones arquitectónicas.</p>
+      <p>La entrada del Hall Principal, sus gradas, el David y los dos leones se modelaron a partir de las fotos compartidas por el estudiante. Las esculturas y las dimensiones son aproximaciones visuales; no son escaneos ni medidas tomadas en sitio.</p>
       <ul className="source-list">
         {Object.values(SOURCES).map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noreferrer">{source.title}<span aria-hidden="true">↗</span></a></li>)}
       </ul>

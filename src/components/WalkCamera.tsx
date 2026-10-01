@@ -5,6 +5,7 @@ import { findCampusBuilding } from '../lib/campus'
 import { moveWalker, walkingStart } from '../lib/walking'
 import { terrainHeightAt } from '../lib/terrain'
 import type { Vec2 } from '../types'
+import { HALL_ENTRANCE } from '../lib/hall'
 
 export type WalkAction = 'forward' | 'back' | 'left' | 'right' | 'turnLeft' | 'turnRight'
 export interface WalkInput { current: Set<WalkAction> }
@@ -24,7 +25,8 @@ export function WalkCamera({ buildingId, lookAt, input, onExit }: { buildingId?:
   useEffect(() => {
     const cam = camera as PerspectiveCamera
     const saved = { position: camera.position.clone(), quaternion: camera.quaternion.clone(), fov: cam.fov, near: cam.near }
-    const target = lookAt ?? findCampusBuilding(buildingId ?? 'hall-principal')?.center
+    const target = lookAt ?? (buildingId === 'hall-principal' ? HALL_ENTRANCE.center : findCampusBuilding(buildingId ?? 'hall-principal')?.center)
+    if (buildingId === 'hall-principal') pitch.current = 0.07
     if (target) heading.current = Math.atan2(target[0] - position.current[0], target[1] - position.current[1])
     cam.fov = 65
     cam.near = 0.1

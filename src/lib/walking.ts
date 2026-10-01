@@ -2,8 +2,9 @@ import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, findCamp
 import { pointInPolygon } from './geo'
 import { boundarySegments, bridgeHeightAt, segmentProjection, SPORT_ZONES, terrainHeightAt } from './terrain'
 import type { Vec2 } from '../types'
+import { HALL_APPROACH, HALL_OBSTACLES } from './hall'
 
-const obstacles = [...CAMPUS_BUILDINGS.map((b) => b.ring), ...CAMPUS_AREAS.filter((a) => a.kind === 'water').map((a) => a.ring)]
+const obstacles = [...CAMPUS_BUILDINGS.map((b) => b.ring), ...CAMPUS_AREAS.filter((a) => a.kind === 'water').map((a) => a.ring), ...HALL_OBSTACLES]
 const clearance: Vec2[] = [[0, 0], [0.55, 0], [-0.55, 0], [0, 0.55], [0, -0.55]]
 const fence = SPORT_ZONES.filter((zone) => zone.kind === 'synthetic').flatMap(boundarySegments)
 
@@ -17,6 +18,7 @@ export function isWalkable(point: Vec2): boolean {
 }
 
 export function walkingStart(buildingId = 'hall-principal'): Vec2 {
+  if (buildingId === 'hall-principal' && isWalkable(HALL_APPROACH)) return [...HALL_APPROACH]
   const target = findCampusBuilding(buildingId)?.center ?? [0, 0]
   // Leave enough space to see the building rather than spawn against its wall.
   const candidates = CAMPUS_PATHS.flat().filter((point) =>

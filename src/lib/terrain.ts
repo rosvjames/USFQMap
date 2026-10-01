@@ -1,5 +1,6 @@
 import { CAMPUS_AREAS, CAMPUS_WALKWAYS, type CampusArea, type CampusWalkway } from './campus'
 import { pointInPolygon } from './geo'
+import { hallEntranceHeightAt } from './hall'
 import type { Vec2 } from '../types'
 
 export const PATH_LEVEL = 0.55
@@ -88,6 +89,8 @@ export function bridgeHeightAt(point: Vec2): number | undefined {
 }
 
 export function terrainHeightAt(point: Vec2): number {
+  const entrance = hallEntranceHeightAt(point)
+  if (entrance !== undefined) return entrance
   const bridge = bridgeHeightAt(point)
   if (bridge !== undefined) return bridge
   for (const stair of SPORT_STAIRS) {

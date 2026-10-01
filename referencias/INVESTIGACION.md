@@ -44,6 +44,14 @@ Los techos se triangulan sobre la huella existente, conservando entrantes. Las a
 - Modelo exterior con materiales basados en referencias fotográficas y detalles arquitectónicos aproximados. Los seis árboles originales de OSM se conservan; los árboles decorativos adicionales se sitúan dentro de áreas verdes mapeadas, evitando senderos y edificios.
 - El Hall Principal inventado se conserva como plantilla de modelado y prueba de rutas, pero está fuera de los planos ofrecidos al visitante.
 
+## Entrada del Hall Principal
+
+Las tres fotos aportadas por el estudiante el 1 de octubre de 2026 sirven como referencia para el pórtico rojo, el frontón gris, las columnas, la plataforma elevada, la escalinata, los leones laterales y la figura central. [Alumni USFQ, mayo de 2024](https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html) identifica la réplica como el David de Miguel Ángel. No se confunde con el nombre del edificio Miguel de Santiago.
+
+La fachada se ancla al borde de la huella de OSM que mira al cuadrángulo. La plataforma se representa aproximadamente a un metro sobre el camino, con seis gradas y separación simétrica de leones. Las dimensiones, posiciones y altura exterior del Hall son estimaciones de las fotografías, sin valor de levantamiento. El David y los leones se modelan mediante mallas propias suaves; no se descargaron ni incorporaron escaneos de terceros. Las fotos no se redistribuyen en la aplicación.
+
+El recorrido exterior al seleccionar el Hall comienza frente al pórtico. Se puede subir la escalinata y caminar alrededor de la estatua; sus bases y las columnas tienen colisión. El acceso al interior permanece bloqueado por la huella existente y no implica que exista un plano interior verificado.
+
 ## Cómo completar interiores con datos reales
 
 Pedir a Planta Física o a la coordinación del edificio planos simplificados por piso, con códigos de aulas, accesos, escaleras, ascensores y pasillos. Confirmar que se pueden usar en el proyecto de la casa abierta. Alternativamente, realizar un levantamiento acompañado y permitido por la universidad.
