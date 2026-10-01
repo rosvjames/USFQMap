@@ -1,6 +1,7 @@
 import type { GraphEdge, GraphNode, Vec2 } from '../types'
 import { CAMPUS_PATHS, findCampusBuilding } from './campus'
 import { ELEVATED_WALKWAYS, segmentProjection } from './terrain'
+import { MAXWELL_ENTRANCE, maxwellToCampus } from './maxwell'
 import { shortestPath } from './pathfinding'
 
 // Average walking speed, used for the "≈ N min" estimate.
@@ -89,10 +90,11 @@ export function endpointForPosition(point: Vec2): Endpoint {
   return { point, nodeId: nearest.id }
 }
 
-/** Door of a building: the spot of its outline closest to any walkway. Real doors are not mapped yet. */
+/** Door of a building: the spot of its outline closest to any walkway. The Maxwell approach is photo-located; other doors remain approximations. */
 export function endpointForBuilding(buildingId: string): Endpoint | null {
   const building = findCampusBuilding(buildingId)
   if (!building) return null
+  if (buildingId === 'maxwell') return endpointForPosition(maxwellToCampus([0, MAXWELL_ENTRANCE.stairFront]))
   let best: Endpoint | null = null
   let bestGap = Infinity
   for (const node of WALKWAYS.nodes) {

@@ -506,3 +506,6 @@ button {
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
 .sports-button { display: flex; justify-content: space-between; width: 100%; padding: 12px 0 0; border: 0; background: none; color: #45594a; font-size: 14px; font-weight: 500; }
+
+.entrance-button { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 11px 13px; margin: 12px 0; color: var(--red); background: #faf3ef; border: 1px solid #e7dcd5; border-radius: 6px; font-weight: 600; }
+.entrance-button:hover { background: #f0e5df; }

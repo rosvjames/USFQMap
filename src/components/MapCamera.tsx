@@ -32,6 +32,10 @@ export interface MapFocus {
   span: number
   /** True while the bottom panel covers the lower part of the map. */
   aboveThePanel: boolean
+  /** Optional map orientation when focusing a photo-located facade. */
+  azimuth?: number
+  height?: number
+  tilt?: number
 }
 
 export interface MapCameraHandle {
@@ -81,19 +85,19 @@ export function MapCamera({ ref, focus, focusKey, onViewChange }: Props) {
     invalidate()
   }
 
-  function flyTo({ center, span, aboveThePanel }: MapFocus) {
+  function flyTo({ center, span, aboveThePanel, azimuth, height = 0, tilt }: MapFocus) {
     // Phones are taller than wide, so the horizontal field of view is the tight one.
     const visibleRatio = 2 * Math.tan(MathUtils.degToRad(camera.fov) / 2) * Math.min(1, camera.aspect)
-    const target = new Vector3(center[0], 0, -center[1])
+    const target = new Vector3(center[0], height, -center[1])
     const covered = aboveThePanel && window.innerWidth < WIDE_SCREEN
     if ((aboveThePanel || window.innerWidth >= WIDE_SCREEN) && controls.current) {
-      const azimuth = goal.current?.azimuth ?? controls.current.getAzimuthalAngle()
+      const heading = azimuth ?? goal.current?.azimuth ?? controls.current.getAzimuthalAngle()
       // On a phone the panel is below the subject; on a wide screen it is a card to its left.
-      const away = covered ? new Vector3(Math.sin(azimuth), 0, Math.cos(azimuth)) : new Vector3(-Math.cos(azimuth), 0, Math.sin(azimuth))
+      const away = covered ? new Vector3(Math.sin(heading), 0, Math.cos(heading)) : new Vector3(-Math.cos(heading), 0, Math.sin(heading))
       target.add(away.multiplyScalar(span * (covered ? PANEL_SHIFT : CARD_SHIFT)))
     }
     const distance = (span * (covered ? PANEL_ZOOM : 1)) / visibleRatio
-    fly({ target, distance: MathUtils.clamp(distance, MIN_DISTANCE, MAX_DISTANCE) })
+    fly({ target, distance: MathUtils.clamp(distance, MIN_DISTANCE, MAX_DISTANCE), ...(azimuth !== undefined && { azimuth }), ...(tilt !== undefined && { tilt }) })
   }
 
   useImperativeHandle(ref, () => ({

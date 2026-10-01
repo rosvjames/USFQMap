@@ -38,6 +38,7 @@ export function SourcesDialog({ onClose }: { onClose: () => void }) {
       <p>Los materiales, la cúpula, las ventanas, molduras y vegetación se inspiran en fotografías públicas de la USFQ y en la ilustración del campus. Los detalles y las posiciones de los árboles son aproximados. Usamos alturas de OpenStreetMap cuando existen y estimaciones visuales en los demás casos; no son mediciones arquitectónicas.</p>
       <p>La entrada del Hall Principal, sus gradas, el David y los dos leones se modelaron a partir de las fotos compartidas por el estudiante. Las esculturas y las dimensiones son aproximaciones visuales; no son escaneos ni medidas tomadas en sitio.</p>
       <p>La Pagoda se representa como un pabellón bajo de madera, con cubierta curva de tejas, galería, puente arqueado y pequeño estanque, según las fotos aportadas por el estudiante. Sus dimensiones y la forma del estanque son aproximadas.</p>
+      <p>La entrada de Maxwell mira al patio de Darwin y Galileo según la captura del estudiante. El arco de piedra, las columnas, las gradas y los leones claros recostados siguen su fotografía; la posición exacta y las dimensiones son aproximadas.</p>
       <ul className="source-list">
         {Object.values(SOURCES).map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noreferrer">{source.title}<span aria-hidden="true">↗</span></a></li>)}
       </ul>

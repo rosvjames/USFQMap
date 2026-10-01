@@ -2,6 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { createSculptureGeometry } from './sculptures'
 
 describe('local sculpture meshes', () => {
+  it('represents the small Maxwell lions reclining in pale stone', () => {
+    const geometry = createSculptureGeometry('reclining-lion', 48)
+    geometry.computeBoundingBox()
+    const box = geometry.boundingBox!
+    expect(box.max.y).toBeLessThan(0.9)
+    expect(box.max.z - box.min.z).toBeGreaterThan(1.5)
+    expect(Array.from(geometry.getAttribute('position').array).every(Number.isFinite)).toBe(true)
+    geometry.dispose()
+  })
   it('builds complete figures with finite normals within the rendering budget', () => {
     for (const kind of ['david', 'lion'] as const) {
       const geometry = createSculptureGeometry(kind)

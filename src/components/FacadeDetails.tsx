@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { BoxGeometry, Color, ExtrudeGeometry, InstancedMesh, Object3D, Shape } from 'three'
 import type { CampusBuilding } from '../lib/campus'
+import { isMaxwellFrontEdge, MAXWELL_ENTRANCE } from '../lib/maxwell'
 import { isHallFrontEdge } from '../lib/hall'
 
 type Detail = { x: number; z: number; height: number; angle: number; width: number; tall: number; depth: number }
@@ -48,16 +49,23 @@ export function FacadeDetails({ buildings }: { buildings: CampusBuilding[] }) {
         if (building.info?.id === 'hall-principal' && isHallFrontEdge(a, b)) continue
         const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
         if (length < 0.3) continue
+        const entranceFace = building.info?.id === 'maxwell' && isMaxwellFrontEdge(a, b)
         const angle = Math.atan2(dy, dx)
         const at = (t: number, offset: number, height: number, width: number, tall: number, depth: number): Detail => ({
           x: a[0] + dx * t + sign * dy / length * offset, z: -(a[1] + dy * t - sign * dx / length * offset), height, angle, width, tall, depth,
         })
         for (let floor = 0; floor < building.levels; floor++) {
-          cornices.push(at(0.5, 0.13, (floor + 1) * floorHeight - 0.12, length + 0.22, floor === building.levels - 1 ? 0.35 : 0.2, 0.4))
+          const corniceHeight = (floor + 1) * floorHeight - 0.12
+          if (entranceFace) {
+            const sideLength = (length - MAXWELL_ENTRANCE.width) / 2
+            for (const t of [sideLength / length / 2, 1 - sideLength / length / 2]) cornices.push(at(t, 0.13, corniceHeight, sideLength, 0.2, 0.4))
+          } else cornices.push(at(0.5, 0.13, corniceHeight, length + 0.22, floor === building.levels - 1 ? 0.35 : 0.2, 0.4))
           if (length < 3) continue
           const count = Math.max(1, Math.floor(length / (curtain ? 2.25 : 4.3)))
           for (let col = 0; col < count; col++) {
-            const t = (col + 0.5) / count, h = floor * floorHeight + floorHeight * 0.56
+            const t = (col + 0.5) / count
+            if (entranceFace && Math.abs((t - 0.5) * length) < MAXWELL_ENTRANCE.width / 2) continue
+            const h = floor * floorHeight + floorHeight * 0.56
             const width = curtain ? length / count - 0.14 : 1.35, tall = curtain ? floorHeight - 0.4 : Math.min(2.05, floorHeight - 0.7)
             const arched = building.info?.id === 'maxwell'
             ;(arched ? archFrames : frames).push(at(t, 0.09, h, width + 0.3, tall + 0.3, 0.2))

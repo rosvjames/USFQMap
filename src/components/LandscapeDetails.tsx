@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { BufferGeometry, CanvasTexture, Color, DoubleSide, Float32BufferAttribute, InstancedMesh, Object3D, RepeatWrapping, SRGBColorSpace } from 'three'
 import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, CAMPUS_TREES } from '../lib/campus'
+import { isMaxwellApproach } from '../lib/maxwell'
 import { pointInPolygon } from '../lib/geo'
 import type { Vec2 } from '../types'
 
@@ -79,7 +80,7 @@ export function LandscapeDetails() {
         for (let y = Math.min(...ys) + 3; y < Math.max(...ys); y += 9) {
           const point: Vec2 = [x + Math.sin(y * 0.7) * 2.3, y + Math.cos(x * 0.6) * 2.3]
           if (!pointInPolygon(point, area.ring) || !pointInPolygon(point, CAMPUS_BOUNDARY)) continue
-          if (CAMPUS_BUILDINGS.some((b) => pointInPolygon(point, b.ring))) continue
+          if (CAMPUS_BUILDINGS.some((b) => pointInPolygon(point, b.ring)) || isMaxwellApproach(point)) continue
           const nearPath = CAMPUS_PATHS.some((path) => path.some((a, i) => {
             if (!i) return false
             const b = path[i - 1], dx = b[0] - a[0], dy = b[1] - a[1]

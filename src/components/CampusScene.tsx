@@ -19,6 +19,7 @@ import { FacadeDetails } from './FacadeDetails'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
 import { SportsGround } from './SportsGround'
 import { CampusBridges } from './CampusBridges'
+import { MaxwellEntrance } from './MaxwellEntrance'
 import { HallEntrance } from './HallEntrance'
 import { Pagoda } from './Pagoda'
 import { SPORT_ZONES, TERRAIN_CUTOUTS, terrainHeightAt } from '../lib/terrain'
@@ -139,6 +140,7 @@ export function CampusScene(props: SceneProps) {
       <SportsGround materials={materials} />
       <CampusBridges />
       <HallEntrance materials={materials} />
+      <MaxwellEntrance materials={materials} />
 
       {CAMPUS_BUILDINGS.map((building) =>
         plan && building.info?.id === plan.buildingId ? null : (
