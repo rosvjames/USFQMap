@@ -1,5 +1,6 @@
 import type { GraphEdge, GraphNode, Vec2 } from '../types'
 import { CAMPUS_PATHS, findCampusBuilding } from './campus'
+import { ELEVATED_WALKWAYS, segmentProjection } from './terrain'
 import { shortestPath } from './pathfinding'
 
 // Average walking speed, used for the "≈ N min" estimate.
@@ -22,6 +23,7 @@ export interface OutdoorRoute {
   minutes: number
   /** Meters walked on straight links that are long enough to be a guess rather than a real walkway. */
   unmapped: number
+  usesBridge: boolean
 }
 
 function buildWalkways() {
@@ -127,7 +129,13 @@ export function findOutdoorRoute(from: Endpoint, to: Endpoint): OutdoorRoute | n
   }
 
   const unmapped = links.map((link) => distance(...link)).filter((length) => length > SHORT_LINK)
+  const usesBridge = path.some((point, i) => i > 0 && ELEVATED_WALKWAYS.some((way) => way.line.some((a, j) => {
+    if (!j) return false
+    const midpoint: Vec2 = [(point[0] + path[i - 1][0]) / 2, (point[1] + path[i - 1][1]) / 2]
+    return segmentProjection(midpoint, way.line[j - 1], a).distance < 0.1
+  })))
   return {
+    usesBridge,
     path,
     links,
     distance: total,

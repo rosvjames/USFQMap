@@ -6,7 +6,7 @@ import {
   CAMPUS_AREAS,
   CAMPUS_BOUNDARY,
   CAMPUS_BUILDINGS,
-  CAMPUS_PATHS,
+  CAMPUS_WALKWAYS,
   CITY_ROADS,
   findCampusBuilding,
   type CampusBuilding,
@@ -18,8 +18,11 @@ import { MapLabel } from './MapLabel'
 import { FacadeDetails } from './FacadeDetails'
 import { WalkCamera, type WalkInput } from './WalkCamera'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
+import { SportsGround } from './SportsGround'
+import { CampusBridges } from './CampusBridges'
+import { SPORT_ZONES, TERRAIN_CUTOUTS, terrainHeightAt } from '../lib/terrain'
 import { LandscapeDetails } from './LandscapeDetails'
-import { createWalkwayGeometry } from '../lib/architecture'
+import { createWalkwayGeometry, createTerrainShapes } from '../lib/architecture'
 import { createCampusMaterials, type CampusMaterials } from '../lib/materials'
 
 const LEVEL_HEIGHT = 3.5
@@ -60,9 +63,6 @@ const INITIAL_CAMERA: [number, number, number] = [
   INITIAL_VIEW.distance * Math.cos(INITIAL_VIEW.tilt),
   -OVERVIEW_CENTER[1] + INITIAL_VIEW.distance * Math.sin(INITIAL_VIEW.tilt) * Math.cos(INITIAL_VIEW.azimuth),
 ]
-// Zoomed out past this, only the origin and destination keep their name so labels do not pile up.
-const CROWDED_SPAN = 260
-
 // Map frame (x east, y north, height) -> three.js frame (x, y up, z south).
 function toScene(x: number, y: number, height = 0): [number, number, number] {
   return [x, height, -y]
@@ -89,6 +89,7 @@ interface SceneProps {
   cameraRef: Ref<MapCameraHandle>
   onViewChange: (azimuth: number, tilted: boolean) => void
   walking: boolean
+  names: boolean
   walkInput: WalkInput
   onExitWalk: () => void
 }
@@ -138,6 +139,8 @@ export function CampusScene(props: SceneProps) {
 
       <Ground materials={materials} />
       <LandscapeDetails />
+      <SportsGround materials={materials} names={props.names && !props.walking} />
+      <CampusBridges names={props.names && !props.walking} />
 
       {CAMPUS_BUILDINGS.map((building) =>
         plan && building.info?.id === plan.buildingId ? null : (
@@ -146,7 +149,7 @@ export function CampusScene(props: SceneProps) {
             building={building}
             materials={materials}
             selected={!props.walking && !!building.info && building.info.id === selectedBuildingId}
-            labelled={props.walking || focus.span < (window.innerWidth < 760 ? 140 : CROWDED_SPAN) || building.info?.id === props.originId || ['maxwell', 'da-vinci', 'hayek', 'coliseo', 'pagoda', 'galileo'].includes(building.info?.id ?? '')}
+            labelled={props.names && building.onCampus}
             onSelect={props.walking ? () => {} : props.onSelectBuilding}
             walking={props.walking}
           />
@@ -173,27 +176,24 @@ export function CampusScene(props: SceneProps) {
 function Ground({ materials }: { materials: CampusMaterials }) {
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
-        <planeGeometry args={[6000, 6000]} />
-        <meshStandardMaterial color={COLOR.city} />
-      </mesh>
+      <FlatArea ring={[[-3000, -3000], [3000, -3000], [3000, 3000], [-3000, 3000]]} height={-0.1} color={COLOR.city} cutTerrain />
 
       {CITY_ROADS.map(({ line, major }, i) => (
         <PavedSurface key={i} line={line} width={major ? 10 : 6} height={0.1} material={materials.road} />
       ))}
 
-      {CAMPUS_BOUNDARY.length > 0 && <FlatArea ring={CAMPUS_BOUNDARY} height={0.25} color={COLOR.lawn} material={materials.grass} />}
+      {CAMPUS_BOUNDARY.length > 0 && <FlatArea ring={CAMPUS_BOUNDARY} height={0.25} color={COLOR.lawn} material={materials.grass} cutTerrain />}
       {CAMPUS_BOUNDARY.length > 0 && <Line points={CAMPUS_BOUNDARY.map(([x, y]) => toScene(x, y, 0.6))} color="#a0b69a" lineWidth={1} />}
-      {CAMPUS_AREAS.map((area, i) => (
+      {CAMPUS_AREAS.filter((area) => !SPORT_ZONES.some((zone) => zone.area.osmId === area.osmId)).map((area, i) => (
         <group key={i}>
-          <FlatArea ring={area.ring} height={0.4} color={AREA_COLOR[area.kind]} material={area.kind === 'green' ? materials.garden : area.kind === 'water' ? materials.water : undefined} />
+          <FlatArea ring={area.ring} height={0.4} color={AREA_COLOR[area.kind]} cutTerrain={area.kind !== 'water'} material={area.kind === 'green' ? materials.garden : area.kind === 'water' ? materials.water : undefined} />
           {area.kind === 'water' && <Line points={area.ring.map(([x, y]) => toScene(x, y, 0.6))} color="#a19a82" lineWidth={0.8} worldUnits />}
           {area.kind === 'pitch' && <Line points={area.ring.map(([x, y]) => toScene(x, y, 0.6))} color="#f2f4df" lineWidth={0.2} worldUnits />}
         </group>
       ))}
 
-      {CAMPUS_PATHS.map((path, i) => (
-        <PavedSurface key={i} line={path} width={2.6} height={0.55} material={materials.paving} />
+      {CAMPUS_WALKWAYS.filter((way) => !way.bridge).map((way) => (
+        <PavedSurface key={way.osmId} line={way.line} width={way.width} height={terrainHeightAt} material={materials.paving} />
       ))}
 
 
@@ -201,14 +201,14 @@ function Ground({ materials }: { materials: CampusMaterials }) {
   )
 }
 
-function PavedSurface({ line, width, height, material }: { line: Vec2[]; width: number; height: number; material: CampusMaterials['paving'] }) {
+function PavedSurface({ line, width, height, material }: { line: Vec2[]; width: number; height: number | ((point: Vec2) => number); material: CampusMaterials['paving'] }) {
   const geometry = useMemo(() => createWalkwayGeometry(line, width, height), [line, width, height])
   useEffect(() => () => geometry.dispose(), [geometry])
   return <mesh geometry={geometry} material={material} receiveShadow raycast={() => null} />
 }
 
-function FlatArea({ ring, height, color, material }: { ring: Vec2[]; height: number; color: string; material?: CampusMaterials['grass'] }) {
-  const shape = useMemo(() => ringShape(ring), [ring])
+function FlatArea({ ring, height, color, material, cutTerrain = false }: { ring: Vec2[]; height: number; color: string; material?: CampusMaterials['grass']; cutTerrain?: boolean }) {
+  const shape = useMemo(() => cutTerrain ? createTerrainShapes(ring, TERRAIN_CUTOUTS) : [ringShape(ring)], [ring, cutTerrain])
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, height, 0]} receiveShadow>
       <shapeGeometry args={[shape]} onUpdate={(geometry) => {
@@ -266,8 +266,8 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
       {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={2} worldUnits raycast={() => null} />}
       {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} />}
-      {info && (selected || props.labelled) && (
-        <MapLabel text={info.name} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={props.walking} />
+      {(selected || props.labelled) && (
+        <MapLabel text={building.name ?? 'Nombre pendiente'} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={props.walking} />
       )}
     </>
   )
@@ -312,9 +312,10 @@ function UserMarker({ position }: { position: Vec2 }) {
 }
 
 function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
-  const lift = 0.8
+  const lift = 0.3
+  const at = (p: Vec2) => toScene(...p, terrainHeightAt(p) + lift)
   const start = route.links[0][0]
-  const path = route.path.map(([x, y]) => toScene(x, y, lift))
+  const path = route.path.map(at)
   return (
     <group>
       {path.length > 1 && (
@@ -328,7 +329,7 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
         // Dashed: a straight guess between a door and the walkways, not a mapped path.
         <Line
           key={i}
-          points={[toScene(...a, lift), toScene(...b, lift)]}
+          points={[at(a), at(b)]}
           color={COLOR.red}
           lineWidth={4}
           dashed
@@ -338,7 +339,7 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
           renderOrder={6}
         />
       ))}
-      <mesh position={toScene(...start, lift)} rotation={[-Math.PI / 2, 0, 0]} renderOrder={7}>
+      <mesh position={at(start)} rotation={[-Math.PI / 2, 0, 0]} renderOrder={7}>
         <circleGeometry args={[2.4, 24]} />
         <meshBasicMaterial color="#1a1a1a" depthTest={false} />
       </mesh>

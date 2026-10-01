@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Vector3, type PerspectiveCamera } from 'three'
 import { findCampusBuilding } from '../lib/campus'
 import { moveWalker, walkingStart } from '../lib/walking'
+import { terrainHeightAt } from '../lib/terrain'
 import type { Vec2 } from '../types'
 
 export type WalkAction = 'forward' | 'back' | 'left' | 'right' | 'turnLeft' | 'turnRight'
@@ -90,8 +91,9 @@ export function WalkCamera({ buildingId, lookAt, input, onExit }: { buildingId?:
       (Math.cos(angle) * forward - Math.sin(angle) * side) * speed,
     ])
     const [x, y] = position.current
-    camera.position.set(x, 2.2, -y)
-    camera.lookAt(new Vector3(x + Math.sin(angle), 2.2 + Math.tan(pitch.current), -y - Math.cos(angle)))
+    const eye = terrainHeightAt(position.current) + 1.65
+    camera.position.set(x, eye, -y)
+    camera.lookAt(new Vector3(x + Math.sin(angle), eye + Math.tan(pitch.current), -y - Math.cos(angle)))
     // This mode uses continuous frames; the overview retains demand rendering.
   })
   return null

@@ -1,5 +1,14 @@
-import { BufferGeometry, Float32BufferAttribute, ShapeUtils, Vector2 } from 'three'
+import { BufferGeometry, Float32BufferAttribute, Path, Shape, ShapeUtils, Vector2 } from 'three'
+import polygonClipping from 'polygon-clipping'
 import type { Vec2 } from '../types'
+
+export function createTerrainShapes(outline: Vec2[], cutouts: Vec2[][]): Shape[] {
+  return polygonClipping.difference([outline], ...cutouts.map((ring) => [ring])).map((polygon) => {
+    const shape = new Shape(polygon[0].map(([x, y]) => new Vector2(x, y)))
+    shape.holes = polygon.slice(1).map((ring) => new Path(ring.map(([x, y]) => new Vector2(x, y))))
+    return shape
+  })
+}
 
 function distanceToEdge(p: Vec2, a: Vec2, b: Vec2): number {
   const dx = b[0] - a[0], dy = b[1] - a[1]
@@ -43,7 +52,7 @@ export function createRoofGeometry(outline: Vec2[], height: number): BufferGeome
 }
 
 /** Paving is a lit surface that receives shadows, instead of a screen-space line. */
-export function createWalkwayGeometry(line: Vec2[], width: number, height: number): BufferGeometry {
+export function createWalkwayGeometry(line: Vec2[], width: number, height: number | ((point: Vec2) => number)): BufferGeometry {
   const vertices: number[] = [], uv: number[] = []
   let distance = 0
   for (let i = 1; i < line.length; i++) {
@@ -54,7 +63,7 @@ export function createWalkwayGeometry(line: Vec2[], width: number, height: numbe
     const corners = [[a[0] - nx, a[1] - ny], [b[0] - nx, b[1] - ny], [b[0] + nx, b[1] + ny], [a[0] + nx, a[1] + ny]]
     const coords = [[0, distance], [0, distance + length], [width, distance + length], [width, distance]]
     for (const index of [0, 1, 2, 0, 2, 3]) {
-      vertices.push(corners[index][0], height, -corners[index][1])
+      vertices.push(corners[index][0], typeof height === 'function' ? height(corners[index] as Vec2) : height, -corners[index][1])
       uv.push(coords[index][0] / 2.4, coords[index][1] / 2.4)
     }
     distance += length

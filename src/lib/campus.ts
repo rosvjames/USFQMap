@@ -22,12 +22,19 @@ export interface CampusBuilding {
   onCampus: boolean
   /** Present only for buildings listed in data/buildings.ts. */
   info?: BuildingInfo
+  name?: string
 }
 
 export interface CampusArea {
   kind: 'green' | 'pitch' | 'water'
   ring: Vec2[]
+  osmId: string
+  name?: string
+  sport?: string
+  surface?: string
 }
+
+export interface CampusWalkway { osmId: string; line: Vec2[]; bridge: boolean; width: number }
 
 const features = (raw as unknown as { features: Feature[] }).features
 const inLayer = (layer: Layer) => features.filter((f) => f.properties.layer === layer)
@@ -53,11 +60,15 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = inLayer('building').map((f) =>
     heightMeters: Number.parseFloat(f.properties.height ?? '') > 0 ? Number.parseFloat(f.properties.height!) : undefined,
     onCampus: !!info || pointInPolygon(center, CAMPUS_BOUNDARY),
     info,
+    name: info?.name ?? f.properties.name,
   }
 })
 
 /** Walkways and service lanes: what outdoor routes are allowed to follow. */
-export const CAMPUS_PATHS: Vec2[][] = inLayer('path').map(lineOf)
+export const CAMPUS_WALKWAYS: CampusWalkway[] = inLayer('path').map((f) => ({
+  osmId: f.properties.osm_id ?? '', line: lineOf(f), bridge: !!f.properties.bridge && f.properties.bridge !== 'no', width: Number(f.properties.width) || 2.6,
+}))
+export const CAMPUS_PATHS: Vec2[][] = CAMPUS_WALKWAYS.map((path) => path.line)
 
 /** City streets around the campus. Drawn for context, never routed over. */
 export const CITY_ROADS: { line: Vec2[]; major: boolean }[] = inLayer('road').map((f) => ({
@@ -66,7 +77,7 @@ export const CITY_ROADS: { line: Vec2[]; major: boolean }[] = inLayer('road').ma
 }))
 
 export const CAMPUS_AREAS: CampusArea[] = (['green', 'pitch', 'water'] as const).flatMap((kind) =>
-  inLayer(kind).map((f) => ({ kind, ring: ringOf(f) })),
+  inLayer(kind).map((f) => ({ kind, ring: ringOf(f), osmId: f.properties.osm_id ?? '', name: f.properties.name, sport: f.properties.sport, surface: f.properties.surface })),
 )
 
 export const CAMPUS_TREES: Vec2[] = inLayer('tree').map((f) => toLocal(f.geometry.coordinates as number[]))

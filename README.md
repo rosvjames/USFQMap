@@ -1,6 +1,6 @@
 # USFQ · Explora
 
-Mapa 3D del campus de Cumbayá para una casa abierta. Permite buscar edificios y códigos de aula, consultar las fuentes, trazar rutas exteriores aproximadas y recorrer el campus principal en primera persona.
+Mapa 3D del campus de Cumbayá para una casa abierta. Permite buscar edificios y códigos de aula, consultar las fuentes, trazar rutas exteriores aproximadas y recorrer el campus principal y el puente hacia Hayek en primera persona.
 
 ## Ejecutar
 
@@ -19,14 +19,17 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 - «Recorrer a pie»: WASD para caminar, flechas arriba/abajo para avanzar/retroceder, izquierda/derecha para girar, arrastrar para mirar y Esc para volver. También hay botones táctiles.
 - Buscar M302, G111, DW010, H100F, un edificio o un servicio como Registro.
 - «Fuentes y cobertura» muestra las referencias y los límites de los datos.
+- «Ver canchas y terrazas» acerca la cámara al sector deportivo. El botón Aa muestra u oculta los nombres, visibles inicialmente en todos los edificios del campus.
 
 ## Datos y precisión
 
-El catálogo contiene 27 lugares con geometría de OpenStreetMap y 13 referencias públicas a aulas, oficinas y un laboratorio. Las ubicaciones interiores solo identifican edificio y piso: **no hay planos interiores reales incorporados**. Las publicaciones antiguas se marcan como históricas. Un código válido por su formato no confirma la existencia del aula.
+El catálogo contiene 36 lugares con geometría de OpenStreetMap y 13 referencias públicas a aulas, oficinas y un laboratorio. Los servicios menores conservan los nombres de OSM. Dos huellas junto a Casa Hannah Arendt permanecen como «Nombre pendiente», sin asignarles un nombre por suposición. Las ubicaciones interiores solo identifican edificio y piso: **no hay planos interiores reales incorporados**. Las publicaciones antiguas se marcan como históricas. Un código válido por su formato no confirma la existencia del aula.
 
 Los detalles arquitectónicos son una interpretación visual de fotografías públicas de la USFQ y de la ilustración del campus compartida por el usuario. No son una reconstrucción arquitectónica medida. Los números de las fichas corresponden al mapa oficial de 2023, cuya leyenda difiere de la imagen antigua.
 
-Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. El modo a pie impide atravesar edificios y agua y se limita al perímetro principal; no cruza las calles hacia Hayek.
+Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. El modo a pie impide atravesar edificios, agua, rejas del campo sintético y bordes de desniveles; permite usar las gradas y el puente elevado hacia Hayek. Fuera del perímetro principal solo permite el corredor del puente.
+
+La zona deportiva se corrigió según la descripción del estudiante: dos canchas de vóley sobre arena, terraza inferior con mesas y sillas metálicas, dos canchas de tenis azules más abajo, fútbol sintético con reja y fútbol natural a desnivel. Hay accesos por gradas a la izquierda del tenis y del campo natural. Las huellas se conservan, pero las profundidades, mobiliario, accesos y altura del puente son aproximaciones visuales, no un levantamiento topográfico.
 
 La investigación completa y los próximos pasos están en [referencias/INVESTIGACION.md](referencias/INVESTIGACION.md).
 
@@ -41,6 +44,9 @@ La investigación completa y los próximos pasos están en [referencias/INVESTIG
 | `src/lib/search.ts` | Buscador y lectura de códigos con avisos de procedencia |
 | `src/lib/outdoor.ts` | Rutas sobre el grafo de senderos |
 | `src/lib/walking.ts` | Puntos iniciales y colisiones del recorrido exterior |
+| `src/lib/terrain.ts` | Desniveles deportivos, gradas y alturas del puente |
+| `src/components/SportsGround.tsx` | Arena, tenis, fútbol, redes y mobiliario |
+| `src/components/CampusBridges.tsx` | Tablero, barandillas y soportes del puente a Hayek |
 | `src/components/WalkCamera.tsx` | Cámara de primera persona, teclado y mirada |
 | `src/components/IllustratedRoof.tsx` | Cubiertas y detalles de los hitos |
 | `src/lib/architecture.ts` | Superficies de techos y senderos |
@@ -68,4 +74,4 @@ Los materiales se contrastaron con fotografías públicas de USFQ Next y Noticia
 
 El volumen exterior, los detalles y la plantación siguen siendo aproximados. Se conservan las huellas y senderos de OpenStreetMap; no se infiere la distribución interior a partir de las fotografías. Las alturas de OSM se usan cuando existen; en los demás edificios se estiman a partir de pisos o proporciones visuales.
 
-Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, colisiones y geometría de techos cóncavos y pavimentos.
+Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, colisiones, gradas, rejas, alturas del puente y geometría de techos cóncavos, pavimentos y terreno rebajado.
