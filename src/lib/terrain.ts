@@ -1,5 +1,6 @@
 import { CAMPUS_AREAS, CAMPUS_WALKWAYS, type CampusArea, type CampusWalkway } from './campus'
 import { pointInPolygon } from './geo'
+import { maxwellEntranceHeightAt } from './maxwell'
 import { PAGODA_POND } from './pagoda'
 import { hallEntranceHeightAt } from './hall'
 import type { Vec2 } from '../types'
@@ -90,6 +91,8 @@ export function bridgeHeightAt(point: Vec2): number | undefined {
 }
 
 export function terrainHeightAt(point: Vec2): number {
+  const maxwell = maxwellEntranceHeightAt(point)
+  if (maxwell !== undefined) return maxwell
   const entrance = hallEntranceHeightAt(point)
   if (entrance !== undefined) return entrance
   const bridge = bridgeHeightAt(point)

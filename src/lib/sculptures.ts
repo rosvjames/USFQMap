@@ -3,7 +3,7 @@ import { MarchingCubes } from 'three/addons/objects/MarchingCubes.js'
 
 type Point = [number, number, number]
 type Form = { p: Point; r: Point; cos: number; sin: number; minRadius: number }
-type Sculpture = 'david' | 'lion'
+type Sculpture = 'david' | 'lion' | 'reclining-lion'
 const form = (p: Point, r: Point, angle = 0): Form => ({ p, r, cos: Math.cos(angle), sin: Math.sin(angle), minRadius: Math.min(...r) })
 function limb(a: Point, b: Point, radius: number): Form {
   return form(a.map((n, i) => (n + b[i]) / 2) as Point,
@@ -44,7 +44,7 @@ function sculptureForms(kind: Sculpture) {
       forms.push(form([-0.02 + Math.cos(a) * radius, 1.76 + row * 0.055, Math.sin(a) * radius * 0.85 - 0.016], [0.041, 0.037, 0.043]))
     }
     cuts.push(form([-0.075, 1.713, 0.108], [0.026, 0.013, 0.028]), form([0.018, 1.713, 0.108], [0.026, 0.013, 0.028]))
-  } else {
+  } else if (kind === 'lion') {
     forms.push(
       form([0, 0.43, -0.14], [0.28, 0.39, 0.33]),
       form([-0.225, 0.21, -0.23], [0.20, 0.20, 0.27]), form([0.225, 0.21, -0.23], [0.20, 0.20, 0.27]),
@@ -61,6 +61,25 @@ function sculptureForms(kind: Sculpture) {
       forms.push(form([Math.cos(a) * (0.265 + row * 0.008), 0.82 + Math.sin(a) * 0.29 + row * 0.08, 0.14 + row * 0.058], [0.05, 0.11, 0.063], Math.cos(a) * 0.24))
     }
     cuts.push(form([-0.115, 1.083, 0.497], [0.029, 0.022, 0.035]), form([0.115, 1.083, 0.497], [0.029, 0.022, 0.035]))
+  } else {
+    // Maxwell has low reclining stone lions with forward paws, rather than the seated Hall lions.
+    forms.push(
+      form([0, 0.24, -0.28], [0.25, 0.22, 0.68]),
+      form([-0.2, 0.16, -0.66], [0.22, 0.15, 0.29]), form([0.2, 0.16, -0.66], [0.22, 0.15, 0.29]),
+      form([-0.17, 0.1, 0.39], [0.1, 0.095, 0.44]), form([0.17, 0.1, 0.39], [0.1, 0.095, 0.44]),
+      form([-0.17, 0.08, 0.78], [0.13, 0.07, 0.14]), form([0.17, 0.08, 0.78], [0.13, 0.07, 0.14]),
+      form([0, 0.46, 0.23], [0.28, 0.29, 0.27]),
+      form([0, 0.61, 0.39], [0.18, 0.15, 0.19]),
+      form([-0.065, 0.55, 0.56], [0.08, 0.06, 0.09]), form([0.065, 0.55, 0.56], [0.08, 0.06, 0.09]),
+      form([0, 0.59, 0.64], [0.06, 0.03, 0.024]),
+      form([-0.17, 0.71, 0.3], [0.06, 0.05, 0.04]), form([0.17, 0.71, 0.3], [0.06, 0.05, 0.04]),
+      form([0.36, 0.12, -0.48], [0.06, 0.055, 0.44]),
+    )
+    for (let i = 0; i < 18; i++) {
+      const a = i * Math.PI / 9
+      forms.push(form([Math.cos(a) * 0.245, 0.45 + Math.sin(a) * 0.255, 0.31], [0.035, 0.07, 0.045]))
+    }
+    cuts.push(form([-0.09, 0.64, 0.53], [0.024, 0.014, 0.025]), form([0.09, 0.64, 0.53], [0.024, 0.014, 0.025]))
   }
   return { forms, cuts }
 }
@@ -74,8 +93,8 @@ function distance(x: number, y: number, z: number, f: Form) {
 /** Original approximate sculpture meshes inspired by the user's photos; no third-party scans. */
 export function createSculptureGeometry(kind: Sculpture, resolution = 72): BufferGeometry {
   const { forms, cuts } = sculptureForms(kind)
-  const size: Point = kind === 'david' ? [1.25, 2.08, 0.9] : [1.2, 1.55, 1.4]
-  const center: Point = kind === 'david' ? [0, 0.96, 0.03] : [0, 0.65, 0.08]
+  const size: Point = kind === 'david' ? [1.25, 2.08, 0.9] : kind === 'lion' ? [1.2, 1.55, 1.4] : [1.4, 1.1, 2.4]
+  const center: Point = kind === 'david' ? [0, 0.96, 0.03] : kind === 'lion' ? [0, 0.65, 0.08] : [0, 0.44, -0.12]
   const dummy = new MeshStandardMaterial()
   const marching = new MarchingCubes(resolution, dummy, false, false, 45000)
   marching.isolation = 0

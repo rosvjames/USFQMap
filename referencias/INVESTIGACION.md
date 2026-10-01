@@ -68,3 +68,9 @@ Las tres fotos aportadas por el estudiante el 1 de octubre de 2026 muestran un p
 Se conserva la orientación y la huella rectangular principal de OpenStreetMap y se utiliza su saliente occidental como referencia para el puente. La cubierta anterior de varias torres apiladas se reemplazó por cuatro faldones curvos con cumbrera baja. El estanque pequeño, alturas, detalles de madera, gradas y plantación son estimaciones visuales de las fotos. La laguna mayor conserva su huella cartográfica. No se modelan interiores ni se incorporan fotografías a los archivos publicados.
 
 Corrección del estudiante: el pequeño estanque rodea toda la Pagoda, conservando su inicio occidental junto al puente. El agua continúa por los cuatro lados bajo el pabellón elevado y el borde de piedras sigue su perímetro completo.
+
+## Entrada de Maxwell
+
+Referencia: fotografía del portal y captura del mapa compartidas por el estudiante el 1 de octubre de 2026. El portal se ancla aproximadamente a la mitad del frente occidental de Maxwell que mira al patio entre Darwin y Galileo. Se representan ocho bandas concéntricas de piedra con juntas, columnillas en las jambas, dos columnas exteriores, puerta oscura arqueada, plataforma y cinco gradas, dos leones claros recostados y macetas con árboles pequeños. Las proporciones y el punto exacto sobre la fachada se estiman visualmente; no se dispone de un levantamiento de esta puerta.
+
+El destino exterior de Maxwell usa el pie de las gradas como punto de aproximación. Los tramos sin sendero cartografiado mantienen su indicación de aproximación. El botón «Ver entrada principal» encuadra la fachada desde el patio, sin recorrido de primera persona. Se retira únicamente la vegetación ilustrativa que tapaba este encuadre; los árboles de OSM se conservan. Los leones son mallas generadas localmente, sin escaneos de terceros, y la fotografía no se publica con la aplicación.

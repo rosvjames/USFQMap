@@ -6,6 +6,7 @@ import { PLANS } from './data/plans'
 import { endpointForBuilding, endpointForPosition, findOutdoorRoute } from './lib/outdoor'
 import { findRoute, floorName } from './lib/pathfinding'
 import { search, type SearchResult } from './lib/search'
+import { MAXWELL_ENTRANCE } from './lib/maxwell'
 import { useGeolocation } from './lib/useGeolocation'
 import type { BuildingPlan } from './types'
 import { CampusGuide, SourcesDialog } from './components/CampusGuide'
@@ -248,6 +249,11 @@ export default function App() {
               <p>{place}</p>
             </div>
           </div>
+
+          {building?.id === 'maxwell' && <button className="entrance-button" onClick={() => {
+            const narrow = window.innerWidth < 760
+            mapCamera.current?.flyTo({ center: MAXWELL_ENTRANCE.center, span: narrow ? 16 : 28, aboveThePanel: true, azimuth: MAXWELL_ENTRANCE.angle, height: 3.5, tilt: narrow ? 1 : 1.2 })
+          }}>Ver entrada principal <span aria-hidden="true">↗</span></button>}
 
           {MAP_NUMBERS[building?.id ?? ''] && <p className="official-number">N.º {MAP_NUMBERS[building!.id]} en el mapa oficial USFQ de 2023</p>}
           {reference && <div className="reference-note"><span className="status-tag">{reference.historical ? 'Referencia histórica' : 'Referencia publicada por USFQ'}</span><a href={SOURCES[reference.source].url} target="_blank" rel="noreferrer">{SOURCES[reference.source].title} ↗</a>{reference.historical && <p>Confirma que el código siga vigente. La fuente es anterior a esta versión del mapa.</p>}</div>}
