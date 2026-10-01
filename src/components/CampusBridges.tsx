@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { Quaternion, Vector3 } from 'three'
 import { ELEVATED_WALKWAYS, bridgeVertexHeight, PATH_LEVEL } from '../lib/terrain'
-import { MapLabel } from './MapLabel'
 
 type Point = [number, number, number]
 const bridgeJunctions = (() => {
@@ -25,7 +24,7 @@ function Beam({ a, b, width, depth, color }: { a: Point; b: Point; width: number
   </mesh>
 }
 
-export function CampusBridges({ names }: { names: boolean }) {
+export function CampusBridges() {
   return <group>
     {ELEVATED_WALKWAYS.map((way) => <group key={way.osmId}>
       {way.line.slice(1).map((b, i) => {
@@ -50,6 +49,5 @@ export function CampusBridges({ names }: { names: boolean }) {
         </group>
       })}
     </group>)}
-    {names && <MapLabel text="Puente a Hayek" position={[-17.46, 8.1, 182.46]} variant="tag" />}
   </group>
 }

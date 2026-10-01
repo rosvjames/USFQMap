@@ -139,8 +139,8 @@ export function CampusScene(props: SceneProps) {
 
       <Ground materials={materials} />
       <LandscapeDetails />
-      <SportsGround materials={materials} names={props.names && !props.walking} />
-      <CampusBridges names={props.names && !props.walking} />
+      <SportsGround materials={materials} />
+      <CampusBridges />
 
       {CAMPUS_BUILDINGS.map((building) =>
         plan && building.info?.id === plan.buildingId ? null : (

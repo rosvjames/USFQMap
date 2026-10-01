@@ -5,7 +5,6 @@ import { boundarySegments, SPORT_ZONES, SPORT_STAIRS, TENNIS_LANDING, SPORT_GATE
 import { createTerrainShapes } from '../lib/architecture'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
-import { MapLabel } from './MapLabel'
 
 function frame(ring: Vec2[]) {
   const edge = ring.map((a, i) => [a, ring[(i + 1) % ring.length]]).find(([a, b]) => Math.abs(b[0] - a[0]) > Math.abs(b[1] - a[1]))!
@@ -124,7 +123,7 @@ function BoundaryWalls({ zone, texture }: { zone: SportZone; texture: CanvasText
   })}</group>
 }
 
-export function SportsGround({ materials, names }: { materials: CampusMaterials; names: boolean }) {
+export function SportsGround({ materials }: { materials: CampusMaterials }) {
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = canvas.height = 32
     const ctx = canvas.getContext('2d')!; ctx.strokeStyle = '#a6ada3'; ctx.lineWidth = 1.2
@@ -153,7 +152,6 @@ export function SportsGround({ materials, names }: { materials: CampusMaterials;
           {zone.kind === 'tennis' && <Tennis width={f.width} texture={texture} />}
           {(zone.kind === 'synthetic' || zone.kind === 'football') && <Football width={f.width} length={f.length} natural={zone.kind === 'football'} texture={texture} />}
         </group>
-        {names && <MapLabel text={zone.label} position={[f.center[0], 1.6, -f.center[1]]} variant="tag" />}
       </group>
     })}
     {SPORT_STAIRS.map((stair, i) => {
@@ -166,7 +164,6 @@ export function SportsGround({ materials, names }: { materials: CampusMaterials;
             <boxGeometry args={[length / count + 0.025, level - stair.low + 0.1, stair.width]} /><meshStandardMaterial color="#b8b2a2" roughness={0.95} />
           </mesh>
         })}
-        {names && <MapLabel text="Gradas" position={[stair.top[0], 1, -stair.top[1]]} variant="tag" />}
       </group>
     })}
     {[TENNIS_LANDING, SPORT_GATE].map((ring, i) => <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.24, 0]} material={materials.paving} receiveShadow><shapeGeometry args={[new Shape(ring.map(([x, y]) => new Vector2(x, y)))]} /></mesh>)}
