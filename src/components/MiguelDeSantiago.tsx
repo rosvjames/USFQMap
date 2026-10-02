@@ -6,7 +6,7 @@ import type { Vec2 } from '../types'
 import type { CampusMaterials } from '../lib/materials'
 import { CAMPUS_BUILDINGS } from '../lib/campus'
 import { createPavedShapes, createRoofGeometry } from '../lib/architecture'
-import { CAMPUS_GATE, MIGUEL_ENTRANCE as entrance, MIGUEL_VOLUMES, MIGUEL_WORLD_FORECOURT, isMiguelExteriorEdge, miguelToCampus } from '../lib/miguel'
+import { CAMPUS_GATE, MIGUEL_DRINKING_WALL as wall, MIGUEL_FORECOURT_RAILS, MIGUEL_RAIL_Z, MIGUEL_PLANTER_X, MIGUEL_ENTRANCE as entrance, MIGUEL_VOLUMES, MIGUEL_WORLD_FORECOURT, isMiguelExteriorEdge, miguelToCampus } from '../lib/miguel'
 
 const noRaycast=()=>null
 type Point=[number,number,number]
@@ -106,7 +106,7 @@ export function MiguelEntrance({materials}:{materials:CampusMaterials}) {
       <Block at={[-12.8,4.73,4.9]} size={[14,.2,.18]} material={finishes.stone}/>
       <Block at={[-8.1,2.55,4.9]} size={[.2,4.6,.2]} material={finishes.iron}/>
       {/* A single orange wall and canopy, with the drinking fountain facing Miguel. */}
-      <Block at={[-16.3,1.8,11.6]} size={[6.4,2.5,.24]} material={materials.hallRed}/>
+      <Block at={[wall.x,1.8,wall.z]} size={[wall.width,2.5,wall.depth]} material={materials.hallRed}/>
       <Block at={[-16.3,3.13,11.6]} size={[6.8,.2,3.5]} material={materials.metalRoof}/>
       <Block at={[-16.3,1.5,11.08]} size={[2.8,.18,.8]} material={finishes.steel}/>
       <Block at={[-16.3,1.6,11.08]} size={[2.5,.045,.58]} material={finishes.basin}/>
@@ -118,10 +118,8 @@ export function MiguelEntrance({materials}:{materials:CampusMaterials}) {
         <Block at={[x,1.1,11.37]} size={[.08,.7,.1]} material={finishes.steel}/>
         <Block at={[x,1.38,11.12]} size={[.08,.08,.6]} material={finishes.steel}/>
       </group>)}
-      <Rail from={-24} to={-16.3} z={15.1} level={.55} material={finishes.iron}/>
-      <Rail from={-8.7} to={5.4} z={15.1} level={.55} material={finishes.iron}/>
-      <Rail from={14.5} to={23} z={15.1} level={.55} material={finishes.iron}/>
-      {[-22.5,-6.8,19.5].map(x=><group key={x}>
+      {MIGUEL_FORECOURT_RAILS.map(([from,to])=><Rail key={from} from={from} to={to} z={MIGUEL_RAIL_Z} level={.55} material={finishes.iron}/>)}
+      {MIGUEL_PLANTER_X.map(x=><group key={x}>
         <Block at={[x,.75,14.2]} size={[2.8,.4,.9]} material={materials.entranceStone}/>
         <Block at={[x,1.08,14.2]} size={[2.5,.4,.7]} material={finishes.hedge}/>
       </group>)}

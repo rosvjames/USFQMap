@@ -7,6 +7,12 @@ export const MIGUEL_ENTRANCE = { center: [-95, -37.8] as Vec2, angle: Math.PI, x
 export function miguelToCampus([x,z]:Vec2):Vec2 { return [MIGUEL_ENTRANCE.center[0]-x,MIGUEL_ENTRANCE.center[1]+z] }
 export const MIGUEL_FORECOURT: Vec2[] = [[-24,.4],[23,.4],[23,18],[-24,18]]
 export const MIGUEL_WORLD_FORECOURT = MIGUEL_FORECOURT.map(miguelToCampus)
+// Shared with animal collision footprints so the visible barriers and walking
+// constraints stay in the same entrance-local frame.
+export const MIGUEL_DRINKING_WALL = { x: -16.3, z: 11.6, width: 6.4, depth: .24 }
+export const MIGUEL_FORECOURT_RAILS = [[-24, -16.3], [-8.7, 5.4], [14.5, 23]] as const
+export const MIGUEL_RAIL_Z = 15.1
+export const MIGUEL_PLANTER_X = [-22.5, -6.8, 19.5]
 // The student places the campus gate between the first two windows facing Miguel.
 const gateBuilding = findCampusBuilding('guardiania-norte')!
 const gateA = gateBuilding.ring[2], gateB = gateBuilding.ring[3]
