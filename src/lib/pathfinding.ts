@@ -5,7 +5,9 @@ import type { BuildingPlan, GraphEdge, GraphNode, Route } from '../types'
 const STAIRS_COST = 15
 const ELEVATOR_COST = 25
 
-export function floorName(floor: number): string {
+export function floorName(floor: number, buildingId?: string): string {
+  if (floor < 0) return `subsuelo ${Math.abs(floor)}`
+  if (floor === 0 && buildingId === 'hayek') return 'piso 0 · Ápice'
   return floor === 0 ? 'subsuelo' : `piso ${floor}`
 }
 
@@ -37,7 +39,7 @@ function buildAdjacency(edges: GraphEdge[], nodes: Map<string, GraphNode>) {
 /** Indoor route with walking instructions. Returns null when there is no path between the two nodes. */
 export function findRoute(plan: BuildingPlan, fromId: string, toId: string): Route | null {
   const path = shortestPath(plan.nodes, plan.edges, fromId, toId)
-  return path && { ...path, steps: describe(path.nodes) }
+  return path && { ...path, steps: describe(path.nodes, plan.buildingId) }
 }
 
 /** A* over any walking graph (a building plan or the campus walkways). */
@@ -97,18 +99,18 @@ function nodeName(node: GraphNode): string {
   return node.label ?? node.code ?? 'este punto'
 }
 
-function describe(path: GraphNode[]): string[] {
+function describe(path: GraphNode[], buildingId: string): string[] {
   const first = path[0]
   const last = path[path.length - 1]
-  const steps = [`Empieza en ${nodeName(first)} (${floorName(first.floor)}).`]
+  const steps = [`Empieza en ${nodeName(first)} (${floorName(first.floor, buildingId)}).`]
   for (let i = 1; i < path.length; i++) {
     const prev = path[i - 1]
     const next = path[i]
     if (prev.floor === next.floor) continue
     const verb = next.floor > prev.floor ? 'Sube' : 'Baja'
     const via = prev.kind === 'elevator' ? 'el ascensor' : (prev.label?.toLowerCase() ?? 'las escaleras')
-    steps.push(`${verb} al ${floorName(next.floor)} por ${via}.`)
+    steps.push(`${verb} al ${floorName(next.floor, buildingId)} por ${via}.`)
   }
-  steps.push(`Llegas a ${nodeName(last)}, en el ${floorName(last.floor)}.`)
+  steps.push(`Llegas a ${nodeName(last)}, en el ${floorName(last.floor, buildingId)}.`)
   return steps
 }

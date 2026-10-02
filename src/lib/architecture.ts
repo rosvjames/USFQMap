@@ -1,5 +1,6 @@
 import { BufferGeometry, Float32BufferAttribute, Path, Shape, ShapeUtils, Vector2 } from 'three'
 import polygonClipping from 'polygon-clipping'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import type { Vec2 } from '../types'
 
 export function createTerrainShapes(outline: Vec2[], cutouts: Vec2[][]): Shape[] {
@@ -10,6 +11,36 @@ export function createTerrainShapes(outline: Vec2[], cutouts: Vec2[][]): Shape[]
   })
 }
 
+/** Plazas overlap at junctions, but must never fill buildings, ponds or garden islands. */
+export function createPavedShapes(outlines: Vec2[][], cutouts: Vec2[][]): Shape[] {
+  if (!outlines.length) return []
+  const polygons = outlines.map((ring) => [ring] as polygonClipping.Polygon)
+  const paved = polygonClipping.union(polygons[0], ...polygons.slice(1))
+  return polygonClipping.difference(paved, ...cutouts.map((ring) => [ring] as polygonClipping.Polygon)).map((polygon) => {
+    const shape = new Shape(polygon[0].map(([x, y]) => new Vector2(x, y)))
+    shape.holes = polygon.slice(1).map((ring) => new Path(ring.map(([x, y]) => new Vector2(x, y))))
+    return shape
+  })
+}
+
+/** Narrow pitched sections beside a recessed courtyard, clipped to the actual building outline. */
+export function createRoofBandGeometry(outline: Vec2[], edges: number[], width: number, height: number): BufferGeometry {
+  const strips = edges.flatMap((i): polygonClipping.Polygon[] => {
+    const a = outline[i], b = outline[(i + 1) % outline.length]
+    const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
+    if (length < 0.01) return []
+    const nx = -dy / length * width, ny = dx / length * width
+    return [[[[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]]]]
+  })
+  if (!strips.length) return new BufferGeometry()
+  const clipped = polygonClipping.intersection([outline], polygonClipping.union(strips[0], ...strips.slice(1)))
+  const pieces = clipped.map((polygon) => createRoofGeometry(polygon[0], height, 1.2, polygon.slice(1)))
+  if (!pieces.length) return new BufferGeometry()
+  const geometry = mergeGeometries(pieces)!
+  pieces.forEach((piece) => piece.dispose())
+  return geometry
+}
+
 function distanceToEdge(p: Vec2, a: Vec2, b: Vec2): number {
   const dx = b[0] - a[0], dy = b[1] - a[1]
   const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy || 1)))
@@ -17,10 +48,14 @@ function distanceToEdge(p: Vec2, a: Vec2, b: Vec2): number {
 }
 
 /** Continuous hipped surface, preserving concave outlines rather than filling their bounding box. */
-export function createRoofGeometry(outline: Vec2[], height: number, maxRise = 3.5): BufferGeometry {
-  const ring = outline.slice()
-  if (ring.length > 1 && Math.hypot(ring[0][0] - ring.at(-1)![0], ring[0][1] - ring.at(-1)![1]) < 0.01) ring.pop()
-  const faces = ShapeUtils.triangulateShape(ring.map(([x, y]) => new Vector2(x, y)), [])
+export function createRoofGeometry(outline: Vec2[], height: number, maxRise = 3.5, holes: Vec2[][] = []): BufferGeometry {
+  const rings = [outline, ...holes].map((input) => {
+    const ring = input.slice()
+    if (ring.length > 1 && Math.hypot(ring[0][0] - ring.at(-1)![0], ring[0][1] - ring.at(-1)![1]) < 0.01) ring.pop()
+    return ring
+  })
+  const points = rings.flat()
+  const faces = ShapeUtils.triangulateShape(rings[0].map(([x, y]) => new Vector2(x, y)), rings.slice(1).map((ring) => ring.map(([x, y]) => new Vector2(x, y))))
   const vertices: number[] = [], uv: number[] = [], indices: number[] = []
   const shared = new Map<string, number>()
   function vertex(p: Vec2) {
@@ -29,7 +64,7 @@ export function createRoofGeometry(outline: Vec2[], height: number, maxRise = 3.
     if (index === undefined) {
       index = vertices.length / 3
       shared.set(key, index)
-      const inset = Math.min(...ring.map((a, i) => distanceToEdge(p, a, ring[(i + 1) % ring.length])))
+      const inset = Math.min(...rings.flatMap((ring) => ring.map((a, i) => distanceToEdge(p, a, ring[(i + 1) % ring.length]))))
       vertices.push(p[0], height + 0.06 + Math.min(maxRise, inset * 0.45), -p[1])
       uv.push(p[0] / 2.4, p[1] / 2.4)
     }
@@ -42,7 +77,7 @@ export function createRoofGeometry(outline: Vec2[], height: number, maxRise = 3.
     triangle(a, ab, ca, depth - 1); triangle(ab, b, bc, depth - 1)
     triangle(ca, bc, c, depth - 1); triangle(ab, bc, ca, depth - 1)
   }
-  faces.forEach(([a, b, c]) => triangle(ring[a], ring[b], ring[c], 4))
+  faces.forEach(([a, b, c]) => triangle(points[a], points[b], points[c], 4))
   const roof = new BufferGeometry()
   roof.setAttribute('position', new Float32BufferAttribute(vertices, 3))
   roof.setAttribute('uv', new Float32BufferAttribute(uv, 2))

@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react'
 import { BUILDINGS } from '../data/buildings'
 import { LOCATIONS, MAP_NUMBERS, SOURCES } from '../data/references'
 
-export function CampusGuide({ onSelectBuilding, onPagoda, onSports }: { onSelectBuilding: (id: string) => void; onPagoda: () => void; onSports: () => void }) {
+export function CampusGuide({ onSelectBuilding, onPagoda, onSports, collapsed, onToggle }: { onSelectBuilding: (id: string) => void; onPagoda: () => void; onSports: () => void; collapsed: boolean; onToggle: () => void }) {
+  if (collapsed) return <button className="campus-tab" aria-label="Mostrar información del campus" aria-expanded={false} onClick={onToggle}><span aria-hidden="true">›</span> Campus</button>
   return (
     <section className="guide">
+      <button className="guide-collapse" aria-label="Ocultar información del campus" aria-expanded={true} onClick={onToggle}><span aria-hidden="true">‹</span></button>
       <p className="eyebrow">Universidad San Francisco de Quito</p>
       <h1>Campus Cumbayá</h1>
       <p className="guide-intro">Explora Cumbayá en 3D, encuentra un edificio o busca el código de tu aula.</p>
@@ -20,7 +22,8 @@ export function CampusGuide({ onSelectBuilding, onPagoda, onSports }: { onSelect
           </button>)}
         </div>
       </details>
-      <p className="guide-hint">Arrastra para moverte · rueda para acercar<br />Botón derecho para girar el mapa</p>
+      <p className="guide-hint guide-hint-desktop">Arrastra para moverte · rueda para acercar<br />Botón derecho para girar el mapa</p>
+      <p className="guide-hint guide-hint-touch">Un dedo para desplazar · pellizca para acercar<br />Gira dos dedos para orientar el mapa</p>
     </section>
   )
 }
@@ -36,6 +39,7 @@ export function SourcesDialog({ onClose }: { onClose: () => void }) {
       <p>El campus se construye con huellas y senderos de OpenStreetMap. Los números de referencia siguen el mapa de la USFQ de 2023. Los servicios menores conservan los nombres de OpenStreetMap; dos huellas sin identificación se muestran como «Nombre pendiente».</p>
       <div className="coverage-note"><strong>Interiores pendientes de levantar</strong><p>No encontramos planos públicos de distribución de aulas. Las referencias identifican edificio y piso; no la puerta ni el recorrido interior. Las publicaciones antiguas se señalan como históricas.</p></div>
       <p>Los materiales, la cúpula, las ventanas, molduras y vegetación se inspiran en fotografías públicas de la USFQ y en la ilustración del campus. Los detalles y las posiciones de los árboles son aproximados. Usamos alturas de OpenStreetMap cuando existen y estimaciones visuales en los demás casos; no son mediciones arquitectónicas.</p>
+      <p>La vista satelital de Apple Maps guía los colores de las cubiertas, las claraboyas, los patios pavimentados y la plantación alrededor de la laguna. El campus, el puente y Hayek reciben el detalle principal; los edificios del entorno son volúmenes simplificados. Los patios y anchos interpretados desde la imagen son aproximados y no confirman nuevos tramos de navegación.</p>
       <p>La entrada del Hall Principal, sus gradas, el David y los dos leones se modelaron a partir de las fotos compartidas por el estudiante. Las esculturas y las dimensiones son aproximaciones visuales; no son escaneos ni medidas tomadas en sitio.</p>
       <p>La Pagoda se representa como un pabellón bajo de madera, con cubierta curva de tejas, galería, puente arqueado y pequeño estanque, según las fotos aportadas por el estudiante. Sus dimensiones y la forma del estanque son aproximadas.</p>
       <p>La entrada de Maxwell mira al patio de Darwin y Galileo según la captura del estudiante. El arco de piedra, las columnas, las gradas y los leones claros recostados siguen su fotografía; la posición exacta y las dimensiones son aproximadas.</p>

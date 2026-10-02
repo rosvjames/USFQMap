@@ -19,7 +19,7 @@ function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
       : kind === 'paving' ? x % 64 < 1.5 || y % 64 < 1.5
       : kind === 'stone' ? y % 32 < 1.5 || (x + Math.floor(y / 32) % 2 * 32) % 64 < 1.5 : false
     const pattern = kind === 'wood' ? Math.sin(x * 0.48 + Math.sin(y * 0.07) * 3 + Math.sin(y * 0.019) * 4) * 17 + Math.sin(x * 2.2 + Math.sin(y * 0.09)) * 5
-      : kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 11
+      : kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 3
       : kind === 'grass' ? Math.sin(x * 1.7 + y * 2.4) * 10
       : kind === 'stone' ? Math.sin(Math.floor(x / 32) * 21 + Math.floor(y / 32) * 17) * 18 : 0
     const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : kind === 'stone' ? 210 : 155 : 230) + noise * (kind === 'grass' ? 65 : 22) + pattern))
@@ -46,18 +46,30 @@ export function createCampusMaterials() {
     pagodaWood: material('wood', '#ac7841', 0.83, 0.024),
     pagodaRoof: material('tile', '#504b43', 0.95, 0.055),
     pondRock: material('stone', '#767569', 0.98, 0.04),
-    pondWater: material('water', '#656846', 0.19, 0.012, 0.25),
+    pondWater: material('water', '#527e70', 0.22, 0.008, 0.25),
     stucco: material('stucco', '#d5af94'),
+    casitaWhite: material('stucco', '#f0ece0'),
+    daVinciYellow: material('stucco', '#e5b55f'),
+    miguelCream: material('stucco', '#dccaaa'),
     brick: material('brick', '#b65e43', 0.92, 0.045),
+    hayekBrick: material('brick', '#ac8964', 0.96, 0.05),
+    hayekStone: material('brick', '#aaa99b', 0.96, 0.012),
     cream: material('stucco', '#e4ddc8'),
+    epicuroStone: material('stucco', '#b6b09c', 0.96, 0.025),
+    academicOrange: material('stucco', '#db7842', 0.95, 0.025),
     hallRed: material('stucco', '#c3654f', 0.95, 0.025),
     entranceStone: material('stone', '#b8b6a8', 0.95, 0.025),
     redStone: material('stone', '#aa705a', 0.95, 0.025),
     terracotta: material('tile', '#64504a', 0.92, 0.065),
+    redTileRoof: material('tile', '#b78368', 0.95, 0.055),
+    tealRoof: material('metal', '#8bafa3', 0.77, 0.035, 0.15),
+    concreteRoof: material('stone', '#d6d0bd', 0.96, 0.018),
+    roofGlass: new MeshStandardMaterial({ color: '#8aafab', roughness: 0.28, metalness: 0.35, transparent: true, opacity: 0.88 }),
     metalRoof: material('metal', '#708c7e', 0.65, 0.045, 0.25),
     grass: material('grass', '#718554', 1, 0.025),
     garden: material('grass', '#647d45', 1, 0.025),
     paving: material('paving', '#c1b8a2', 0.95, 0.04),
+    lakePaving: material('paving', '#b79578', 0.95, 0.025),
     road: material('stucco', '#aaa9a0', 1, 0.025),
     sand: material('sand', '#d4bd8b', 1, 0.025),
     tennis: material('stucco', '#286fa8', 0.95, 0.008),

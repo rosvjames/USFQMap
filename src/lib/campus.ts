@@ -1,4 +1,5 @@
 import raw from '../data/campus.json'
+import polygonClipping from 'polygon-clipping'
 import { BUILDINGS } from '../data/buildings'
 import type { BuildingInfo, Vec2 } from '../types'
 import { centroid, pointInPolygon, toLocal } from './geo'
@@ -34,7 +35,7 @@ export interface CampusArea {
   surface?: string
 }
 
-export interface CampusWalkway { osmId: string; line: Vec2[]; bridge: boolean; width: number }
+export interface CampusWalkway { osmId: string; line: Vec2[]; bridge: boolean; width: number; mappedWidth?: number }
 
 const features = (raw as unknown as { features: Feature[] }).features
 const inLayer = (layer: Layer) => features.filter((f) => f.properties.layer === layer)
@@ -47,8 +48,19 @@ const infoByOsmId = new Map(BUILDINGS.map((b) => [b.osmId, b]))
 /** Outline of the university grounds. */
 export const CAMPUS_BOUNDARY: Vec2[] = inLayer('campus').map(ringOf)[0] ?? []
 
+// The student's photo shows an exterior gap that OSM's touching outlines omit.
+// Preserve the Hall completely. The exterior gap ends at the covered ramp tunnel;
+// behind that mouth, both original building outlines join again.
+export const HALL_EINSTEIN_GAP = 3.8
+export const HALL_EINSTEIN_OPEN_LENGTH = 14
+const hallRing = ringOf(inLayer('building').find(f=>f.properties.osm_id==='way/395847792')!)
+const hallStart = hallRing.at(-3)!, hallEnd = hallRing.at(-2)!
+const hallWidth = Math.hypot(hallEnd[0]-hallStart[0],hallEnd[1]-hallStart[1])
+const hallUx = (hallEnd[0]-hallStart[0])/hallWidth, hallUy = (hallEnd[1]-hallStart[1])/hallWidth
+const einsteinFrontGap:Vec2[] = ([[-1,.15],[HALL_EINSTEIN_GAP,.15],[HALL_EINSTEIN_GAP,-HALL_EINSTEIN_OPEN_LENGTH],[-1,-HALL_EINSTEIN_OPEN_LENGTH]] as Vec2[]).map(([x,z])=>[hallEnd[0]+hallUx*x+hallUy*z,hallEnd[1]+hallUy*x-hallUx*z])
+
 export const CAMPUS_BUILDINGS: CampusBuilding[] = inLayer('building').map((f) => {
-  const ring = ringOf(f)
+  const ring = f.properties.osm_id === 'way/395847790' ? polygonClipping.difference([ringOf(f)],[einsteinFrontGap])[0][0] as Vec2[] : ringOf(f)
   const center = centroid(ring)
   const osmId = f.properties.osm_id ?? ''
   const info = infoByOsmId.get(osmId)
@@ -56,8 +68,8 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = inLayer('building').map((f) =>
     osmId,
     ring,
     center,
-    levels: Number(f.properties['building:levels']) || 1,
-    heightMeters: Number.parseFloat(f.properties.height ?? '') > 0 ? Number.parseFloat(f.properties.height!) : undefined,
+    levels: info?.id === 'gobe' ? 2 : Number(f.properties['building:levels']) || 1,
+    heightMeters: info?.id === 'gobe' ? 6.4 : Number.parseFloat(f.properties.height ?? '') > 0 ? Number.parseFloat(f.properties.height!) : undefined,
     onCampus: !!info || pointInPolygon(center, CAMPUS_BOUNDARY),
     info,
     name: info?.name ?? f.properties.name,
@@ -66,7 +78,7 @@ export const CAMPUS_BUILDINGS: CampusBuilding[] = inLayer('building').map((f) =>
 
 /** Walkways and service lanes: what outdoor routes are allowed to follow. */
 export const CAMPUS_WALKWAYS: CampusWalkway[] = inLayer('path').map((f) => ({
-  osmId: f.properties.osm_id ?? '', line: lineOf(f), bridge: !!f.properties.bridge && f.properties.bridge !== 'no', width: Number(f.properties.width) || 2.6,
+  osmId: f.properties.osm_id ?? '', line: lineOf(f), bridge: !!f.properties.bridge && f.properties.bridge !== 'no', width: Number(f.properties.width) || 2.6, mappedWidth: Number(f.properties.width) || undefined,
 }))
 export const CAMPUS_PATHS: Vec2[][] = CAMPUS_WALKWAYS.map((path) => path.line)
 

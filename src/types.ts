@@ -6,7 +6,7 @@ export type NodeKind = 'room' | 'corridor' | 'stairs' | 'elevator' | 'entrance'
 export interface GraphNode {
   id: string
   kind: NodeKind
-  /** 0 = subsuelo, 1 = planta baja, 2 = segundo piso... */
+  /** Number printed for that building. Hayek: 0 = Ápice, -1/-2 = classroom basements. */
   floor: number
   x: number
   y: number

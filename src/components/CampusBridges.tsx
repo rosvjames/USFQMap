@@ -1,50 +1,60 @@
-import { useMemo } from 'react'
-import { Quaternion, Vector3 } from 'three'
-import { ELEVATED_WALKWAYS, bridgeVertexHeight, PATH_LEVEL } from '../lib/terrain'
+import { useEffect, useMemo } from 'react'
+import { Quaternion, Shape, Vector3 } from 'three'
+import { ELEVATED_WALKWAYS, bridgeVertexHeight } from '../lib/terrain'
+import { campusBaseHeightAt } from '../lib/campusSlope'
+import { bridgeBoundaryRails, bridgeJunctions, createBridgeDeckGeometry } from '../lib/bridges'
 
 type Point = [number, number, number]
-const bridgeJunctions = (() => {
-  const ends = new Map<string, number>()
-  for (const way of ELEVATED_WALKWAYS) for (let i = 1; i < way.line.length; i++) {
-    for (const point of [way.line[i - 1], way.line[i]]) {
-      const key = point.join(',')
-      ends.set(key, (ends.get(key) ?? 0) + 1)
-    }
-  }
-  return new Set([...ends].filter(([, degree]) => degree > 2).map(([key]) => key))
-})()
 
 function Beam({ a, b, width, depth, color }: { a: Point; b: Point; width: number; depth: number; color: string }) {
   const { length, quaternion } = useMemo(() => {
     const delta = new Vector3(...b).sub(new Vector3(...a))
     return { length: delta.length(), quaternion: new Quaternion().setFromUnitVectors(new Vector3(0, 0, 1), delta.normalize()) }
   }, [a[0], a[1], a[2], b[0], b[1], b[2]])
-  return <mesh position={[(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2]} quaternion={quaternion} castShadow receiveShadow>
-    <boxGeometry args={[width, depth, length]} /><meshStandardMaterial color={color} roughness={0.65} metalness={color === '#6a7471' ? 0.55 : 0} />
+  return <mesh position={[(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2]} quaternion={quaternion} castShadow receiveShadow raycast={()=>null}>
+    <boxGeometry args={[width, depth, length]} /><meshStandardMaterial color={color} roughness={0.75} metalness={color === '#303936' ? 0.5 : 0} />
   </mesh>
 }
 
 export function CampusBridges() {
+  const decks = useMemo(()=>ELEVATED_WALKWAYS.map(createBridgeDeckGeometry),[])
+  const rails = useMemo(()=>bridgeBoundaryRails(ELEVATED_WALKWAYS),[])
+  const junctions = useMemo(()=>bridgeJunctions(ELEVATED_WALKWAYS),[])
+  const arrow = useMemo(()=>{
+    const shape=new Shape(); shape.moveTo(-0.08,-0.18);shape.lineTo(0.08,-0.18);shape.lineTo(0.08,0.04)
+    shape.lineTo(0.23,0.04);shape.lineTo(0,0.33);shape.lineTo(-0.23,0.04);shape.lineTo(-0.08,0.04);shape.closePath();return shape
+  },[])
+  useEffect(()=>()=>decks.forEach(g=>g.dispose()),[decks])
   return <group>
+    {decks.map((geometry,i)=><mesh key={i} geometry={geometry} castShadow receiveShadow raycast={()=>null}><meshStandardMaterial color="#b8b6aa" roughness={0.96}/></mesh>)}
+    {junctions.map(({point,height,radius},i)=><mesh key={i} position={[point[0],height-0.16,-point[1]]} castShadow receiveShadow raycast={()=>null}><cylinderGeometry args={[radius,radius,0.32,16]} /><meshStandardMaterial color="#b8b6aa" roughness={0.96}/></mesh>)}
+    {rails.map(({a,b,ah,bh},i)=>{
+      const length=Math.hypot(b[0]-a[0],b[1]-a[1]),count=Math.max(1,Math.ceil(length/0.7))
+      const point=(t:number,rise=0):Point=>[a[0]+(b[0]-a[0])*t,ah+(bh-ah)*t+rise,-a[1]-(b[1]-a[1])*t]
+      return <group key={i}>
+        <Beam a={point(0,0.08)} b={point(1,0.08)} width={0.18} depth={0.16} color="#d1d0c6"/>
+        {[0.25,0.84,1.13].map(rise=><Beam key={rise} a={point(0,rise)} b={point(1,rise)} width={0.065} depth={rise===1.13?0.08:0.045} color="#303936"/>)}
+        {Array.from({length:count+1},(_,j)=><Beam key={j} a={point(j/count,0.16)} b={point(j/count,1.13)} width={0.055} depth={0.055} color="#303936"/>)}
+        {Array.from({length:Math.ceil(length/0.18)},(_,j)=>{
+          const t=(j+0.5)/Math.ceil(length/0.18)
+          return <Beam key={`picket${j}`} a={point(t,0.24)} b={point(t,1.08)} width={0.02} depth={0.02} color="#303936"/>
+        })}
+      </group>
+    })}
     {ELEVATED_WALKWAYS.map((way) => <group key={way.osmId}>
       {way.line.slice(1).map((b, i) => {
         const a = way.line[i], ah = bridgeVertexHeight(way, i), bh = bridgeVertexHeight(way, i + 1)
-        const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy), width = Math.max(way.width, 2.8)
-        const nx = dy / length, nz = dx / length, count = Math.ceil(length / 2)
-        // Leave the shared junction open instead of placing a ramp's rail across the main deck.
-        const railStart = bridgeJunctions.has(a.join(',')) ? Math.min(0.4, width / length) : 0
-        const railEnd = bridgeJunctions.has(b.join(',')) ? 1 - Math.min(0.4, width / length) : 1
+        const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
+        const nx = dy / length, nz = dx / length
         const point = (t: number, offset = 0, rise = 0): Point => [a[0] + dx * t + nx * offset, ah + (bh - ah) * t + rise, -a[1] - dy * t + nz * offset]
         return <group key={i}>
-          <Beam a={point(0, 0, -0.15)} b={point(1, 0, -0.15)} width={width} depth={0.3} color="#aaa89a" />
-          <Beam a={point(0, 0, -0.48)} b={point(1, 0, -0.48)} width={0.55} depth={0.4} color="#6a7471" />
-          {[-1, 1].map((side) => <group key={side}>
-            {[0.5, 1.15].map((rise) => <Beam key={rise} a={point(railStart, side * width / 2, rise)} b={point(railEnd, side * width / 2, rise)} width={0.065} depth={0.065} color="#6a7471" />)}
-            {Array.from({ length: count + 1 }, (_, j) => j / count >= railStart && j / count <= railEnd && <Beam key={j} a={point(j / count, side * width / 2)} b={point(j / count, side * width / 2, 1.2)} width={0.07} depth={0.07} color="#6a7471" />)}
-          </group>)}
+          <Beam a={point(0, 0, -0.48)} b={point(1, 0, -0.48)} width={0.55} depth={0.4} color="#303936" />
+          <Beam a={point(0,0,0.02)} b={point(1,0,0.02)} width={0.045} depth={0.015} color="#d2ac36"/>
+          {Array.from({length:Math.floor(length/4)},(_,j)=>([-1,1] as const).map(side=><mesh key={`${j}/${side}`} position={point((j+0.5)/Math.floor(length/4),side*0.55,0.025)} rotation={[-Math.PI/2,0,Math.atan2(-dx,dy)+(side===1?Math.PI:0)]} raycast={()=>null}><shapeGeometry args={[arrow]}/><meshStandardMaterial color="#ecece4" roughness={1}/></mesh>))}
           {length > 25 && [0.15, 0.85].map((t) => {
-            const p = point(t), height = Math.max(0, p[1] - PATH_LEVEL - 0.35)
-            return <mesh key={t} position={[p[0], PATH_LEVEL + height / 2, p[2]]} castShadow receiveShadow><cylinderGeometry args={[0.45, 0.6, height, 10]} /><meshStandardMaterial color="#a7a498" roughness={0.95} /></mesh>
+            const p = point(t), ground=campusBaseHeightAt([p[0],-p[2]])-.1, height = Math.max(0, p[1] - ground - 0.35)
+            const center:Point=[p[0],ground+height/2,p[2]]
+            return <mesh key={t} position={center} castShadow receiveShadow><cylinderGeometry args={[0.45, 0.6, height, 10]} /><meshStandardMaterial color="#a7a498" roughness={0.95} /></mesh>
           })}
         </group>
       })}
