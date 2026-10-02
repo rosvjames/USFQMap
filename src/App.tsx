@@ -19,6 +19,7 @@ import { MIGUEL_GARDEN_ENTRANCE, miguelGardenToCampus } from './lib/miguelGarden
 import { CAMPUS_SLOPE, campusBaseHeightAt } from './lib/campusSlope'
 import { PAGODA, PAGODA_STAIR_FOOT } from './lib/pagoda'
 import { CASITA, casitaToCampus } from './lib/casita'
+import { COLISEO_CENTER } from './lib/coliseo'
 import { EPICURO_FRONT, epicuroToCampus } from './lib/epicuro'
 import { NEWTON_ENTRANCE, newtonToCampus } from './lib/newton'
 import { GALILEO_ENTRANCE, galileoToCampus } from './lib/galileo'
@@ -63,6 +64,7 @@ export default function App() {
   const gps = useGeolocation(originId === GPS)
   const [tilted, setTilted] = useState(true)
   const [names, setNames] = useState(true)
+  const [interiorOpen, setInteriorOpen] = useState(false)
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const [guideCollapsed, setGuideCollapsed] = useState(false)
   const mapCamera = useRef<MapCameraHandle>(null)
@@ -111,6 +113,7 @@ export default function App() {
 
   const choose = useCallback((result: SearchResult) => {
     setDestination(result)
+    setInteriorOpen(false)
     setQuery('')
     const targetPlan = PLANS[result.buildingId]
     if (!targetPlan) return
@@ -157,6 +160,7 @@ export default function App() {
       <CampusScene
         selectedBuildingId={destination?.buildingId}
         plan={plan}
+        interiorBuildingId={interiorOpen && building?.id === 'coliseo' ? 'coliseo' : undefined}
         route={route}
         outdoorRoute={outdoorRoute}
         originId={originId}
@@ -345,6 +349,12 @@ export default function App() {
             mapCamera.current?.flyTo({center,span:95,aboveThePanel:true,azimuth:-.7,height:campusBaseHeightAt(center)+2,tilt:1.1})
           }}>Ver bajada hacia el puente <span aria-hidden="true">↗</span></button>}
 
+          {building?.id === 'coliseo' && <button className="entrance-button" aria-pressed={interiorOpen} onClick={() => {
+            if (!interiorOpen) mapCamera.current?.flyTo({ center: COLISEO_CENTER, span: window.innerWidth < 760 ? 52 : 64, aboveThePanel: true, azimuth: 0, height: 1, tilt: 0.5 })
+            setInteriorOpen(!interiorOpen)
+          }}>{interiorOpen ? 'Volver al exterior' : 'Ver interior · piso 1'} <span aria-hidden="true">↗</span></button>}
+          {building?.id === 'coliseo' && interiorOpen && <p className="warning">Prototipo trazado sobre una foto del plano de evacuación: medidas aproximadas y espacios aún sin identificar.</p>}
+
           {building?.id === 'gobe' && <button className="entrance-button" onClick={() => {
             const narrow=window.innerWidth<760
             mapCamera.current?.flyTo({center:casitaToCampus([0,1]),span:narrow?16:22,aboveThePanel:true,azimuth:CASITA.angle+.25,height:3.8,tilt:1.1})
@@ -400,7 +410,7 @@ export default function App() {
               ))}
             </ol>
           )}
-          {!plan && <p className="note">{building?.id === 'hayek' ? 'La ruta exterior llega a la entrada del puente. Ápice está abajo, en el piso 0; el plano interior y las rutas a los subsuelos aún no están disponibles.' : 'La ruta llega al exterior del edificio, a un acceso aproximado. El plano interior aún no está disponible.'}</p>}
+          {!plan && !interiorOpen && <p className="note">{building?.id === 'hayek' ? 'La ruta exterior llega a la entrada del puente. Ápice está abajo, en el piso 0; el plano interior y las rutas a los subsuelos aún no están disponibles.' : 'La ruta llega al exterior del edificio, a un acceso aproximado. El plano interior aún no está disponible.'}</p>}
           {plan?.placeholder && <p className="warning">Plano de ejemplo: las aulas y pasillos aún no son los reales.</p>}
           {buildingLocations.length > 0 && !roomCode && <div className="location-list"><h2>Aulas y oficinas documentadas</h2>{buildingLocations.map((location) => <button key={location.code} onClick={() => choose(search(location.code)[0])}><strong>{location.code}</strong><span>{floorName(location.floor, building?.id)} · {location.historical ? 'histórica' : location.label}</span><span aria-hidden="true">↗</span></button>)}</div>}
         </section>

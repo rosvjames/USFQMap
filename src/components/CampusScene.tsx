@@ -52,6 +52,7 @@ import { HallEntrance } from './HallEntrance'
 import { HallMiniPlaza } from './HallMiniPlaza'
 import { HALL_MINI_WORLD_OUTLINE } from '../lib/hallMiniPlaza'
 import { Pagoda } from './Pagoda'
+import { ColiseoInterior } from './ColiseoInterior'
 import { SPORT_ZONES, TERRAIN_CUTOUTS, terrainHeightAt } from '../lib/terrain'
 import { LandscapeDetails } from './LandscapeDetails'
 import { createWalkwayGeometry, createTerrainShapes, createPavedShapes } from '../lib/architecture'
@@ -117,6 +118,8 @@ function ringShape(ring: Vec2[]): Shape {
 interface SceneProps {
   selectedBuildingId?: string
   plan?: BuildingPlan
+  /** Building drawn roofless with its modelled interior instead of its exterior volume. */
+  interiorBuildingId?: string
   route: Route | null
   outdoorRoute: OutdoorRoute | null
   /** A building id, or 'gps'. */
@@ -130,7 +133,8 @@ interface SceneProps {
 }
 
 export const CampusScene = memo(function CampusScene(props: SceneProps) {
-  const { selectedBuildingId, plan } = props
+  const { selectedBuildingId, plan, interiorBuildingId } = props
+  const exteriors = useMemo(() => CAMPUS_BUILDINGS.filter((building) => !interiorBuildingId || building.info?.id !== interiorBuildingId), [interiorBuildingId])
   const lightweight = useLightweightRendering()
   const materials = useMemo(createCampusMaterials, [])
   useEffect(() => () => materials.dispose(), [materials])
@@ -200,9 +204,9 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <MaxwellDragon materials={materials} />
       </StaticDetails>
       <CampusAnimals />
-      <CachedShadows sceneKey={`${plan?.buildingId}|${props.activeFloor}|${lightweight}`} />
+      <CachedShadows sceneKey={`${plan?.buildingId}|${interiorBuildingId}|${props.activeFloor}|${lightweight}`} />
 
-      {CAMPUS_BUILDINGS.filter((building) => building.onCampus).map((building) =>
+      {exteriors.filter((building) => building.onCampus).map((building) =>
         plan && building.info?.id === plan.buildingId ? null : (
           <BuildingMesh
             key={building.osmId}
@@ -215,7 +219,8 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
         ),
       )}
 
-      <FacadeDetails buildings={CAMPUS_BUILDINGS} />
+      <FacadeDetails buildings={exteriors} />
+      {interiorBuildingId === 'coliseo' && <ColiseoInterior materials={materials} />}
 
       {plan && <IndoorPlan plan={plan} route={props.route} activeFloor={props.activeFloor} />}
       {props.outdoorRoute && <OutdoorRouteLine route={props.outdoorRoute} />}
