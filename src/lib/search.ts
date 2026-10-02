@@ -6,7 +6,7 @@ import { floorName } from './pathfinding'
 
 export type SearchResult =
   | { kind: 'room'; key: string; buildingId: string; node: GraphNode; title: string; subtitle: string }
-  | { kind: 'building'; key: string; buildingId: string; floor?: number; title: string; subtitle: string; reference?: LocationReference; inferred?: boolean }
+  | { kind: 'building'; key: string; buildingId: string; floor?: number; title: string; subtitle: string; reference?: LocationReference; inferred?: boolean; landmark?: boolean }
 
 function normalize(text: string): string {
   return text
@@ -38,7 +38,7 @@ const ROOMS: SearchResult[] = Object.values(PLANS).filter((plan) => !plan.placeh
       buildingId: plan.buildingId,
       node,
       title: node.code ?? node.label ?? node.id,
-      subtitle: [node.code && node.label, `${building?.name ?? plan.buildingId}, ${floorName(node.floor)}`].filter(Boolean).join(', '),
+      subtitle: [node.code && node.label, `${building?.name ?? plan.buildingId}, ${floorName(node.floor, plan.buildingId)}`].filter(Boolean).join(', '),
     }))
 })
 
@@ -56,6 +56,8 @@ const REFERENCE_RESULTS: SearchResult[] = LOCATIONS.map((reference) => ({
   subtitle: `${reference.label} · ${BUILDINGS.find((b) => b.id === reference.buildingId)?.name} · ${reference.historical ? 'referencia histórica' : 'fuente USFQ'}`,
 }))
 
+const APICE_RESULT: SearchResult = { kind: 'building', key: 'apice', buildingId: 'hayek', floor: 0, landmark: true, title: 'Ápice', subtitle: 'Cafetería y punto de encuentro · Hayek · piso 0' }
+
 export function search(query: string, limit = 8): SearchResult[] {
   const q = normalize(query)
   if (!q) return []
@@ -64,7 +66,7 @@ export function search(query: string, limit = 8): SearchResult[] {
     const aliases = r.kind === 'building' ? (BUILDINGS.find((b) => b.id === r.buildingId)?.aliases ?? []) : []
     return normalize([r.title, r.subtitle, ...aliases].join(' '))
   }
-  const results = [...ROOMS, ...REFERENCE_RESULTS, ...BUILDING_RESULTS].filter((r) => haystack(r).includes(q))
+  const results = [...ROOMS, ...REFERENCE_RESULTS, ...BUILDING_RESULTS, APICE_RESULT].filter((r) => haystack(r).includes(q))
 
   // A well-formed code for a building without an indoor plan still tells the user where to go.
   const parsed = parseRoomCode(query)
@@ -78,7 +80,7 @@ export function search(query: string, limit = 8): SearchResult[] {
       floor: parsed.floor,
       inferred: true,
       title: parsed.code,
-      subtitle: `${parsed.building.name}, ${floorName(parsed.floor)} · código interpretado, aula sin confirmar`,
+      subtitle: `${parsed.building.name}, ${floorName(parsed.floor, parsed.building.id)} · código interpretado, aula sin confirmar`,
     })
   }
   return results.slice(0, limit)

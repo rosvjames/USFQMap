@@ -1,0 +1,75 @@
+import { useEffect,useMemo } from 'react'
+import { DoubleSide,MeshStandardMaterial } from 'three'
+import type { CampusMaterials } from '../lib/materials'
+import { createPavedShapes,createWalkwayGeometry } from '../lib/architecture'
+import { CAMPUS_BUILDINGS } from '../lib/campus'
+import { MIGUEL_GARDEN_ENTRANCE as h,MIGUEL_GARDEN_APPROACH,MIGUEL_GARDEN_FORECOURT } from '../lib/miguelGarden'
+import { foliageTexture } from './LandscapeDetails'
+const noRaycast=()=>null
+type Point=[number,number,number]
+function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMaterial}) {
+  return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size}/></mesh>
+}
+/** Full-height glazed garden entrance from the second Miguel photograph. */
+export function MiguelGardenEntrance({materials}:{materials:CampusMaterials}) {
+  const foliage=useMemo(foliageTexture,[])
+  const finish=useMemo(()=>({
+    glass:new MeshStandardMaterial({color:'#779c8f',metalness:.46,roughness:.19}),
+    reflection:new MeshStandardMaterial({color:'#9aa79a',metalness:.4,roughness:.22}),
+    door:new MeshStandardMaterial({color:'#3c6359',metalness:.4,roughness:.2}),
+    frame:new MeshStandardMaterial({color:'#c0c6b4',metalness:.4,roughness:.52}),
+    dark:new MeshStandardMaterial({color:'#52665b',roughness:.8}),
+    hedge:new MeshStandardMaterial({color:'#69883c',roughness:1}),
+    bark:new MeshStandardMaterial({color:'#837657',roughness:1}),
+    leaves:new MeshStandardMaterial({color:'#6f8050',map:foliage,alphaTest:.45,side:DoubleSide,roughness:1}),
+  }),[foliage])
+  const walk=useMemo(()=>createWalkwayGeometry(MIGUEL_GARDEN_APPROACH,4.4,h.ground+.01),[])
+  const garden=useMemo(()=>createPavedShapes([MIGUEL_GARDEN_FORECOURT],CAMPUS_BUILDINGS.map(b=>b.ring)),[])
+  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());foliage.dispose();walk.dispose()},[finish,foliage,walk])
+  return <group>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,.51,0]} material={materials.grass} receiveShadow raycast={noRaycast}><shapeGeometry args={[garden]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/></mesh>
+    <mesh geometry={walk} material={materials.lakePaving} receiveShadow raycast={noRaycast}/>
+    <group position={[h.center[0],0,-h.center[1]]} rotation={[0,h.angle,0]}>
+      <Block at={[0,h.height/2,-h.depth/2]} size={[h.width-.4,h.height,h.depth]} material={materials.miguelCream}/>
+      {[-1,1].map(side=><group key={side} position={[side*(h.width/2-.19),(h.height+h.ground)/2,-h.depth/2]} rotation={[0,side*Math.PI/2,0]}>
+        <Block at={[0,0,0]} size={[h.depth,h.height-h.ground,.1]} material={finish.glass}/>
+        {Array.from({length:5},(_,i)=><Block key={i} at={[-h.depth/2+i*h.depth/4,0,.12]} size={[.06,h.height-h.ground,.1]} material={finish.frame}/>)}
+        {Array.from({length:6},(_,i)=><Block key={i} at={[0,-(h.height-h.ground)/2+i*(h.height-h.ground)/5,.12]} size={[h.depth,.1,.1]} material={finish.frame}/>)}
+      </group>)}
+      {/* Flat green cap, unlike the pitched roofs of the adjacent wings. */}
+      <Block at={[0,h.height+.09,-h.depth/2]} size={[h.width+.45,.18,h.depth+.4]} material={materials.tealRoof}/>
+      <Block at={[0,h.height-.02,.05]} size={[h.width+.3,.16,.35]} material={finish.frame}/>
+      {/* Alternating pale panes suggest the floors and tree reflections in the photograph. */}
+      {Array.from({length:5},(_,row)=>Array.from({length:6},(_,col)=>{
+        const w=(h.width-.4)/6,tall=(h.height-h.ground-.25)/5
+        return <Block key={`${row}-${col}`} at={[-(h.width-.4)/2+(col+.5)*w,h.ground+(row+.5)*tall,.18]} size={[w-.065,tall-.09,.16]} material={(row+col)%3===0?finish.reflection:finish.glass}/>
+      }))}
+      {Array.from({length:7},(_,i)=><Block key={i} at={[-(h.width-.4)/2+i*(h.width-.4)/6,(h.height+h.ground)/2,.35]} size={[i%3===0?.11:.06,h.height-h.ground,.16]} material={finish.frame}/>)}
+      {Array.from({length:6},(_,i)=><Block key={i} at={[0,h.ground+i*(h.height-h.ground-.25)/5,.37]} size={[h.width-.2,.12,.17]} material={finish.frame}/>)}
+      {[3.46,6.39,9.32,12.25].map(y=><Block key={y} at={[0,y-.16,.32]} size={[h.width-.28,.075,.08]} material={finish.dark}/>)}
+      {[-1,1].map(side=><Block key={side} at={[side*(h.width/2-.01),(h.height+h.ground)/2,.29]} size={[.19,h.height-h.ground,.44]} material={finish.frame}/>)}
+      <Block at={[0,h.ground+.065,.78]} size={[h.width+.12,.13,1.7]} material={materials.entranceStone}/>
+      {/* Wide glass entrance with two central leaves and fixed side panels. */}
+      <Block at={[0,h.ground+1.36,.44]} size={[h.width-.55,2.72,.13]} material={finish.door}/>
+      {[-3.12,-1.5,0,1.5,3.12].map(x=><Block key={x} at={[x,h.ground+1.36,.59]} size={[.085,2.72,.15]} material={finish.frame}/>)}
+      <Block at={[0,h.ground+2.73,.58]} size={[h.width-.35,.13,.16]} material={finish.frame}/>
+      {[-.17,.17].map(x=><Block key={x} at={[x,h.ground+1.17,.72]} size={[.045,.65,.065]} material={finish.frame}/>)}
+      {/* Narrow, level shelter across the ground-floor doors. */}
+      <Block at={[0,h.ground+2.98,.89]} size={[h.width+1.1,.13,1.8]} material={materials.tealRoof}/>
+      {[-1,1].map(side=><group key={side}>
+        <Block at={[side*(h.width/2+.42),h.ground+1.47,1.51]} size={[.07,2.94,.07]} material={finish.frame}/>
+        {[3.4,8.4].map(z=><group key={z}>
+          <Block at={[side*3.75,.72,z]} size={[1.6,.36,4.65]} material={materials.entranceStone}/>
+          <Block at={[side*3.75,1.16,z]} size={[1.46,.65,4.47]} material={finish.hedge}/>
+          <Block at={[side*3.75,1.51,z]} size={[1.44,.12,4.45]} material={finish.hedge}/>
+        </group>)}
+      </group>)}
+      {/* Light inlaid paving bands lead directly to the doors. */}
+      {[3.6,7.0,10.4,13.7].map(z=><Block key={z} at={[.1,.59,z]} size={[4.2,.015,.12]} material={materials.cream}/>)}
+      {[[8.5,3.7,12.2],[10.6,7.8,13.1],[8.3,12,10.8]].map(([x,z,height],i)=><group key={i} position={[x,.55,z]}>
+        <mesh position={[0,height/2,0]} material={finish.bark} castShadow raycast={noRaycast}><cylinderGeometry args={[.12,.3,height,10]}/></mesh>
+        {Array.from({length:7},(_,j)=><mesh key={j} position={[Math.cos(j*2.4+i)*1.05,height-1.4+Math.sin(j*1.7)*1.15,Math.sin(j*2.4+i)*1.05]} scale={[1.35,2.3,1.45]} rotation={[.1,j,0]} material={finish.leaves} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,2]}/></mesh>)}
+      </group>)}
+    </group>
+  </group>
+}

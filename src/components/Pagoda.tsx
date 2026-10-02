@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { CatmullRomCurve3, DoubleSide, InstancedMesh, Object3D, Shape, Vector2, Vector3 } from 'three'
 import { palmFrond } from './LandscapeDetails'
 import type { ThreeEvent } from '@react-three/fiber'
-import { PAGODA, PAGODA_POND, PAGODA_POND_OUTLINE, createPagodaRoof, pagodaBridgeHeight } from '../lib/pagoda'
+import { PAGODA, PAGODA_POND, PAGODA_POND_OUTLINE, createPagodaRoof, pagodaBridgeHeight, PAGODA_STAIRS, PAGODA_STAIR_LEVEL, pagodaStairWidthAt, createPagodaStairWall, isPagodaStairApproach } from '../lib/pagoda'
 import type { CampusMaterials } from '../lib/materials'
 
 type Point = [number, number, number]
@@ -32,10 +32,12 @@ function CurvedTimber({ points, radius, material }: { points: Point[]; radius: n
 
 export function Pagoda({ materials, onSelect }: { materials: CampusMaterials; onSelect: () => void }) {
   const roof = useMemo(createPagodaRoof, [])
+  const walls = useMemo(() => [-1, 1].map(side => ({ red: createPagodaStairWall(side), green: createPagodaStairWall(side, true) })), [])
+  useEffect(() => () => walls.forEach(wall => { wall.red.dispose(); wall.green.dispose() }), [walls])
   useEffect(() => () => roof.dispose(), [roof])
   const pond = useMemo(() => new Shape(PAGODA_POND.map(([x, y]) => new Vector2(x, y))), [])
   const layout = useMemo(() => {
-    const wood: Timber[] = [], dark: Timber[] = [], stone: Timber[] = [], red: Timber[] = [], green: Timber[] = []
+    const wood: Timber[] = [], dark: Timber[] = [], stone: Timber[] = []
     const add = (items: Timber[], p: Point, size: Point, angle = 0) => items.push({ p, size, angle })
     const floor = PAGODA.floor, hx = PAGODA.width / 2, hz = PAGODA.depth / 2
     // Raised veranda, perimeter beams, thin planks and stone foundation piers.
@@ -93,16 +95,15 @@ export function Pagoda({ materials, onSelect }: { materials: CampusMaterials; on
       balusters.push([x, y + 0.08, z])
       if (i % 4 === 0) { add(wood, [x, y + 0.58, z], [0.23, 1.16, 0.23]); add(wood, [x, y + 1.18, z], [0.33, 0.12, 0.33]) }
     }
-    // Broad approach steps with flanking red retaining walls and green coping.
-    for (let i = 0; i < 6; i++) {
-      const top = 0.55 + (6 - i) * (floor - 0.55) / 6
-      add(stone, [bridgeStart - 0.3 - i * 0.43, (top + 0.25) / 2, 0], [0.46, top - 0.25, 3.4 + i * 0.38])
+    // Eight equal treads descend toward the paved approach, widening like the photo.
+    const run = (PAGODA_STAIRS.topX - PAGODA_STAIRS.bottomX) / PAGODA_STAIRS.count
+    for (let i = 0; i < PAGODA_STAIRS.count; i++) {
+      const t = (i + 1) / PAGODA_STAIRS.count
+      const top = floor + (PAGODA_STAIR_LEVEL - floor) * t
+      const base = PAGODA_STAIR_LEVEL - .16
+      add(stone, [PAGODA_STAIRS.topX - (i + .5) * run, (top + base) / 2, 0], [run + .006, top - base, pagodaStairWidthAt(t)])
     }
-    for (const z of [-3.02, 3.02]) {
-      add(red, [bridgeStart - 1.2, 0.85, z], [3.2, 1.1, 0.35]); add(green, [bridgeStart - 1.2, 1.42, z], [3.3, 0.14, 0.44])
-      add(red, [bridgeStart - 2.8, 0.9, z], [0.48, 1.2, 0.48]); add(green, [bridgeStart - 2.8, 1.53, z], [0.55, 0.13, 0.55])
-    }
-    return { wood, dark, stone, red, green, columns, balusters, bridgeStart, bridgeEnd, hx, hz }
+    return { wood, dark, stone, columns, balusters, bridgeStart, bridgeEnd, hx, hz }
   }, [])
   const select = (event: ThreeEvent<MouseEvent>) => {
     if (event.delta > 5) return
@@ -115,8 +116,10 @@ export function Pagoda({ materials, onSelect }: { materials: CampusMaterials; on
     <group position={[PAGODA.center[0], 0, -PAGODA.center[1]]} rotation={[0, PAGODA.angle, 0]} onClick={select}>
       <Timbers items={layout.wood} material={materials.pagodaWood} />
       <Timbers items={layout.stone} material={materials.entranceStone} />
-      <Timbers items={layout.red} material={materials.hallRed} />
-      <Timbers items={layout.green} material={materials.metalRoof} />
+      {walls.map((wall, i) => <group key={`stair-wall-${i}`}>
+        <mesh geometry={wall.red} material={materials.hallRed} castShadow receiveShadow />
+        <mesh geometry={wall.green} material={materials.metalRoof} castShadow receiveShadow />
+      </group>)}
       <Timbers items={layout.dark} material={materials.pagodaRoof} />
       {layout.columns.map((p, i) => <mesh key={i} position={p} material={materials.pagodaWood} castShadow><cylinderGeometry args={[0.16, 0.2, 2.45, 12]} /></mesh>)}
       <Balusters positions={layout.balusters} material={materials.pagodaWood} />
@@ -157,6 +160,8 @@ function PondBorder({ materials }: { materials: CampusMaterials }) {
       const count = Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 0.55)
       for (let j = 0; j < count; j++) {
         const t = j / count, i = items.length, offset = Math.sin(i * 17) * 0.1
+        const x = a[0] + (b[0] - a[0]) * t + offset, z = a[1] + (b[1] - a[1]) * t - offset
+        if (isPagodaStairApproach([x, z], .62)) continue
         items.push({ p: [a[0] + (b[0] - a[0]) * t + offset, 0.48, a[1] + (b[1] - a[1]) * t - offset],
           scale: [0.4 + i % 3 * 0.1, 0.25 + i % 2 * 0.12, 0.33 + i % 4 * 0.06] })
       }
@@ -175,7 +180,7 @@ function PondBorder({ materials }: { materials: CampusMaterials }) {
     <instancedMesh ref={rockMesh} args={[undefined, materials.pondRock, rocks.length]} castShadow receiveShadow>
       <icosahedronGeometry args={[1, 0]} />
     </instancedMesh>
-    {Array.from({ length: 20 }, (_, i) => <mesh key={i} position={[-13.5 + Math.sin(i * 11) * 1.25, 0.355, (i % 2 ? -1 : 1) * (2 + Math.cos(i * 7) * 1.1)]} rotation={[-Math.PI / 2, 0, i * 2]}>
+    {Array.from({ length: 20 }, (_, i) => i).filter(i => !isPagodaStairApproach([-13.5 + Math.sin(i * 11) * 1.25, (i % 2 ? -1 : 1) * (2 + Math.cos(i * 7) * 1.1)], .5)).map(i => <mesh key={i} position={[-13.5 + Math.sin(i * 11) * 1.25, 0.355, (i % 2 ? -1 : 1) * (2 + Math.cos(i * 7) * 1.1)]} rotation={[-Math.PI / 2, 0, i * 2]}>
       <circleGeometry args={[0.22 + i % 3 * 0.07, 12, 0, Math.PI * 1.85]} /><meshStandardMaterial color={i % 2 ? '#526b35' : '#718344'} roughness={0.6} side={DoubleSide} />
     </mesh>)}
   </group>

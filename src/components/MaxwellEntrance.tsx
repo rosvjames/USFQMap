@@ -47,8 +47,9 @@ export function MaxwellEntrance({ materials }: { materials: CampusMaterials }) {
     return new ExtrudeGeometry(shape, { depth: 0.10, bevelEnabled: false, curveSegments: 36 })
   }, [])
   const lion = useMemo(() => createSculptureGeometry('reclining-lion', 48), [])
+  const friezeArch = useMemo(() => createArchBand(0.19, 0.24, 0.06), [])
   const metal = useMemo(() => new MeshStandardMaterial({ color: '#25322f', metalness: 0.5, roughness: 0.55 }), [])
-  useEffect(() => () => { stones.dispose(); door.dispose(); lion.dispose(); metal.dispose() }, [stones, door, lion, metal])
+  useEffect(() => () => { stones.dispose(); door.dispose(); lion.dispose(); metal.dispose(); friezeArch.dispose() }, [stones, door, lion, metal, friezeArch])
   const level = entrance.level, spring = entrance.spring, cream = materials.cream
   return <group position={[entrance.center[0], 0, -entrance.center[1]]} rotation={[0, entrance.angle, 0]}>
     <Block at={[0, (level + 0.25) / 2, entrance.platformFront / 2]} size={[entrance.width, level - 0.25, entrance.platformFront]} material={materials.entranceStone} />
@@ -57,6 +58,14 @@ export function MaxwellEntrance({ materials }: { materials: CampusMaterials }) {
       return <Block key={i} at={[0, (top + 0.25) / 2, entrance.platformFront + (i + 0.5) * 0.45]} size={[entrance.width + i * 0.15, top - 0.25, 0.45]} material={materials.entranceStone} />
     })}
     <mesh geometry={stones} castShadow receiveShadow raycast={noRaycast}><meshStandardMaterial vertexColors roughness={0.94} /></mesh>
+    <Block at={[0, 8.37, 0.54]} size={[11.25, 0.96, 0.92]} material={cream} />
+    <Block at={[0, 8.92, 0.6]} size={[11.7, 0.15, 1.05]} material={cream} />
+    {Array.from({ length: 15 }, (_, i) => <mesh key={i} geometry={friezeArch} position={[(i - 7) * 0.65, 8.24, 1.025]} material={materials.entranceStone} raycast={noRaycast} />)}
+    <mesh position={[0, 9.66, 0.12]} rotation={[Math.PI / 2, 0, 0]} material={metal} raycast={noRaycast}><cylinderGeometry args={[0.67, 0.67, 0.08, 32]} /></mesh>
+    <mesh position={[0, 9.66, 0.19]} material={cream} raycast={noRaycast}><torusGeometry args={[0.7, 0.045, 8, 40]} /></mesh>
+    {Array.from({ length: 12 }, (_, i) => <group key={i} position={[0, 9.66, 0.24]} rotation={[0, 0, i * Math.PI / 6]}>
+      <Block at={[0, 0.32, 0]} size={[0.035, 0.64, 0.035]} material={cream} />
+    </group>)}
     <mesh geometry={door} position={[0, 0, 0.10]} material={metal} receiveShadow raycast={noRaycast} />
     {/* Dense black metalwork follows the arched head; the opening below stays dark. */}
     {Array.from({ length: 25 }, (_, i) => {

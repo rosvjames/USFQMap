@@ -1,12 +1,22 @@
 import { CAMPUS_AREAS, CAMPUS_WALKWAYS, type CampusArea, type CampusWalkway } from './campus'
 import { pointInPolygon } from './geo'
 import { maxwellEntranceHeightAt } from './maxwell'
-import { PAGODA_POND } from './pagoda'
+import { PAGODA_POND, pagodaEntranceHeightAt } from './pagoda'
+import { CAMPUS_SLOPE, campusBaseHeightAt } from './campusSlope'
 import { hallEntranceHeightAt } from './hall'
+import { HAYEK_ENTRANCE, hayekLandingHeightAt } from './hayek'
+import { hallPassageHeightAt } from './hallPassage'
+import { miguelEntranceHeightAt } from './miguel'
+import { daVinciPassageHeightAt } from './daVinci'
+import { daVinciFrontHeightAt } from './daVinciPlaza'
+import { hallPlazaHeightAt } from './hallPlaza'
+import { epicuroHeightAt, isEpicuroForecourt } from './epicuro'
+import { newtonHeightAt } from './newton'
+import { galileoHeightAt } from './galileo'
 import type { Vec2 } from '../types'
 
 export const PATH_LEVEL = 0.55
-export const BRIDGE_LEVEL = 6
+export const BRIDGE_LEVEL = HAYEK_ENTRANCE.level
 export type SportKind = 'sand' | 'terrace' | 'tennis' | 'synthetic' | 'football'
 export interface SportZone { kind: SportKind; area: CampusArea; height: number; label: string }
 // Uses existing OSM footprints. Use/terraces corrected from the student's on-site description.
@@ -31,7 +41,12 @@ export const SPORT_ACCESS_AREAS: Vec2[][] = [
   [[-64.15, -99], [-62.45, -99], [-62.45, -135], [-64.15, -135]],
   [[-4.04, -108.03], [-4.98, -139.32], [-2.73, -139.67], [-1.14, -108.59]],
 ]
-export const ELEVATED_WALKWAYS = CAMPUS_WALKWAYS.filter((way) => way.bridge)
+export const ELEVATED_WALKWAYS = CAMPUS_WALKWAYS.filter((way) => way.bridge).map(way => {
+  if (!['way/1032704764','way/1032704766'].includes(way.osmId)) return way
+  const [a,b] = way.line, length = Math.hypot(b[0]-a[0],b[1]-a[1]), t = Math.min(3.2/length,0.25)
+  // A short flat landing joins the deck before the ramp descends to the street.
+  return {...way,line:[a,[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t] as Vec2,...way.line.slice(1)]}
+})
 
 export function segmentProjection(p: Vec2, a: Vec2, b: Vec2) {
   const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
@@ -72,8 +87,7 @@ export function boundarySegments(zone: SportZone): [Vec2, Vec2][] {
 }
 
 export function bridgeVertexHeight(way: CampusWalkway, index: number): number {
-  if (way.osmId === 'way/1032704764') return index === 0 ? BRIDGE_LEVEL : PATH_LEVEL
-  if (way.osmId === 'way/1032704766') return index === 0 ? BRIDGE_LEVEL : PATH_LEVEL
+  if (way.osmId === 'way/1032704764' || way.osmId === 'way/1032704766') return index === way.line.length - 1 ? (way.osmId === CAMPUS_SLOPE.campusRampId ? campusBaseHeightAt(way.line[index]) : PATH_LEVEL) : BRIDGE_LEVEL
   return BRIDGE_LEVEL
 }
 
@@ -91,18 +105,39 @@ export function bridgeHeightAt(point: Vec2): number | undefined {
 }
 
 export function terrainHeightAt(point: Vec2): number {
+  const pagoda = pagodaEntranceHeightAt(point)
+  if (pagoda !== undefined) return pagoda
+  const epicuro = epicuroHeightAt(point)
+  if (epicuro !== undefined) return epicuro
+  const newton = newtonHeightAt(point)
+  if (newton !== undefined) return newton
+  const galileo = galileoHeightAt(point)
+  if (galileo !== undefined) return galileo
+  const passage = hallPassageHeightAt(point)
+  if (passage !== undefined) return passage
+  const miguel = miguelEntranceHeightAt(point)
+  if (miguel !== undefined) return miguel
+  const plazaDoor = hallPlazaHeightAt(point)
+  if (plazaDoor !== undefined) return plazaDoor
+  const plaza = daVinciFrontHeightAt(point)
+  if (plaza !== undefined) return plaza
+  const daVinci = daVinciPassageHeightAt(point)
+  if (daVinci !== undefined) return daVinci
+  const hayek = hayekLandingHeightAt(point)
+  if (hayek !== undefined) return hayek
   const maxwell = maxwellEntranceHeightAt(point)
   if (maxwell !== undefined) return maxwell
   const entrance = hallEntranceHeightAt(point)
   if (entrance !== undefined) return entrance
   const bridge = bridgeHeightAt(point)
   if (bridge !== undefined) return bridge
+  if (isEpicuroForecourt(point)) return .58
   for (const stair of SPORT_STAIRS) {
     const { t, distance } = segmentProjection(point, stair.top, stair.bottom)
     if (distance <= stair.width / 2 && t >= -0.02 && t <= 1.02) return PATH_LEVEL + (stair.low - PATH_LEVEL) * Math.max(0, Math.min(1, t))
   }
   if (pointInPolygon(point, TENNIS_LANDING) || pointInPolygon(point, SPORT_GATE)) return -3.25
-  return SPORT_ZONES.find((zone) => pointInPolygon(point, zone.area.ring))?.height ?? PATH_LEVEL
+  return SPORT_ZONES.find((zone) => pointInPolygon(point, zone.area.ring))?.height ?? campusBaseHeightAt(point)
 }
 
 /** Top terrain must be cut away so recessed floors remain visible from above and at eye level. */
