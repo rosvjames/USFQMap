@@ -33,7 +33,7 @@ export const BUILDINGS: BuildingInfo[] = [
   { id: 'taller-metal', name: 'Taller de Metal-Madera', osmId: 'way/395842620' },
   { id: 'herbario', name: 'Herbario USFQ', osmId: 'way/1036855377' },
   { id: 'mantenimiento', name: 'Oficinas de Mantenimiento', osmId: 'way/1036860351', aliases: ['Planta Física'] },
-  { id: 'gobe', name: 'GOBE', osmId: 'way/1036865897' },
+  { id: 'gobe', name: 'La casita de la 12 de octubre', osmId: 'way/1036865897', aliases: ['Casita', '12 de octubre'] },
   { id: 'guardiania-norte', name: 'Guardianía · entrada principal', osmId: 'way/395853817' },
   { id: 'guardiania-sur', name: 'Guardianía · acceso al puente', osmId: 'way/1036855779' },
   { id: 'banos-deportes', name: 'Baños · zona deportiva', osmId: 'way/395853835' },

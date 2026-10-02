@@ -1,10 +1,58 @@
 import { describe, expect, it } from 'vitest'
-import { createRoofGeometry, createWalkwayGeometry, createTerrainShapes } from './architecture'
+import { createRoofGeometry, createWalkwayGeometry, createTerrainShapes, createPavedShapes, createRoofBandGeometry } from './architecture'
 import { ShapeGeometry } from 'three'
-import { CAMPUS_BUILDINGS } from './campus'
+import { CAMPUS_BUILDINGS, findCampusBuilding } from './campus'
 import type { Vec2 } from '../types'
+import { ROOF_SKYLIGHTS } from '../data/siteAppearance'
+import { pointInPolygon } from './geo'
 
 describe('architectural surfaces', () => {
+  it('places every satellite-referenced skylight within its building footprint', () => {
+    for (const [id, skylights] of Object.entries(ROOF_SKYLIGHTS)) {
+      const building = findCampusBuilding(id)!
+      for (const skylight of skylights) for (const x of [-skylight.width / 2, skylight.width / 2]) for (const z of [-skylight.depth / 2, skylight.depth / 2]) {
+        const point: Vec2 = [
+          building.center[0] + skylight.offset[0] + x * Math.cos(skylight.angle) + z * Math.sin(skylight.angle),
+          building.center[1] + skylight.offset[1] + x * Math.sin(skylight.angle) - z * Math.cos(skylight.angle),
+        ]
+        expect(pointInPolygon(point, building.ring), `${id}: skylight outside roof at ${point}`).toBe(true)
+      }
+    }
+  })
+  it('unites plaza paving while leaving buildings and water uncovered', () => {
+    const shapes = createPavedShapes([
+      [[0, 0], [8, 0], [8, 10], [0, 10]], [[4, 0], [10, 0], [10, 10], [4, 10]],
+    ], [
+      [[2, 2], [4, 2], [4, 4], [2, 4]], [[6, 6], [9, 6], [9, 9], [6, 9]],
+    ])
+    const geometry = new ShapeGeometry(shapes)
+    const p = geometry.getAttribute('position'), index = geometry.index!
+    let area = 0
+    for (let i = 0; i < index.count; i += 3) {
+      const a = index.getX(i), b = index.getX(i + 1), c = index.getX(i + 2)
+      area += Math.abs((p.getX(b) - p.getX(a)) * (p.getY(c) - p.getY(a)) - (p.getY(b) - p.getY(a)) * (p.getX(c) - p.getX(a))) / 2
+    }
+    expect(area).toBeCloseTo(87)
+    geometry.dispose()
+  })
+
+  it('keeps pitched roof bands inside Hayek without bridging its courtyard notch', () => {
+    const ring: Vec2[] = [[0, 0], [10, 0], [10, 10], [7, 10], [7, 3], [3, 3], [3, 10], [0, 10], [0, 0]]
+    const geometry = createRoofBandGeometry(ring, [3, 4, 5], 2, 14)
+    const p = geometry.getAttribute('position'), index = geometry.index!
+    expect(index.count).toBeGreaterThan(0)
+    for (let i = 0; i < index.count; i += 3) {
+      const ids = [0, 1, 2].map((offset) => index.getX(i + offset))
+      const x = ids.reduce((s, id) => s + p.getX(id), 0) / 3
+      const y = ids.reduce((s, id) => s - p.getZ(id), 0) / 3
+      expect(x > 3 && x < 7 && y > 3).toBe(false)
+      expect(x).toBeGreaterThanOrEqual(0)
+      expect(x).toBeLessThanOrEqual(10)
+      expect(y).toBeGreaterThanOrEqual(0)
+      expect(y).toBeLessThanOrEqual(10)
+    }
+    geometry.dispose()
+  })
   it('cuts overlapping recessed areas out of the ground without duplicate holes', () => {
     const shapes = createTerrainShapes([[0, 0], [10, 0], [10, 10], [0, 10]], [
       [[2, 2], [6, 2], [6, 6], [2, 6]], [[4, 4], [8, 4], [8, 8], [4, 8]],

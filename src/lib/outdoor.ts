@@ -1,6 +1,14 @@
 import type { GraphEdge, GraphNode, Vec2 } from '../types'
-import { CAMPUS_PATHS, findCampusBuilding } from './campus'
+import { CAMPUS_BUILDINGS, CAMPUS_PATHS, findCampusBuilding } from './campus'
 import { ELEVATED_WALKWAYS, segmentProjection } from './terrain'
+import { MAXWELL_ENTRANCE, maxwellToCampus } from './maxwell'
+import { MIGUEL_ENTRANCE, miguelToCampus } from './miguel'
+import { HAYEK_ENTRANCE, hayekToCampus } from './hayek'
+import { HALL_ENTRANCE, hallToCampus } from './hall'
+import { HALL_EINSTEIN_PATH, EINSTEIN_HALL_DOOR } from './hallPassage'
+import { NEWTON_ACCESS_PATH, NEWTON_ACCESS_JOIN_END, NEWTON_DOOR_APPROACH } from './newton'
+import { GALILEO_ACCESS_PATH, GALILEO_DOOR_APPROACH, GALILEO_LAGOON } from './galileo'
+import { pointInPolygon } from './geo'
 import { shortestPath } from './pathfinding'
 
 // Average walking speed, used for the "≈ N min" estimate.
@@ -24,6 +32,7 @@ export interface OutdoorRoute {
   /** Meters walked on straight links that are long enough to be a guess rather than a real walkway. */
   unmapped: number
   usesBridge: boolean
+  usesHallPassage: boolean
 }
 
 function buildWalkways() {
@@ -61,10 +70,34 @@ function buildWalkways() {
     if (component.size > largest.size) largest = component
   }
 
-  return {
-    nodes: [...nodes.values()].filter((n) => largest.has(n.id)),
-    edges: edges.filter((e) => largest.has(e.from)),
-  }
+  const connectedNodes = [...nodes.values()].filter(n=>largest.has(n.id))
+  const connectedEdges = edges.filter(e=>largest.has(e.from))
+  // A photo-confirmed connection joins the Hall forecourt to Einstein's side door.
+  // Keep the mapped network intact, attaching the new passage to its connected component.
+  const entry=HALL_EINSTEIN_PATH[0]
+  const candidates=connectedNodes.filter(n=>!CAMPUS_BUILDINGS.some(b=>pointInPolygon([n.x,n.y],b.ring)))
+  const join=candidates.reduce((best,n)=>distance([n.x,n.y],entry)<distance([best.x,best.y],entry)?n:best)
+  const ids=HALL_EINSTEIN_PATH.map(([x,y])=>{
+    const id=`${x.toFixed(2)},${y.toFixed(2)}`
+    if(!connectedNodes.some(n=>n.id===id))connectedNodes.push({id,kind:'corridor',floor:1,x,y})
+    return id
+  })
+  connectedEdges.push({from:join.id,to:ids[0]})
+  ids.slice(1).forEach((id,i)=>connectedEdges.push({from:ids[i],to:id}))
+  const galileoIds=GALILEO_ACCESS_PATH.map(([x,y])=>{
+    const id=`${x.toFixed(2)},${y.toFixed(2)}`
+    if(!connectedNodes.some(n=>n.id===id))connectedNodes.push({id,kind:'corridor',floor:1,x,y})
+    return id
+  })
+  galileoIds.slice(1).forEach((id,i)=>connectedEdges.push({from:galileoIds[i],to:id}))
+  const newtonIds=NEWTON_ACCESS_PATH.map(([x,y])=>{
+    const id=`${x.toFixed(2)},${y.toFixed(2)}`
+    if(!connectedNodes.some(n=>n.id===id))connectedNodes.push({id,kind:'corridor',floor:1,x,y})
+    return id
+  })
+  newtonIds.slice(1).forEach((id,i)=>connectedEdges.push({from:newtonIds[i],to:id}))
+  connectedEdges.push({from:newtonIds[1],to:NEWTON_ACCESS_JOIN_END.map(v=>v.toFixed(2)).join(',')})
+  return {nodes:connectedNodes,edges:connectedEdges}
 }
 
 const WALKWAYS = buildWalkways()
@@ -89,10 +122,17 @@ export function endpointForPosition(point: Vec2): Endpoint {
   return { point, nodeId: nearest.id }
 }
 
-/** Door of a building: the spot of its outline closest to any walkway. Real doors are not mapped yet. */
+/** Photo-located entrances; other doors approximate the nearest walkway. */
 export function endpointForBuilding(buildingId: string): Endpoint | null {
   const building = findCampusBuilding(buildingId)
   if (!building) return null
+  if (buildingId === 'hall-principal') return endpointForPosition(hallToCampus([0,HALL_ENTRANCE.stairFront]))
+  if (buildingId === 'einstein') return endpointForPosition(EINSTEIN_HALL_DOOR)
+  if (buildingId === 'newton') return endpointForPosition(NEWTON_DOOR_APPROACH)
+  if (buildingId === 'galileo') return endpointForPosition(GALILEO_DOOR_APPROACH)
+  if (buildingId === 'miguel-de-santiago') return endpointForPosition(miguelToCampus([MIGUEL_ENTRANCE.x, MIGUEL_ENTRANCE.stairFront]))
+  if (buildingId === 'maxwell') return endpointForPosition(maxwellToCampus([0, MAXWELL_ENTRANCE.stairFront]))
+  if (buildingId === 'hayek') return endpointForPosition(hayekToCampus(HAYEK_ENTRANCE.door))
   let best: Endpoint | null = null
   let bestGap = Infinity
   for (const node of WALKWAYS.nodes) {
@@ -114,6 +154,15 @@ export function findOutdoorRoute(from: Endpoint, to: Endpoint): OutdoorRoute | n
   if (!walk) return null
 
   const path = walk.nodes.map((n): Vec2 => [n.x, n.y])
+  const mappedBridge = path.some((point, i) => i > 0 && ELEVATED_WALKWAYS.some((way) => way.line.some((a, j) => {
+    if (!j) return false
+    const midpoint: Vec2 = [(point[0] + path[i - 1][0]) / 2, (point[1] + path[i - 1][1]) / 2]
+    return segmentProjection(midpoint, way.line[j - 1], a).distance < 0.1
+  })))
+  const passageNodes=new Set(HALL_EINSTEIN_PATH.map(p=>p.map(v=>v.toFixed(2)).join(',')))
+  const mappedHallPassage=path.some((p,i)=>i>0&&passageNodes.has(p.map(v=>v.toFixed(2)).join(','))&&passageNodes.has(path[i-1].map(v=>v.toFixed(2)).join(',')))
+  const lakeEntranceNodes=new Set([...GALILEO_ACCESS_PATH.slice(1),...NEWTON_ACCESS_PATH.slice(1)].map(p=>p.map(v=>v.toFixed(2)).join(',')))
+  const mappedLakeApproach=path.some((p,i)=>i>0&&lakeEntranceNodes.has(p.map(v=>v.toFixed(2)).join(','))&&lakeEntranceNodes.has(path[i-1].map(v=>v.toFixed(2)).join(',')))
   let links: [Vec2, Vec2][] = [
     [from.point, path[0]],
     [path[path.length - 1], to.point],
@@ -122,20 +171,19 @@ export function findOutdoorRoute(from: Endpoint, to: Endpoint): OutdoorRoute | n
 
   // Neighbouring places: walking straight across beats a detour to the nearest walkway and back.
   const direct = distance(from.point, to.point)
-  if (direct < total / 2 || path.length < 2) {
+  const shortLakeLink = mappedLakeApproach && direct < SHORT_LINK && Array.from({length:11},(_,i):Vec2=>[
+    from.point[0]+(to.point[0]-from.point[0])*i/10,from.point[1]+(to.point[1]-from.point[1])*i/10,
+  ]).every(p=>!pointInPolygon(p,GALILEO_LAGOON.ring)&&!CAMPUS_BUILDINGS.some(b=>pointInPolygon(p,b.ring)))
+  if ((!mappedBridge && !mappedHallPassage && (!mappedLakeApproach || shortLakeLink) && (direct < total / 2 || (mappedLakeApproach && shortLakeLink))) || path.length < 2) {
     links = [[from.point, to.point]]
     total = direct
     path.length = 0
   }
 
   const unmapped = links.map((link) => distance(...link)).filter((length) => length > SHORT_LINK)
-  const usesBridge = path.some((point, i) => i > 0 && ELEVATED_WALKWAYS.some((way) => way.line.some((a, j) => {
-    if (!j) return false
-    const midpoint: Vec2 = [(point[0] + path[i - 1][0]) / 2, (point[1] + path[i - 1][1]) / 2]
-    return segmentProjection(midpoint, way.line[j - 1], a).distance < 0.1
-  })))
   return {
-    usesBridge,
+    usesBridge: mappedBridge && path.length > 1,
+    usesHallPassage: mappedHallPassage && path.length > 1,
     path,
     links,
     distance: total,

@@ -1,15 +1,69 @@
 import { useEffect, useMemo } from 'react'
-import { DoubleSide } from 'three'
+import { Line } from '@react-three/drei'
+import { BufferGeometry, DoubleSide, Float32BufferAttribute } from 'three'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
+import type { Vec2 } from '../types'
+import { HALL_PLAZA_FACE, HALL_PLAZA_WING, HALL_PLAZA_REMAINDER } from '../lib/hallPlaza'
 import type { CampusBuilding } from '../lib/campus'
-import { createRoofGeometry } from '../lib/architecture'
+import { createRoofBandGeometry, createRoofGeometry } from '../lib/architecture'
 import type { CampusMaterials } from '../lib/materials'
+import { ROOF_APPEARANCE, ROOF_SKYLIGHTS, type RoofFinish, type Skylight } from '../data/siteAppearance'
 
 /** Photo-referenced materials on approximate roofs; the OSM ground footprint is preserved. */
 export function IllustratedRoof({ building, height, materials }: { building: CampusBuilding; height: number; materials: CampusMaterials }) {
-  const geometry = useMemo(() => createRoofGeometry(building.ring, height, building.info?.id === 'hall-principal' ? 0.6 : 3.5), [building, height])
+  const id = building.info?.id ?? ''
+  const appearance = ROOF_APPEARANCE[id] ?? { finish: 'dark', rise: 1.5 }
+  const geometry = useMemo(() => {
+    if(id!=='hall-principal')return createRoofGeometry(building.ring,height,appearance.rise)
+    const pieces=HALL_PLAZA_REMAINDER.map(p=>createRoofGeometry(p[0] as Vec2[],height,appearance.rise,p.slice(1) as Vec2[][]))
+    const merged=mergeGeometries(pieces,false)!;pieces.forEach(g=>g.dispose());return merged
+  }, [id,building,height,appearance.rise])
+  const plazaRoof=useMemo(()=>{
+    if(id!=='hall-principal')return null
+    const pieces=HALL_PLAZA_WING.map(p=>createRoofGeometry(p[0] as Vec2[],HALL_PLAZA_FACE.height,.45))
+    const merged=mergeGeometries(pieces,false)!;pieces.forEach(g=>g.dispose());return merged
+  },[id])
+  useEffect(() => () => {geometry.dispose();plazaRoof?.dispose()}, [geometry,plazaRoof])
+  const finish: Record<RoofFinish, CampusMaterials['terracotta']> = {
+    dark: materials.terracotta, terracotta: materials.redTileRoof, green: materials.metalRoof,
+    teal: materials.tealRoof, concrete: materials.concreteRoof,
+  }
+  return <group>
+    <mesh geometry={geometry} material={finish[appearance.finish]} castShadow receiveShadow raycast={() => null} />
+    {plazaRoof&&<mesh geometry={plazaRoof} material={materials.metalRoof} castShadow receiveShadow raycast={()=>null}/>}
+    {(ROOF_SKYLIGHTS[id] ?? []).map((skylight, i) => <RoofSkylight key={i} skylight={skylight} building={building} height={height + appearance.rise + 0.08} materials={materials} />)}
+    {id === 'hayek' && <HayekRoof building={building} height={height} materials={materials} />}
+  </group>
+}
+
+function HayekRoof({ building, height, materials }: { building: CampusBuilding; height: number; materials: CampusMaterials }) {
+  // The intricate inner edge is the existing OSM courtyard notch, not a guessed rectangle.
+  const geometry = useMemo(() => createRoofBandGeometry(building.ring, Array.from({ length: 24 }, (_, i) => i), 4.5, height + 0.1), [building, height])
   useEffect(() => () => geometry.dispose(), [geometry])
-  const greenMetal = ['maxwell', 'darwin', 'casa-blanca', 'teatro-casa-blanca', 'pagoda', 'coliseo', 'dragon-shop'].includes(building.info?.id ?? '')
-  return <mesh geometry={geometry} material={greenMetal ? materials.metalRoof : materials.terracotta} castShadow receiveShadow raycast={() => null} />
+  return <mesh geometry={geometry} material={materials.terracotta} castShadow receiveShadow raycast={() => null} />
+}
+
+function RoofSkylight({ skylight, building, height, materials }: { skylight: Skylight; building: CampusBuilding; height: number; materials: CampusMaterials }) {
+  const { width, depth, rise, angle, offset } = skylight
+  const corners: [number, number, number][] = [[-width / 2, 0, -depth / 2], [width / 2, 0, -depth / 2], [width / 2, 0, depth / 2], [-width / 2, 0, depth / 2]]
+  const peak: [number, number, number] = [0, rise, 0]
+  // The corners are derived entirely from these dimensions.
+  const geometry = useMemo(() => {
+    const vertices = corners.flatMap((corner, i) => [...corner, ...peak, ...corners[(i + 1) % 4]])
+    const glass = new BufferGeometry()
+    glass.setAttribute('position', new Float32BufferAttribute(vertices, 3))
+    glass.computeVertexNormals()
+    return glass
+  }, [width, depth, rise])
+  useEffect(() => () => geometry.dispose(), [geometry])
+  return <group position={[building.center[0] + offset[0], height, -building.center[1] - offset[1]]} rotation={[0, angle, 0]}>
+    <mesh geometry={geometry} material={materials.roofGlass} castShadow raycast={() => null} />
+    {[0, 0.25, 0.5, 0.75].map((t) => {
+      const ring = corners.map(([x, , z]): [number, number, number] => [x * (1 - t), rise * t + 0.02, z * (1 - t)])
+      return <Line key={t} points={[...ring, ring[0]]} color="#b4c4bc" lineWidth={0.1} worldUnits raycast={() => null} />
+    })}
+    {corners.map((corner, i) => <Line key={i} points={[corner, peak]} color="#b4c4bc" lineWidth={0.12} worldUnits raycast={() => null} />)}
+  </group>
 }
 
 function ClockFace({ angle }: { angle: number }) {
