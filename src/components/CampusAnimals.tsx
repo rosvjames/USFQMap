@@ -4,7 +4,7 @@ import {
   CanvasTexture, CatmullRomCurve3, ConeGeometry, CylinderGeometry, Group,
   MeshStandardMaterial, SphereGeometry, SRGBColorSpace, SpriteMaterial, TubeGeometry, Vector3,
 } from 'three'
-import { ANIMAL_ROUTES, sampleAnimalPosition, type CampusAnimalId } from '../lib/campusAnimals'
+import { ANIMAL_ROUTES, advanceAnimalTime, sampleAnimalPosition, type CampusAnimalId } from '../lib/campusAnimals'
 
 type Point = [number, number, number]
 const noRaycast = () => null
@@ -67,6 +67,7 @@ function Animal({ id, seconds, parts }: { id: CampusAnimalId; seconds: React.Ref
   const root = useRef<Group>(null), body = useRef<Group>(null), tail = useRef<Group>(null)
   const legs = useRef<(Group | null)[]>([])
   const pig = id === 'gaston'
+  const walkingSeconds = useRef(0), lastTick = useRef(seconds.current)
   const tailGeometry = useMemo(() => {
     const points = pig
       ? Array.from({ length: 25 }, (_, i) => new Vector3(-.77 - i / 24 * .29, .78 + Math.cos(i / 24 * Math.PI * 4) * .085, Math.sin(i / 24 * Math.PI * 4) * .085))
@@ -77,7 +78,10 @@ function Animal({ id, seconds, parts }: { id: CampusAnimalId; seconds: React.Ref
   const initial = sampleAnimalPosition(id, 0)
   useFrame(({ camera }) => {
     if (!root.current) return
-    const sample = sampleAnimalPosition(id, seconds.current)
+    const delta = seconds.current - lastTick.current
+    lastTick.current = seconds.current
+    walkingSeconds.current = advanceAnimalTime(id, walkingSeconds.current, delta)
+    const sample = sampleAnimalPosition(id, walkingSeconds.current)
     root.current.position.set(sample.point[0], sample.height + .04, -sample.point[1])
     // Smooth turns while the position itself always stays on the checked route.
     const turn = Math.atan2(Math.sin(sample.yaw - root.current.rotation.y), Math.cos(sample.yaw - root.current.rotation.y))

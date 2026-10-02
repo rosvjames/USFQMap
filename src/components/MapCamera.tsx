@@ -112,7 +112,9 @@ export function MapCamera({ ref, focus, focusKey, onViewChange }: Props) {
     flyToAnimal(id) {
       const animal=scene.getObjectByName(`campus-animal-${id}`)
       if(animal){
-        flyTo({center:[animal.position.x,-animal.position.z],height:animal.position.y+1,span:18,aboveThePanel:true,azimuth:.4,tilt:.65})
+        // The greyhounds' forecourt faces north; view them from that side so
+        // Miguel's roof does not hide the checked walking area.
+        flyTo({center:[animal.position.x,-animal.position.z],height:animal.position.y+1,span:18,aboveThePanel:true,azimuth:id==='gaston'?.4:Math.PI+.4,tilt:.65})
         following.current={id:animal.name,position:animal.position.clone()}
       }
     },
