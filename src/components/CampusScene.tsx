@@ -20,6 +20,8 @@ import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
 import { SportsGround } from './SportsGround'
 import { CampusBridges } from './CampusBridges'
 import { Casita } from './Casita'
+import { ColiseoBuilding, ColiseoLandscape } from './Coliseo'
+import { SportsAnnex } from './SportsAnnex'
 import { HallFlags } from './HallFlags'
 import { CampusAnimals } from './CampusAnimals'
 import { campusSlopeOffsetAt, createGradedSurfaceGeometry } from '../lib/campusSlope'
@@ -182,6 +184,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <CityContext />
       <Ground materials={materials} />
       <LandscapeDetails />
+      <ColiseoLandscape materials={materials} />
       <SportsGround materials={materials} />
       <CampusBridges />
       <HayekEntrance materials={materials} />
@@ -271,7 +274,7 @@ function Ground({ materials }: { materials: CampusMaterials }) {
 
       <SatellitePlazas materials={materials} />
 
-      {CAMPUS_WALKWAYS.filter((way) => !way.bridge && way.line.some((point) => pointInPolygon(point, CAMPUS_BOUNDARY))).map((way) => (
+      {CAMPUS_WALKWAYS.filter((way) => !way.bridge && way.osmId !== 'way/395853824' && way.line.some((point) => pointInPolygon(point, CAMPUS_BOUNDARY))).map((way) => (
         <PavedSurface key={way.osmId} line={way.line} width={way.mappedWidth ?? VISUAL_PATH_WIDTHS[way.osmId] ?? way.width} height={terrainHeightAt} material={['way/1036865904','way/1431922073','way/1431922074'].includes(way.osmId)?materials.lakePaving:materials.paving} />
       ))}
 
@@ -341,9 +344,9 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
   const { building, selected, onSelect, materials } = props
   const shape = useMemo(() => building.info?.id === 'guardiania-norte' ? createTerrainShapes(building.ring,[CAMPUS_GATE_CUTOUT]) : building.info?.id === 'einstein' ? createTerrainShapes(building.ring,[HALL_TUNNEL_CUTOUT]) : ringShape(building.ring), [building])
   const info = building.info
-  const campusHeight = info?.id === 'obelisco' ? 0.6 : info?.id === 'newton' ? NEWTON_ENTRANCE.height : building.heightMeters ?? (info?.id === 'coliseo' ? 8 : info?.id === 'hall-principal' ? 5.5 : building.levels * LEVEL_HEIGHT)
+  const campusHeight = info?.id === 'obelisco' ? 0.6 : info?.id === 'banos-deportes' ? 3.5 : info?.id === 'coliseo' ? 5.7 : info?.id === 'newton' ? NEWTON_ENTRANCE.height : building.heightMeters ?? (info?.id === 'hall-principal' ? 5.5 : building.levels * LEVEL_HEIGHT)
   const height = building.onCampus ? campusHeight : Math.min(campusHeight, 5)
-  const roofExtra = info?.id === 'maxwell' ? 13 : info?.id === 'obelisco' ? 20 : info?.id === 'pagoda' ? 3 : 3.5
+  const roofExtra = info?.id === 'maxwell' ? 13 : info?.id === 'obelisco' ? 20 : info?.id === 'coliseo' ? 7.8 : info?.id === 'pagoda' ? 3 : 3.5
   const geometry = useMemo(() => {
     const body = new ExtrudeGeometry(shape, { depth: info?.id === 'einstein' ? HALL_TUNNEL.ceiling : height, bevelEnabled: false })
     const uv = body.getAttribute('uv')
@@ -364,8 +367,8 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
   const brick = ['galileo', 'newton', 'einstein', 'hayek', 'miguel-de-santiago'].includes(info?.id ?? '')
   const wallMaterial = info?.id === 'gobe' ? materials.casitaWhite : info?.id === 'epicuro' ? materials.epicuroStone : ['newton','galileo'].includes(info?.id ?? '') ? materials.academicOrange : ['guardiania-norte','galileo'].includes(info?.id ?? '') ? materials.hallRed : info?.id === 'da-vinci' ? materials.daVinciYellow : info?.id === 'hall-principal' ? materials.hallRed : info?.id === 'maxwell' || info?.id === 'casa-blanca' || info?.id === 'obelisco' ? materials.cream : brick ? materials.brick : materials.stucco
   return (
-    <group position={[0,campusSlopeOffsetAt(building.center),0]}>
-      {info?.id === 'miguel-de-santiago' ? <MiguelBuilding materials={materials} onSelect={() => onSelect('miguel-de-santiago')} /> : info?.id === 'pagoda' ? <Pagoda materials={materials} onSelect={() => onSelect('pagoda')} /> : <mesh
+    <group position={[0,['coliseo','banos-deportes'].includes(info?.id ?? '') ? 0 : campusSlopeOffsetAt(building.center),0]}>
+      {info?.id === 'banos-deportes' ? <SportsAnnex materials={materials} onSelect={() => onSelect('banos-deportes')} /> : info?.id === 'coliseo' ? <ColiseoBuilding materials={materials} onSelect={() => onSelect('coliseo')} /> : info?.id === 'miguel-de-santiago' ? <MiguelBuilding materials={materials} onSelect={() => onSelect('miguel-de-santiago')} /> : info?.id === 'pagoda' ? <Pagoda materials={materials} onSelect={() => onSelect('pagoda')} /> : <mesh
         geometry={geometry}
         rotation={[-Math.PI / 2, 0, 0]}
         castShadow={building.onCampus}
@@ -390,7 +393,7 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       </mesh>}
       {gateLintel && <mesh geometry={gateLintel} position={[0,CAMPUS_GATE.lintel,0]} rotation={[-Math.PI/2,0,0]} material={materials.hallRed} castShadow receiveShadow raycast={()=>null}/>}
       {tunnelUpper && <mesh geometry={tunnelUpper} position={[0,HALL_TUNNEL.ceiling,0]} rotation={[-Math.PI/2,0,0]} material={materials.brick} castShadow receiveShadow onClick={event=>{if(event.delta>5)return;event.stopPropagation();onSelect('einstein')}}/>}
-      {building.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe'].includes(info?.id ?? '') && <IllustratedRoof building={building} height={height} materials={materials} />}
+      {building.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe', 'coliseo', 'banos-deportes'].includes(info?.id ?? '') && <IllustratedRoof building={building} height={height} materials={materials} />}
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
       {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
       {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} scale={info?.id === 'pagoda' ? 0.5 : info?.id === 'gobe' ? .3 : 1} />}

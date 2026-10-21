@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BASKETBALL, COLISEO, COLISEO_STANDS, COLISEO_WALLS, VOLLEYBALL, coliseoToCampus, wallPieces } from './coliseo'
+import { BASKETBALL, COLISEO, COLISEO_STANDS, COLISEO_WALLS, VOLLEYBALL, coliseoToCampus, wallPieces } from './coliseoInterior'
 import { findCampusBuilding } from './campus'
 
 describe('Coliseo interior', () => {

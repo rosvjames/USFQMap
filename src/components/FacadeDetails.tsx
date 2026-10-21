@@ -46,7 +46,7 @@ function FacadeInstances({ items, color, glass = false, arched = false }: { item
 export function FacadeDetails({ buildings }: { buildings: CampusBuilding[] }) {
   const details = useMemo(() => {
     const archFrames: Detail[] = [], archPanes: Detail[] = [], frames: Detail[] = [], panes: Detail[] = [], mullions: Detail[] = [], cornices: Detail[] = []
-    for (const building of buildings.filter((b) => b.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe'].includes(b.info?.id ?? ''))) {
+    for (const building of buildings.filter((b) => b.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe', 'coliseo', 'banos-deportes'].includes(b.info?.id ?? ''))) {
       const ring = building.ring
       const signedArea = ring.reduce((sum, a, i) => { const b = ring[(i + 1) % ring.length]; return sum + a[0] * b[1] - b[0] * a[1] }, 0)
       const sign = signedArea > 0 ? 1 : -1

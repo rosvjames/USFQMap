@@ -36,7 +36,7 @@ export const BUILDINGS: BuildingInfo[] = [
   { id: 'gobe', name: 'La casita de la 12 de octubre', osmId: 'way/1036865897', aliases: ['Casita', '12 de octubre'] },
   { id: 'guardiania-norte', name: 'Guardianía · entrada principal', osmId: 'way/395853817' },
   { id: 'guardiania-sur', name: 'Guardianía · acceso al puente', osmId: 'way/1036855779' },
-  { id: 'banos-deportes', name: 'Baños · zona deportiva', osmId: 'way/395853835' },
+  { id: 'banos-deportes', name: 'Baños · zona deportiva', osmId: 'way/395853835', aliases: ['Casita del Obelisco', 'Mural del Coliseo'] },
   { id: 'com-oeste', name: 'COM · sector oeste', osmId: 'way/1036855378' },
   { id: 'com-este', name: 'COM · sector este', osmId: 'way/395842621' },
 ]

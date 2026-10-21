@@ -8,6 +8,7 @@ import { HALL_MINI_WORLD_OUTLINE } from './hallMiniPlaza'
 import { galileoToCampus, GALILEO_ENTRANCE, GALILEO_LAGOON } from './galileo'
 import { miguelToCampus, MIGUEL_DRINKING_WALL, MIGUEL_FORECOURT_RAILS, MIGUEL_RAIL_Z, MIGUEL_PLANTER_X } from './miguel'
 import { PAGODA_POND } from './pagoda'
+import { COLISEO_GARDEN_STAIRS, COLISEO, SPORTS_ANNEX, coliseoToCampus } from './coliseo'
 
 function rectangle(x: number, z: number, width: number, depth: number, transform: (p: Vec2) => Vec2): Vec2[] {
   return ([[x-width/2,z-depth/2],[x+width/2,z-depth/2],[x+width/2,z+depth/2],[x-width/2,z+depth/2]] as Vec2[]).map(transform)
@@ -20,6 +21,8 @@ const rings = [
   ...CAMPUS_BUILDINGS.map(b => b.ring),
   ...CAMPUS_AREAS.filter(a => a.kind === 'water' || a.osmId === 'way/1369166967').map(a => a.ring),
   PAGODA_POND, GALILEO_LAGOON.ring, HALL_MINI_WORLD_OUTLINE,
+  COLISEO_GARDEN_STAIRS,
+  ...[[-24, SPORTS_ANNEX.left-.35], [SPORTS_ANNEX.right+.35, COLISEO.stairX - COLISEO.stairWidth / 2 - .4], [COLISEO.stairX + COLISEO.stairWidth / 2 + .4, 20]].map(([a, b]) => rectangle((a + b) / 2, COLISEO.platformFront, b - a, .3, coliseoToCampus)),
   rectangle(wall.x, wall.z, wall.width, wall.depth, miguelToCampus),
   rectangle(-16.3, 11.08, 2.8, .8, miguelToCampus),
   ...MIGUEL_FORECOURT_RAILS.map(([a,b]) => rectangle((a+b)/2, MIGUEL_RAIL_Z, b-a, .12, miguelToCampus)),

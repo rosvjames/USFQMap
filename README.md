@@ -132,4 +132,18 @@ Gastón, el cerdito, camina automáticamente por senderos entre la casita y el H
 
 La última fotografía del Hall deja el césped central despejado: se retiran los árboles ilustrativos de esa parcela y se añaden la reja negra del extremo de la calle, retornos laterales y diez banderas bicolores en dos filas de cinco. Las banderas son recreaciones gráficas, no emblemas oficiales verificados.
 
-La referencia de la Pagoda corrige sus gradas: ocho peldaños que bajan y se ensanchan hacia el camino, con muros rojos inclinados y remates verdes. Piedras y plantas acuáticas dejan libre el acceso. El terreno y los senderos descienden de forma continua hasta el pie de la rampa de acceso al puente del lado del campus. El desnivel de 1.8 m es una estimación visual, sin levantar una topografía ni certificar accesibilidad; el tablero del puente y los niveles de las canchas se conservan.
+La referencia de la Pagoda corrige sus gradas: ocho peldaños que bajan y se ensanchan hacia el camino, con muros rojos inclinados y remates verdes. Piedras y plantas acuáticas dejan libre el acceso. El terreno y los senderos descienden de forma continua hasta el pie de la rampa de acceso al puente del lado del campus. El desnivel se ajusta a la referencia del Coliseo y es una estimación visual, sin levantar una topografía ni certificar accesibilidad; el tablero del puente y los niveles de las canchas se conservan.
+
+
+### Coliseo y camino en bajada
+
+Las fotografías del estudiante corrigen el Coliseo Alexandros: paredes naranja rojizas, vanos horizontales con persianas, molduras arqueadas, puerta acristalada y cubierta metálica verde con un segundo nivel ventilado y remate central. El camino existente desciende desde arriba de la Pagoda, pasa junto al Coliseo y llega al pie de la rampa del puente. El césped de enfrente permanece más alto, con un borde de contención y gradas; la vegetación deja libre el camino. La ficha del Coliseo incluye «Ver fachada y bajada». La caída total representada es aproximadamente 3.2 m y la diferencia entre camino y césped ronda 0.5–1 m frente a la fachada: son estimaciones visuales, no medidas topográficas. Se conserva la huella OSM del Coliseo; la posición de la puerta y las gradas es aproximada.
+
+
+### Jardín deportivo, gradas y casita del Obelisco
+
+La segunda serie de fotografías del estudiante guía las cintas naranjas, redes blancas, arena con huellas, setos, mallas protectoras con acceso abierto y luminarias de las dos canchas de vóley. La terraza de mesas incorpora cuatro pérgolas oscuras con enredaderas, bases de piedra, senderos, canteros, árboles y sombrillas rojas.
+
+Frente al Coliseo hay una escalinata ancha que une el camino inferior con el césped elevado del Obelisco. La casita de esa zona corresponde al volumen catalogado como «Baños · zona deportiva»; tiene paredes rojizas y cubierta baja. Su huella se desplaza visualmente 4.4 m hacia el oeste y 6 m hacia el norte para despejar el paso y separarla del Obelisco. El ajuste se aplica en `campus.ts` para compartir la posición entre mallas, recortes y obstáculos, sin editar el archivo OSM original. Las dimensiones y desplazamientos son aproximaciones interpretadas de las fotos.
+
+El mural usa la fotografía aportada por el estudiante, guardada intacta en `public/textures/coliseo-annex-mural-reference.jpg`; las coordenadas UV seleccionan el panel de la imagen. Las vistas de la ficha del Coliseo permiten acercarse al mural, las gradas y el jardín con vóley.

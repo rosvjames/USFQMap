@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { DoubleSide, MeshStandardMaterial } from 'three'
-import { BASKETBALL, COLISEO as hall, COLISEO_STAIR as stair, COLISEO_STANDS as stands, COLISEO_WALLS, VOLLEYBALL, wallPieces, type Court } from '../lib/coliseo'
+import { BASKETBALL, COLISEO as hall, COLISEO_STAIR as stair, COLISEO_STANDS as stands, COLISEO_WALLS, VOLLEYBALL, wallPieces, type Court } from '../lib/coliseoInterior'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
 

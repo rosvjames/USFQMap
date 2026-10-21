@@ -4,6 +4,7 @@ import { CanvasTexture, DoubleSide, InstancedMesh, Object3D, RepeatWrapping, Sha
 import { boundarySegments, SPORT_ZONES, SPORT_STAIRS, TENNIS_LANDING, SPORT_GATE, SPORT_ACCESS_AREAS, TERRAIN_CUTOUTS, PATH_LEVEL, type SportZone } from '../lib/terrain'
 import { createTerrainShapes } from '../lib/architecture'
 import type { CampusMaterials } from '../lib/materials'
+import { GardenTerrace, GARDEN_TABLES, SandCourtPlanting } from './SportsGarden'
 import type { Vec2 } from '../types'
 
 function frame(ring: Vec2[]) {
@@ -16,24 +17,25 @@ function frame(ring: Vec2[]) {
   return { angle, center: [u * ux + v * uy, u * uy - v * ux] as Vec2, width: Math.max(...us) - Math.min(...us), length: Math.max(...vs) - Math.min(...vs) }
 }
 
-function Wire({ width, height, texture }: { width: number; height: number; texture: CanvasTexture }) {
+function Wire({ width, height, texture, white = false }: { width: number; height: number; texture: CanvasTexture; white?: boolean }) {
   return <mesh receiveShadow raycast={() => null}>
     <planeGeometry args={[width, height]} onUpdate={(geo) => {
       const uv = geo.getAttribute('uv')
       for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * width / 0.22, uv.getY(i) * height / 0.22)
       uv.needsUpdate = true
     }} />
-    <meshStandardMaterial map={texture} color="#526057" alphaTest={0.35} side={DoubleSide} roughness={0.6} metalness={0.4} />
+    <meshStandardMaterial map={texture} color={white ? "#f4f1e2" : "#526057"} alphaTest={0.35} side={DoubleSide} roughness={0.6} metalness={0.4} />
   </mesh>
 }
 
 function Net({ width, bottom = 0, height, texture }: { width: number; bottom?: number; height: number; texture: CanvasTexture }) {
   return <group>
-    <group position={[0, bottom + height / 2, 0]}><Wire width={width} height={height} texture={texture} /></group>
+    <group position={[0, bottom + height / 2, 0]}><Wire width={width} height={height} texture={texture} white={bottom>0} /></group>
     {[-1, 1].map((side) => <mesh key={side} position={[side * width / 2, (height + bottom) / 2, 0]} castShadow>
       <cylinderGeometry args={[0.045, 0.045, height + bottom + 0.14, 8]} /><meshStandardMaterial color="#e0e0d5" metalness={0.6} roughness={0.45} />
     </mesh>)}
     <Line points={[[-width / 2, bottom + height, 0], [width / 2, bottom + height, 0]]} color="#ede9dc" lineWidth={0.06} worldUnits />
+    {bottom > 0 && <Line points={[[-width/2,bottom,0],[width/2,bottom,0]]} color="#ede9dc" lineWidth={.045} worldUnits />}
   </group>
 }
 
@@ -75,7 +77,7 @@ function MetalFurniture() {
   const parts = useMemo(() => {
     const cylinders: { x: number; y: number; z: number; r: number; h: number }[] = []
     const chairs: { x: number; z: number; angle: number }[] = []
-    for (const x of [-8, 0, 8]) for (const z of [-8, 0, 8]) {
+    for (const [x,z] of GARDEN_TABLES) {
       cylinders.push({ x, z, y: 0.75, r: 0.85, h: 0.04 }, { x, z, y: 0.37, r: 0.07, h: 0.74 }, { x, z, y: 0.07, r: 0.35, h: 0.06 })
       for (let i = 0; i < 4; i++) {
         const angle = i * Math.PI / 2, cx = x + Math.sin(angle) * 1.25, cz = z + Math.cos(angle) * 1.25
@@ -98,13 +100,20 @@ function MetalFurniture() {
     for (const mesh of [tubes.current, backs.current]) if (mesh) { mesh.instanceMatrix.needsUpdate = true; mesh.computeBoundingSphere() }
   }, [parts])
   return <group>
-    <instancedMesh ref={tubes} args={[undefined, undefined, parts.cylinders.length]} castShadow receiveShadow><cylinderGeometry args={[1, 1, 1, 12]} /><meshStandardMaterial color="#697476" metalness={0.7} roughness={0.38} /></instancedMesh>
-    <instancedMesh ref={backs} args={[undefined, undefined, parts.chairs.length]} castShadow><torusGeometry args={[0.25, 0.025, 6, 16, Math.PI]} /><meshStandardMaterial color="#697476" metalness={0.7} roughness={0.38} /></instancedMesh>
+    <instancedMesh ref={tubes} args={[undefined, undefined, parts.cylinders.length]} castShadow receiveShadow><cylinderGeometry args={[1, 1, 1, 12]} /><meshStandardMaterial color="#3b4841" metalness={0.7} roughness={0.38} /></instancedMesh>
+    <instancedMesh ref={backs} args={[undefined, undefined, parts.chairs.length]} castShadow><torusGeometry args={[0.25, 0.025, 6, 16, Math.PI]} /><meshStandardMaterial color="#3b4841" metalness={0.7} roughness={0.38} /></instancedMesh>
   </group>
 }
 
 function BoundaryWalls({ zone, texture }: { zone: SportZone; texture: CanvasTexture }) {
-  return <group>{boundarySegments(zone).map(([a, b], i) => {
+  const segments = boundarySegments(zone).flatMap(([a,b]): [Vec2,Vec2][] => {
+    const center = frame(zone.area.ring).center
+    // Three metres of open entry through the western protective fence.
+    if (zone.kind !== 'sand' || (a[0]+b[0])/2 > center[0] || Math.hypot(b[0]-a[0],b[1]-a[1]) < 20) return [[a,b]]
+    const length=Math.hypot(b[0]-a[0],b[1]-a[1]), at=(t:number):Vec2=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]
+    return [[a,at(.5-1.5/length)],[at(.5+1.5/length),b]]
+  })
+  return <group>{segments.map(([a, b], i) => {
     const length = Math.hypot(b[0] - a[0], b[1] - a[1])
     if (length < 0.1) return null
     const wallHeight = 0.25 - zone.height
@@ -112,7 +121,7 @@ function BoundaryWalls({ zone, texture }: { zone: SportZone; texture: CanvasText
     const center: [number, number, number] = [(a[0] + b[0]) / 2, zone.height, -(a[1] + b[1]) / 2]
     return <group key={i} position={center} rotation={[0, angle, 0]}>
       {zone.height < 0 && <mesh position={[0, wallHeight / 2, 0]} receiveShadow><boxGeometry args={[length, wallHeight, 0.12]} /><meshStandardMaterial color="#a89e88" roughness={0.95} /></mesh>}
-      {zone.kind === 'synthetic' && <group>
+      {(zone.kind === 'synthetic' || zone.kind === 'sand') && <group>
         <group position={[0, 2.5, 0]}><Wire width={length} height={5} texture={texture} /></group>
         <Line points={[[-length / 2, 5, 0], [length / 2, 5, 0]]} color="#3f5043" lineWidth={0.075} worldUnits />
         {Array.from({ length: Math.ceil(length / 3.5) + 1 }, (_, j) => <mesh key={j} position={[-length / 2 + j * length / Math.ceil(length / 3.5), 2.5, 0]} castShadow>
@@ -131,7 +140,13 @@ export function SportsGround({ materials }: { materials: CampusMaterials }) {
     const map = new CanvasTexture(canvas); map.wrapS = map.wrapT = RepeatWrapping; map.anisotropy = 4
     return map
   }, [])
-  useEffect(() => () => texture.dispose(), [texture])
+  const volleyTexture = useMemo(() => {
+    const canvas=document.createElement('canvas'); canvas.width=canvas.height=32
+    const ctx=canvas.getContext('2d')!;ctx.strokeStyle='#fff';ctx.lineWidth=1.6
+    ctx.strokeRect(.8,.8,30.4,30.4)
+    const map=new CanvasTexture(canvas);map.wrapS=map.wrapT=RepeatWrapping;map.anisotropy=4;return map
+  },[])
+  useEffect(() => () => { texture.dispose(); volleyTexture.dispose() }, [texture,volleyTexture])
   return <group>
     {SPORT_ACCESS_AREAS.map((ring, i) => <mesh key={`access-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} material={materials.road} receiveShadow>
       <shapeGeometry args={[createTerrainShapes(ring, TERRAIN_CUTOUTS)]} onUpdate={(geo) => { const uv = geo.getAttribute('uv'); for (let j = 0; j < uv.count; j++) uv.setXY(j, uv.getX(j) / 2.4, uv.getY(j) / 2.4); uv.needsUpdate = true }} />
@@ -145,10 +160,18 @@ export function SportsGround({ materials }: { materials: CampusMaterials }) {
         </mesh>
         <BoundaryWalls zone={zone} texture={texture} />
         <group position={[f.center[0], zone.height + 0.015, -f.center[1]]} rotation={[0, f.angle, 0]}>
-          {zone.kind === 'sand' && [-1, 1].map((side) => <group key={side} position={[0, 0, side * 6]}>
-            <Rectangle width={12} length={6} color="#476a86" /><group rotation={[0, Math.PI / 2, 0]}><Net width={6.4} bottom={1.43} height={1} texture={texture} /></group>
-          </group>)}
-          {zone.kind === 'terrace' && <MetalFurniture />}
+          {zone.kind === 'sand' && <>
+            {[-1,1].map(side=><group key={side} position={[0,0,side*6.1]}>
+              <Rectangle width={12} length={8} color="#d98640" />
+              <group rotation={[0,Math.PI/2,0]}><Net width={8.5} bottom={1.43} height={1} texture={volleyTexture} /></group>
+            </group>)}
+            <SandCourtPlanting width={f.width} length={f.length} />
+            {[-1,1].flatMap(x=>[-1,1].map(z=><group key={`${x}-${z}`} position={[x*(f.width/2+.3),0,z*(f.length/2-.5)]}>
+              <mesh position={[0,3.9,0]} castShadow><cylinderGeometry args={[.06,.085,7.8,8]} /><meshStandardMaterial color="#35413b" /></mesh>
+              <mesh position={[0,7.8,0]} rotation={[.2,0,0]}><boxGeometry args={[1.05,.25,.42]} /><meshStandardMaterial color="#ededdb" emissive="#e9e9ce" emissiveIntensity={.35} /></mesh>
+            </group>))}
+          </>}
+          {zone.kind === 'terrace' && <><GardenTerrace materials={materials} /><MetalFurniture /></>}
           {zone.kind === 'tennis' && <Tennis width={f.width} texture={texture} />}
           {(zone.kind === 'synthetic' || zone.kind === 'football') && <Football width={f.width} length={f.length} natural={zone.kind === 'football'} texture={texture} />}
         </group>

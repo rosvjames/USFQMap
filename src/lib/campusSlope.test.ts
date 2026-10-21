@@ -5,22 +5,40 @@ import { ELEVATED_WALKWAYS, SPORT_ZONES, bridgeVertexHeight, terrainHeightAt } f
 import { PAGODA, PAGODA_POND, PAGODA_STAIRS, PAGODA_STAIR_LEVEL, PAGODA_STAIR_FOOT, pagodaToCampus, pagodaStairWidthAt, createPagodaStairWall } from './pagoda'
 import { pointInPolygon } from './geo'
 import type { Vec2 } from '../types'
+import { COLISEO_LANE, coliseoToCampus } from './coliseo'
 
 const at = (t: number): Vec2 => [CAMPUS_SLOPE.start[0] + (CAMPUS_SLOPE.end[0] - CAMPUS_SLOPE.start[0]) * t, CAMPUS_SLOPE.start[1] + (CAMPUS_SLOPE.end[1] - CAMPUS_SLOPE.start[1]) * t]
 
 describe('Pagoda to campus-side bridge grade', () => {
-  it('descends continuously from the original Pagoda approach to the mapped ramp foot', () => {
-    expect(campusBaseHeightAt(PAGODA_STAIR_FOOT)).toBeCloseTo(.55)
+  it('keeps the lawn grade continuous from the Pagoda approach to the mapped ramp foot', () => {
+    expect(campusBaseHeightAt(PAGODA_STAIR_FOOT)).toBeCloseTo(PAGODA_STAIR_LEVEL)
     expect(campusBaseHeightAt(CAMPUS_SLOPE.end)).toBeCloseTo(.55 - CAMPUS_SLOPE.drop)
     let previous = campusBaseHeightAt(at(0))
     for (let i = 1; i <= 1000; i++) {
       const height = campusBaseHeightAt(at(i / 1000))
-      expect(height).toBeLessThanOrEqual(previous)
-      expect(previous - height).toBeLessThan(.01)
+      expect(Math.abs(previous - height)).toBeLessThan(.04)
       previous = height
     }
     const epsilon = 1e-4
     expect(Math.abs(campusBaseHeightAt(at(1 - epsilon)) - campusBaseHeightAt(at(1 + epsilon)))).toBeLessThan(1e-4)
+  })
+  it('descends along the mapped Coliseo lane and keeps the facing lawn higher', () => {
+    let previous = campusBaseHeightAt(COLISEO_LANE[0])
+    for (let i = 1; i < COLISEO_LANE.length; i++) {
+      const a = COLISEO_LANE[i - 1], b = COLISEO_LANE[i]
+      for (let j = 1; j <= 100; j++) {
+        const height = campusBaseHeightAt([a[0] + (b[0] - a[0]) * j / 100, a[1] + (b[1] - a[1]) * j / 100])
+        expect(height).toBeLessThanOrEqual(previous + 1e-8)
+        expect(previous - height).toBeLessThan(.2 * Math.hypot(b[0] - a[0], b[1] - a[1]) / 100 + .001)
+        previous = height
+      }
+    }
+    expect(previous).toBeCloseTo(campusBaseHeightAt(CAMPUS_SLOPE.end))
+    for (const x of [-18, -10, 0, 10, 18]) {
+      const lane = campusBaseHeightAt(coliseoToCampus([x, 2]))
+      const lawn = campusBaseHeightAt(coliseoToCampus([x, 9]))
+      expect(lawn - lane).toBeGreaterThan(.5)
+    }
   })
   it('joins the campus ramp ground endpoint without changing any deck or far ramp level', () => {
     for (const way of ELEVATED_WALKWAYS) way.line.forEach((point, i) => {

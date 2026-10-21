@@ -59,8 +59,14 @@ const hallWidth = Math.hypot(hallEnd[0]-hallStart[0],hallEnd[1]-hallStart[1])
 const hallUx = (hallEnd[0]-hallStart[0])/hallWidth, hallUy = (hallEnd[1]-hallStart[1])/hallWidth
 const einsteinFrontGap:Vec2[] = ([[-1,.15],[HALL_EINSTEIN_GAP,.15],[HALL_EINSTEIN_GAP,-HALL_EINSTEIN_OPEN_LENGTH],[-1,-HALL_EINSTEIN_OPEN_LENGTH]] as Vec2[]).map(([x,z])=>[hallEnd[0]+hallUx*x+hallUy*z,hallEnd[1]+hallUy*x-hallUx*z])
 
+// Student's photos put the small annex on the raised garden, clear of the lane
+// and the Obelisk. Apply the visual correction here so rendering, clipping,
+// route endpoints and animal obstacles share the same footprint.
+export const SPORTS_ANNEX_OFFSET: Vec2 = [-4.4, 6]
+
 export const CAMPUS_BUILDINGS: CampusBuilding[] = inLayer('building').map((f) => {
-  const ring = f.properties.osm_id === 'way/395847790' ? polygonClipping.difference([ringOf(f)],[einsteinFrontGap])[0][0] as Vec2[] : ringOf(f)
+  const original = ringOf(f)
+  const ring = f.properties.osm_id === 'way/395847790' ? polygonClipping.difference([original],[einsteinFrontGap])[0][0] as Vec2[] : f.properties.osm_id === 'way/395853835' ? original.map(([x,y]):Vec2 => [x + SPORTS_ANNEX_OFFSET[0], y + SPORTS_ANNEX_OFFSET[1]]) : original
   const center = centroid(ring)
   const osmId = f.properties.osm_id ?? ''
   const info = infoByOsmId.get(osmId)

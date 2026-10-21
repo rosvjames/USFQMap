@@ -14,6 +14,7 @@ import { campusToPagoda, isPagodaStairApproach } from '../lib/pagoda'
 import { isHallFlagGarden } from '../lib/hallFlags'
 import { campusSlopeOffsetAt } from '../lib/campusSlope'
 import { isHallMiniPlaza } from '../lib/hallMiniPlaza'
+import { isColiseoLane, isColiseoRetainingEdge, COLISEO_GARDEN_STAIRS } from '../lib/coliseo'
 import { pointInPolygon } from '../lib/geo'
 import type { Vec2 } from '../types'
 import { SATELLITE_GARDENS, VISUAL_PATH_WIDTHS } from '../data/siteAppearance'
@@ -86,7 +87,7 @@ export function LandscapeDetails() {
   const texture = useMemo(foliageTexture, []), frond = useMemo(palmFrond, [])
   useEffect(() => () => { texture.dispose(); frond.dispose() }, [texture, frond])
   const instances = useMemo(() => {
-    const trees: Tree[] = CAMPUS_TREES.filter((point) => !isMiguelGardenForecourt(point) && !isEpicuroForecourt(point) && !isHallMiniPlaza(point) && !isHallFlagGarden(point) && !isPagodaStairApproach(campusToPagoda(point),3) && !isGalileoLandscape(point) && !isMaxwellCourtyard(point) && !isMaxwellCafe(point) && !isDaVinciPassage(point) && !isDaVinciPlaza(point) && miguelEntranceHeightAt(point) === undefined).map((point) => ({ point, size: 1.1, palm: false, tone: '#576b3d' }))
+    const trees: Tree[] = CAMPUS_TREES.filter((point) => !CAMPUS_BUILDINGS.some(b => b.info?.id === 'banos-deportes' && pointInPolygon(point,b.ring)) && !isColiseoLane(point, 1) && !isColiseoRetainingEdge(point) && !pointInPolygon(point, COLISEO_GARDEN_STAIRS) && !isMiguelGardenForecourt(point) && !isEpicuroForecourt(point) && !isHallMiniPlaza(point) && !isHallFlagGarden(point) && !isPagodaStairApproach(campusToPagoda(point),3) && !isGalileoLandscape(point) && !isMaxwellCourtyard(point) && !isMaxwellCafe(point) && !isDaVinciPassage(point) && !isDaVinciPlaza(point) && miguelEntranceHeightAt(point) === undefined).map((point) => ({ point, size: 1.1, palm: false, tone: '#576b3d' }))
     let index = 0
     const gardens = [
       ...CAMPUS_AREAS.filter((a) => a.kind === 'green' && a.osmId !== 'way/395847793').map((area) => ({ ring: area.ring, wooded: false })),
@@ -97,7 +98,7 @@ export function LandscapeDetails() {
       for (let x = Math.min(...xs) + 3; x < Math.max(...xs); x += 9) {
         for (let y = Math.min(...ys) + 3; y < Math.max(...ys); y += 9) {
           const point: Vec2 = [x + Math.sin(y * 0.7) * 2.3, y + Math.cos(x * 0.6) * 2.3]
-          if (isMiguelGardenForecourt(point) || isEpicuroForecourt(point) || isHallMiniPlaza(point) || isHallFlagGarden(point) || isPagodaStairApproach(campusToPagoda(point),3) || isGalileoLandscape(point) || !pointInPolygon(point, ring) || !pointInPolygon(point, CAMPUS_BOUNDARY)) continue
+          if (isColiseoLane(point, 1) || isColiseoRetainingEdge(point) || pointInPolygon(point, COLISEO_GARDEN_STAIRS) || isMiguelGardenForecourt(point) || isEpicuroForecourt(point) || isHallMiniPlaza(point) || isHallFlagGarden(point) || isPagodaStairApproach(campusToPagoda(point),3) || isGalileoLandscape(point) || !pointInPolygon(point, ring) || !pointInPolygon(point, CAMPUS_BOUNDARY)) continue
           if (CAMPUS_BUILDINGS.some((b) => pointInPolygon(point, b.ring)) || isMaxwellApproach(point) || isMaxwellCourtyard(point) || isMaxwellCafe(point) || isDaVinciPassage(point) || isDaVinciPlaza(point) || miguelEntranceHeightAt(point) !== undefined) continue
           if (CAMPUS_AREAS.some((a) => a.kind === 'water' && pointInPolygon(point, a.ring))) continue
           if (!wooded && Math.min(...ring.map((a, i) => segmentProjection(point, a, ring[(i + 1) % ring.length]).distance)) > 4) continue

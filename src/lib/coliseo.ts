@@ -1,71 +1,89 @@
+import { CAMPUS_WALKWAYS, findCampusBuilding } from './campus'
 import type { Vec2 } from '../types'
-import { findCampusBuilding } from './campus'
 
-// Ground floor read from a photo of the "Mapa de recursos y evacuación · Coliseo / Pagoda · Piso 1"
-// sign. The OSM footprint fixes the size; partitions, doors and courts are placed by eye on it,
-// so every dimension below is approximate and no space has been identified on site yet.
-// The strip of rooms the sign draws beyond the east wall is outside the footprint and not modelled.
+// Existing footprint; facade proportions and relative levels follow the student's photos.
 const building = findCampusBuilding('coliseo')!
-// ring: NW, NE, NE notch, SE, SW. The frame sits on the south wall, x east and y north.
-const origin = building.ring[4], southEast = building.ring[3], northWest = building.ring[0]
-const width = Math.hypot(southEast[0] - origin[0], southEast[1] - origin[1])
-const ux = (southEast[0] - origin[0]) / width, uy = (southEast[1] - origin[1]) / width
-const depth = Math.hypot(northWest[0] - origin[0], northWest[1] - origin[1])
-
+const a = building.ring[0], b = building.ring[4]
+const width = Math.hypot(b[0] - a[0], b[1] - a[1])
+const ux = (b[0] - a[0]) / width, uy = (b[1] - a[1]) / width
 export const COLISEO = {
-  origin, angle: Math.atan2(uy, ux), width, depth,
-  // The floor sits level on the upper campus grade; the lawn falls away below its south-west corner,
-  // so the slab and outer walls continue `footing` metres down to stay closed there.
-  floor: 0.6, footing: 2, outerWall: 3.4, innerWall: 2.5,
-  /** Changing rooms and offices line the west wall; the stands line the south one. */
-  service: width * 0.205, stands: depth * 0.157,
+  center: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] as Vec2,
+  angle: Math.atan2(uy, ux), width, depth: 42.1,
+  eave: 5.7, doorX: 11.6, doorWidth: 3.8,
+  stairX: 6.3, stairWidth: 10.5, stairBottom: 4.6, stairTop: 9.6,
+  platformFront: 7.6, platformLevel: .4, roadWidth: 6.8,
 }
-export function coliseoToCampus([x, y]: Vec2): Vec2 {
-  return [origin[0] + ux * x - uy * y, origin[1] + uy * x + ux * y]
+export function coliseoToCampus([x, z]: Vec2): Vec2 {
+  return [COLISEO.center[0] + ux * x + uy * z, COLISEO.center[1] + uy * x - ux * z]
 }
-export const COLISEO_CENTER = coliseoToCampus([width / 2, depth / 2])
+export function campusToColiseo([x, y]: Vec2): Vec2 {
+  const dx = x - COLISEO.center[0], dy = y - COLISEO.center[1]
+  return [dx * ux + dy * uy, dx * uy - dy * ux]
+}
+export const COLISEO_GARDEN_STAIRS: Vec2[] = ([
+  [COLISEO.stairX - COLISEO.stairWidth / 2, COLISEO.stairBottom], [COLISEO.stairX + COLISEO.stairWidth / 2, COLISEO.stairBottom],
+  [COLISEO.stairX + COLISEO.stairWidth / 2, COLISEO.stairTop], [COLISEO.stairX - COLISEO.stairWidth / 2, COLISEO.stairTop],
+] as Vec2[]).map(coliseoToCampus)
+export const COLISEO_PLATFORM: Vec2[] = ([[-24,COLISEO.platformFront],[20,COLISEO.platformFront],[20,23],[-24,23]] as Vec2[]).map(coliseoToCampus)
 
-export interface Door { at: number; width: number }
-export interface Wall { from: Vec2; to: Vec2; outer?: boolean; doors?: Door[] }
+export const COLISEO_LOWER_FORECOURT: Vec2[] = ([[-24,4.05],[20,4.05],[20,COLISEO.platformFront],[-24,COLISEO.platformFront]] as Vec2[]).map(coliseoToCampus)
 
-const W = width, D = depth, S = COLISEO.service
-// Entrance lobby between the two changing rooms, where the sign says "usted está aquí".
-const LOBBY: Vec2 = [D * 0.2, D * 0.3]
-const CHANGING_END = D * 0.48, OFFICE_SPLIT = D * 0.63
-export const COLISEO_WALLS: Wall[] = [
-  { from: [0, 0], to: [0, D], outer: true, doors: [{ at: (LOBBY[0] + LOBBY[1]) / 2, width: 2.2 }] },
-  { from: [0, D], to: [W, D], outer: true, doors: [{ at: S + 2.2, width: 2 }, { at: W - 3.5, width: 2 }] },
-  { from: [W, D], to: [W, 0], outer: true, doors: [{ at: D - 2.6, width: 2 }] },
-  { from: [W, 0], to: [0, 0], outer: true },
-  { from: [S, 0], to: [S, D], doors: [{ at: (LOBBY[0] + LOBBY[1]) / 2, width: 2.6 }, { at: D * 0.55, width: 1.1 }, { at: D * 0.82, width: 1.1 }] },
-  { from: [0, LOBBY[0]], to: [S, LOBBY[0]], doors: [{ at: S - 1.2, width: 1 }] },
-  { from: [0, LOBBY[1]], to: [S, LOBBY[1]], doors: [{ at: S - 1.2, width: 1 }] },
-  { from: [0, CHANGING_END], to: [S, CHANGING_END] },
-  { from: [0, OFFICE_SPLIT], to: [S, OFFICE_SPLIT] },
-  // Cubicles against the west wall of each changing room.
-  ...[0.04, 0.08, 0.12, 0.16, 0.34, 0.38, 0.42].map((s): Wall => ({ from: [0, D * s], to: [S * 0.42, D * s] })),
-]
+const annexLocal = findCampusBuilding('banos-deportes')!.ring.map(campusToColiseo)
+export const SPORTS_ANNEX = {
+  left: Math.min(...annexLocal.map(p=>p[0])), right: Math.max(...annexLocal.map(p=>p[0])),
+  front: Math.min(...annexLocal.map(p=>p[1])), back: Math.max(...annexLocal.map(p=>p[1])),
+}
+export const COLISEO_ANNEX_APRON: Vec2[] = ([
+  [SPORTS_ANNEX.left-.35,3.6],[SPORTS_ANNEX.right+.35,3.6],
+  [SPORTS_ANNEX.right+.35,SPORTS_ANNEX.front+.05],[SPORTS_ANNEX.left-.35,SPORTS_ANNEX.front+.05],
+] as Vec2[]).map(coliseoToCampus)
 
-/** Solid stretches of a wall, as distances from its start, once the doors are cut out. */
-export function wallPieces(wall: Wall): [number, number][] {
-  const length = Math.hypot(wall.to[0] - wall.from[0], wall.to[1] - wall.from[1])
-  const pieces: [number, number][] = []
-  let start = 0
-  for (const door of [...(wall.doors ?? [])].sort((a, b) => a.at - b.at)) {
-    const open = Math.max(start, door.at - door.width / 2)
-    if (open > start) pieces.push([start, open])
-    start = Math.min(length, door.at + door.width / 2)
+export function isColiseoRetainingEdge(point: Vec2): boolean {
+  const [x, z] = campusToColiseo(point)
+  return x >= -24.3 && x <= 20.3 && Math.abs(z - COLISEO.platformFront) < .6 && Math.abs(x - COLISEO.stairX) > COLISEO.stairWidth / 2
+}
+
+/** Raised lawn supporting both the Obelisk and annex, with graded outer joins. */
+export function coliseoPlatformBaseAt(point: Vec2, surrounding: number): number {
+  const [x,z] = campusToColiseo(point)
+  const strength = smooth((z - 5.4) / 2.2) * (1 - smooth((z - 23) / 5)) * smooth((x + 28) / 4) * (1 - smooth((x - 17) / 8))
+  return surrounding + Math.max(0, .55 - surrounding) * strength
+}
+
+// Grade the mapped lane from above the Pagoda to the ground end of the bridge ramp.
+// Keeping this separate from campusSlope avoids a terrain/landmark import cycle.
+const lane = CAMPUS_WALKWAYS.find(w => w.osmId === 'way/395853824')!
+const ramp = CAMPUS_WALKWAYS.find(w => w.osmId === 'way/1032704764')!
+export const COLISEO_LANE: Vec2[] = [...lane.line, ramp.line.at(-1)!]
+const lengths = COLISEO_LANE.slice(1).map((b, i) => Math.hypot(b[0] - COLISEO_LANE[i][0], b[1] - COLISEO_LANE[i][1]))
+const total = lengths.reduce((sum, n) => sum + n, 0)
+const smooth = (t: number) => { const s = Math.max(0, Math.min(1, t)); return s * s * (3 - 2 * s) }
+
+/** The lane drops earlier than the broad lawn, leaving the grass above its edge. */
+export function coliseoLaneHeightAt(point: Vec2, upper: number, drop: number, surrounding: number): number {
+  let nearest = Infinity, weightedHeight = 0, weights = 0, travelled = 0
+  for (let i = 0; i < lengths.length; i++) {
+    const a = COLISEO_LANE[i], b = COLISEO_LANE[i + 1]
+    const dx = b[0] - a[0], dy = b[1] - a[1]
+    const t = Math.max(0, Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (lengths[i] ** 2 || 1)))
+    const distance = Math.hypot(point[0] - a[0] - dx * t, point[1] - a[1] - dy * t)
+    const laneHeight = upper - drop * smooth((travelled + lengths[i] * t) / total)
+    // Blend adjoining segments at a bend. Choosing just the nearest segment
+    // makes the terrain jump along their equal-distance boundary.
+    const weight = Math.exp(-((distance / 2.5) ** 2))
+    weightedHeight += laneHeight * weight; weights += weight
+    nearest = Math.min(nearest, distance)
+    travelled += lengths[i]
   }
-  if (length > start) pieces.push([start, length])
-  return pieces
+  if (nearest >= COLISEO.roadWidth / 2 + 3.3 || weights < 1e-12) return surrounding
+  const influence = 1 - smooth((nearest - COLISEO.roadWidth / 2) / 3.3)
+  return surrounding + (Math.min(surrounding, weightedHeight / weights) - surrounding) * influence
 }
 
-export interface Court { center: Vec2; length: number; width: number }
-// Regulation sizes, long side east–west as drawn on the sign.
-const courtX = S + (W - S) * 0.5
-export const BASKETBALL: Court = { center: [courtX, D * 0.64], length: 28, width: 15 }
-export const VOLLEYBALL: Court = { center: [courtX, D * 0.3], length: 18, width: 9 }
-
-// Reading of the row of small squares along the south wall as the frame of a stepped stand.
-export const COLISEO_STANDS = { from: S + (W - S) * 0.2, to: W - 1.5, tiers: 4, tread: (COLISEO.stands - 0.6) / 4, riser: 0.42 }
-export const COLISEO_STAIR = { from: S + 0.4, to: S + (W - S) * 0.14, steps: 8, depth: 2.4, riser: 0.2 }
+export function isColiseoLane(point: Vec2, margin = 0): boolean {
+  return COLISEO_LANE.slice(1).some((b, i) => {
+    const a = COLISEO_LANE[i], dx = b[0] - a[0], dy = b[1] - a[1]
+    const t = Math.max(0, Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (dx * dx + dy * dy)))
+    return Math.hypot(point[0] - a[0] - dx * t, point[1] - a[1] - dy * t) < COLISEO.roadWidth / 2 + margin
+  })
+}
