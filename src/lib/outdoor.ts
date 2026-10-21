@@ -8,6 +8,7 @@ import { HALL_ENTRANCE, hallToCampus } from './hall'
 import { HALL_EINSTEIN_PATH, EINSTEIN_HALL_DOOR } from './hallPassage'
 import { NEWTON_ACCESS_PATH, NEWTON_ACCESS_JOIN_END, NEWTON_DOOR_APPROACH } from './newton'
 import { GALILEO_ACCESS_PATH, GALILEO_DOOR_APPROACH, GALILEO_LAGOON } from './galileo'
+import { COLISEO, coliseoToCampus } from './coliseo'
 import { pointInPolygon } from './geo'
 import { shortestPath } from './pathfinding'
 
@@ -133,6 +134,8 @@ export function endpointForBuilding(buildingId: string): Endpoint | null {
   if (buildingId === 'miguel-de-santiago') return endpointForPosition(miguelToCampus([MIGUEL_ENTRANCE.x, MIGUEL_ENTRANCE.stairFront]))
   if (buildingId === 'maxwell') return endpointForPosition(maxwellToCampus([0, MAXWELL_ENTRANCE.stairFront]))
   if (buildingId === 'hayek') return endpointForPosition(hayekToCampus(HAYEK_ENTRANCE.door))
+  // In front of the glazed door, on the lane that runs along the facade.
+  if (buildingId === 'coliseo') return endpointForPosition(coliseoToCampus([COLISEO.doorX, 1.6]))
   let best: Endpoint | null = null
   let bestGap = Infinity
   for (const node of WALKWAYS.nodes) {
