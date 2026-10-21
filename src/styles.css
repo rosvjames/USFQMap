@@ -532,3 +532,45 @@ button {
 .hayek-levels li { padding: 8px 0; }
 .hayek-levels li strong, .hayek-levels li span { display: block; }
 .hayek-levels li span { color: var(--muted, #6d786f); font-size: 15px; margin-top: 3px; }
+
+/* Exterior exploration keeps the map UI out of the walking view. */
+.walk-button { display: flex; justify-content: space-between; align-items: center; gap: 16px; width: 100%; padding: 14px 16px; border: 0; border-radius: 7px; background: var(--red); color: #fff; font-weight: 600; font-size: 15px; }
+.walk-button:hover { background: #a70d26; }
+.panel-walk { margin-top: 18px; }
+.walking canvas { outline: none; cursor: grab; touch-action: none; }
+.walking canvas:active { cursor: grabbing; }
+.walking-banner { position: absolute; top: 105px; left: 26px; z-index: 20; width: 285px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: #fffffff2; box-shadow: var(--float); }
+.walking-banner h1 { margin: 10px 0; font-family: var(--sign); font-size: 26px; line-height: 1.1; }
+.walking-banner p { margin: 0 0 16px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+.walking-banner button { display: flex; justify-content: space-between; width: 100%; min-height: 44px; align-items: center; border: 0; background: none; color: var(--red); font-weight: 600; }
+.crosshair { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ffffffe0; text-shadow: 0 1px 4px #243728; font-size: 22px; pointer-events: none; }
+.walk-pad { position: absolute; right: 26px; bottom: max(70px, calc(env(safe-area-inset-bottom) + 50px)); z-index: 20; display: grid; grid-template-columns: repeat(3, 48px); gap: 7px; }
+.walk-pad button { width: 48px; height: 48px; background: #fffffff0; border: 1px solid var(--line); border-radius: 7px; font-size: 24px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.walk-pad button:active { color: white; background: var(--red); }
+@media (max-width: 759px) {
+  .walking-banner { top: 77px; left: 12px; width: min(260px, calc(100% - 24px)); padding: 14px 16px; }
+  .walking-banner h1 { font-size: 22px; }
+  .walking-banner p { font-size: 12px; margin-bottom: 5px; }
+  .walk-pad { right: 12px; }
+}
+@media (max-height: 500px) {
+  .walking-banner { top: 65px; padding: 10px 14px; width: 250px; }
+  .walking-banner .status-tag { display: none; }
+  .walking-banner h1 { font-size: 21px; margin-top: 0; }
+}
+
+.walk-hint-mobile, .walk-joystick { display: none; }
+.pet-hint { position: absolute; left: 50%; bottom: 82px; z-index: 21; transform: translateX(-50%); padding: 10px 15px; border: 1px solid #efd6dd; border-radius: 24px; color: #693349; background: #fff5f9f2; font-size: 14px; pointer-events: none; white-space: nowrap; }
+.pet-hint kbd { display: inline-grid; place-items: center; min-width: 25px; height: 25px; margin-right: 6px; background: white; border: 1px solid #d8b7c3; border-radius: 5px; font: 600 14px var(--text); }
+@media (pointer: coarse), (max-width: 759px) {
+  .walk-pad, .walk-hint-desktop { display: none; }
+  .walk-hint-mobile { display: block; }
+  .walk-joystick { position: absolute; display: flex; flex-direction: column; align-items: center; left: max(18px,env(safe-area-inset-left)); bottom: max(70px,calc(env(safe-area-inset-bottom) + 52px)); z-index: 22; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .joystick-base { position: relative; width: 96px; height: 96px; border: 1px solid #ffffffbc; border-radius: 50%; background: #f8faf14a; box-shadow: inset 0 0 0 12px #ffffff1c,0 2px 12px #26372220; touch-action: none; }
+  .joystick-base::before, .joystick-base::after { content: ''; position: absolute; background: #ffffff70; pointer-events: none; }
+  .joystick-base::before { width: 1px; height: 72px; left: 47px; top: 12px; }
+  .joystick-base::after { width: 72px; height: 1px; left: 12px; top: 47px; }
+  .joystick-knob { position: absolute; left: 28px; top: 28px; width: 40px; height: 40px; border: 1px solid #ffffffed; border-radius: 50%; background: #ffffffe6; box-shadow: 0 2px 8px #24392e33; transform: translate(var(--stick-x,0px),var(--stick-y,0px)); pointer-events: none; }
+  .joystick-caption { margin-top: 7px; padding: 3px 9px; border-radius: 9px; color: #344c3c; background: #ffffffe3; font-size: 11px; }
+  .pet-hint { bottom: max(205px,calc(env(safe-area-inset-bottom) + 185px)); font-size: 13px; }
+}

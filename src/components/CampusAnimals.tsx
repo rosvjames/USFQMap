@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import {
   CanvasTexture, CatmullRomCurve3, ConeGeometry, CylinderGeometry, Group,
   MeshStandardMaterial, SphereGeometry, SRGBColorSpace, SpriteMaterial, TubeGeometry, Vector3,
 } from 'three'
+import { AnimalHearts } from './AnimalHearts'
+import { nearestPettableAnimal } from '../lib/animalAffection'
 import { ANIMAL_ROUTES, advanceAnimalTime, sampleAnimalPosition, type CampusAnimalId } from '../lib/campusAnimals'
 
 type Point = [number, number, number]
@@ -63,8 +65,8 @@ function NameTag({ id, height }: { id: CampusAnimalId; height: number }) {
   return <sprite material={material} position={[0, height, 0]} scale={[2.1, .63, 1]} raycast={noRaycast} />
 }
 
-function Animal({ id, seconds, parts }: { id: CampusAnimalId; seconds: React.RefObject<number>; parts: Parts }) {
-  const root = useRef<Group>(null), body = useRef<Group>(null), tail = useRef<Group>(null)
+function Animal({ id, seconds, parts, root, walking, burst, onPet }: { id: CampusAnimalId; seconds: React.RefObject<number>; parts: Parts; root:React.RefObject<Group|null>; walking:boolean; burst:number; onPet:(id:CampusAnimalId)=>void }) {
+  const body = useRef<Group>(null), tail = useRef<Group>(null)
   const legs = useRef<(Group | null)[]>([])
   const pig = id === 'gaston'
   const walkingSeconds = useRef(0), lastTick = useRef(seconds.current)
@@ -80,7 +82,9 @@ function Animal({ id, seconds, parts }: { id: CampusAnimalId; seconds: React.Ref
     if (!root.current) return
     const delta = seconds.current - lastTick.current
     lastTick.current = seconds.current
-    walkingSeconds.current = advanceAnimalTime(id, walkingSeconds.current, delta)
+    // Wait within petting reach so a finger can reliably tap the animal.
+    const waiting=nearestPettableAnimal(walking,camera.position,[{id,position:root.current.position}])===id
+    if(!waiting)walkingSeconds.current = advanceAnimalTime(id, walkingSeconds.current, delta)
     const sample = sampleAnimalPosition(id, walkingSeconds.current)
     root.current.position.set(sample.point[0], sample.height + .04, -sample.point[1])
     // Smooth turns while the position itself always stays on the checked route.
@@ -130,12 +134,47 @@ function Animal({ id, seconds, parts }: { id: CampusAnimalId; seconds: React.Ref
     </group>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,.01,0]} raycast={noRaycast}><circleGeometry args={[.6,24]}/><meshBasicMaterial color="#18241e" transparent opacity={.2} depthWrite={false}/></mesh>
     <NameTag id={id} height={pig ? 1.57 : 2.12} />
+    <AnimalHearts burst={walking ? burst : 0} height={pig ? 1.4 : 1.95}/>
+    {walking && <mesh position={[0,pig?.7:.95,0]} scale={[1.45,pig?.65:1,.6]} onClick={event=>{event.stopPropagation();if(event.delta<8)onPet(id)}}>
+      <sphereGeometry args={[1,12,8]}/><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false}/>
+    </mesh>}
   </group>
 }
 
 /** Mounted outside the static geometry batch; animate at 30 fps only while visible. */
-export function CampusAnimals() {
+export function CampusAnimals({walking,onNearbyAnimalChange}:{walking:boolean;onNearbyAnimalChange:(id:CampusAnimalId|null)=>void}) {
   const invalidate = useThree(state => state.invalidate)
+  const camera=useThree(state=>state.camera),gl=useThree(state=>state.gl)
+  const roots=useMemo(()=>({gaston:createRef<Group>(),pancho:createRef<Group>(),pancha:createRef<Group>()}),[])
+  const ids=Object.keys(ANIMAL_ROUTES) as CampusAnimalId[]
+  const [bursts,setBursts]=useState<Record<CampusAnimalId,number>>({gaston:0,pancho:0,pancha:0})
+  const lastPet=useRef<Record<CampusAnimalId,number>>({gaston:-Infinity,pancho:-Infinity,pancha:-Infinity})
+  const nearby=useRef<CampusAnimalId|null>(null)
+  const findNearby=useCallback(()=>nearestPettableAnimal(walking,camera.position,
+    (Object.keys(roots) as CampusAnimalId[]).flatMap(id=>roots[id].current?[{id,position:roots[id].current!.position}]:[])),[walking,camera,roots])
+  const pet=useCallback((id:CampusAnimalId)=>{
+    if(!walking||document.hidden||document.querySelector('dialog[open]'))return
+    // Touch targets the animal tapped, even when both greyhounds are within reach.
+    const animal=roots[id].current
+    if(!animal||nearestPettableAnimal(true,camera.position,[{id,position:animal.position}])!==id)return
+    const now=performance.now()
+    if(now-lastPet.current[id]<700)return
+    lastPet.current[id]=now;setBursts(value=>({...value,[id]:now}));invalidate()
+    if(import.meta.env.DEV){gl.domElement.dataset.petAnimal=id;gl.domElement.dataset.petCount=String(Number(gl.domElement.dataset.petCount??0)+1)}
+  },[walking,camera,roots,invalidate,gl])
+  useEffect(()=>{
+    if(!walking){nearby.current=null;onNearbyAnimalChange(null);return}
+    const key=(event:KeyboardEvent)=>{
+      if(event.code!=='KeyE'||event.repeat||(event.target as HTMLElement)?.closest('input,select,textarea,button,[contenteditable="true"]'))return
+      const id=findNearby();if(id){event.preventDefault();pet(id)}
+    }
+    window.addEventListener('keydown',key)
+    return ()=>window.removeEventListener('keydown',key)
+  },[walking,findNearby,pet,onNearbyAnimalChange])
+  useFrame(()=>{
+    const id=walking&&!document.hidden&&!document.querySelector('dialog[open]')?findNearby():null
+    if(id!==nearby.current){nearby.current=id;onNearbyAnimalChange(id)}
+  })
   const seconds = useRef(0)
   const parts = useAnimalParts()
   useEffect(() => {
@@ -162,8 +201,6 @@ export function CampusAnimals() {
     }
   }, [invalidate])
   return <group name="campus-animals">
-    <Animal id="gaston" seconds={seconds} parts={parts} />
-    <Animal id="pancho" seconds={seconds} parts={parts} />
-    <Animal id="pancha" seconds={seconds} parts={parts} />
+    {ids.map(id=><Animal key={id} id={id} seconds={seconds} parts={parts} root={roots[id]} walking={walking} burst={bursts[id]} onPet={pet}/>)}
   </group>
 }

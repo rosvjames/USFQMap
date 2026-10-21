@@ -2,10 +2,15 @@ import { describe,expect,it } from 'vitest'
 import polygonClipping from 'polygon-clipping'
 import { CAMPUS_BUILDINGS,findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
-import { MIGUEL_GARDEN_ENTRANCE as h,MIGUEL_GARDEN_TOWER_RING,MIGUEL_GARDEN_ROOF_CUT,MIGUEL_GARDEN_APPROACH,isMiguelGardenTowerFace } from './miguelGarden'
+import { MIGUEL_GARDEN_ENTRANCE as h,MIGUEL_GARDEN_TOWER_RING,MIGUEL_GARDEN_ROOF_CUT,MIGUEL_GARDEN_APPROACH,isMiguelGardenTowerFace,miguelGardenToCampus } from './miguelGarden'
 import { MIGUEL_VOLUMES } from './miguel'
+import { isAnimalTravelClear } from './animalObstacles'
 
 describe('Miguel garden entrance photograph',()=>{
+  it('blocks travel through the rocket pedestal while leaving the entrance approach clear',()=>{
+    expect(isAnimalTravelClear(miguelGardenToCampus([5,8]),miguelGardenToCampus([12,8]),.2)).toBe(false)
+    expect(isAnimalTravelClear(miguelGardenToCampus([0,3]),miguelGardenToCampus([0,14]),.2)).toBe(true)
+  })
   it('fits the glazed shaft inside Miguel and removes the old roof crossing it',()=>{
     const building=findCampusBuilding('miguel-de-santiago')!
     expect(polygonClipping.difference([MIGUEL_GARDEN_TOWER_RING],[building.ring])).toEqual([])

@@ -1,5 +1,5 @@
 import polygonClipping from 'polygon-clipping'
-import { MIGUEL_GARDEN_ROOF_CUT, isMiguelGardenTowerFace } from '../lib/miguelGarden'
+import { MIGUEL_GARDEN_ROOF_CUT, isMiguelGardenTowerFace, isMiguelGlazedGardenFace } from '../lib/miguelGarden'
 import { useEffect, useMemo } from 'react'
 import { BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, MeshStandardMaterial, Shape, Vector2 } from 'three'
 import type { Vec2 } from '../types'
@@ -37,6 +37,7 @@ export function MiguelBuilding({materials,onSelect}:{materials:CampusMaterials;o
 export function MiguelEntrance({materials}:{materials:CampusMaterials}) {
   const finishes=useMemo(()=>({
     glass:new MeshStandardMaterial({color:'#3c645c',roughness:.2,metalness:.38}),
+    gardenGlass:new MeshStandardMaterial({color:'#a3c4b9',roughness:.32,metalness:.25}),
     frame:new MeshStandardMaterial({color:'#8bafa0',roughness:.52,metalness:.45}),
     iron:new MeshStandardMaterial({color:'#344a41',roughness:.65,metalness:.35}),
     stone:new MeshStandardMaterial({color:'#a8afa8',roughness:.94}),
@@ -75,6 +76,9 @@ export function MiguelEntrance({materials}:{materials:CampusMaterials}) {
       if(length<.1||!isMiguelExteriorEdge(a,b)||isMiguelGardenTowerFace(a,b))return null
       const glassFront=i===1&&(a[1]+b[1])/2>-39
       const count=Math.max(1,Math.floor(length/4.7)),floors=Math.floor(v.height/3.5)
+      if(isMiguelGlazedGardenFace(a,b))return <group key={`${i}-${j}`} position={[(a[0]+b[0])/2,0,-(a[1]+b[1])/2]} rotation={[0,Math.atan2(dy,dx),0]}>
+        <GardenCurtainFacade width={length} height={v.height} materials={materials} finishes={finishes}/>
+      </group>
       return <group key={`${i}-${j}`} position={[(a[0]+b[0])/2,0,-(a[1]+b[1])/2]} rotation={[0,Math.atan2(dy,dx),0]}>
         {!glassFront&&<Block at={[0,1.65,.06]} size={[length,3.3,.12]} material={materials.hallRed}/>}
         {[3.5,7,v.height].filter(y=>y<=v.height).map((y,k)=><Block key={k} at={[0,y-.08,.14]} size={[length+.12,.16,.3]} material={materials.cream}/>)}
@@ -124,6 +128,26 @@ export function MiguelEntrance({materials}:{materials:CampusMaterials}) {
         <Block at={[x,1.08,14.2]} size={[2.5,.4,.7]} material={finishes.hedge}/>
       </group>)}
     </group>
+  </group>
+}
+/** Mint window grid, charcoal columns and red ground-floor walls behind the exhibit. */
+function GardenCurtainFacade({width:w,height:h,materials,finishes}:{width:number;height:number;materials:CampusMaterials;finishes:{glass:MeshStandardMaterial;gardenGlass:MeshStandardMaterial;frame:MeshStandardMaterial;iron:MeshStandardMaterial}}) {
+  const cols=Math.max(2,Math.ceil(w/1.15)),rows=Math.max(1,Math.round((h-.55)/3.2))
+  return <group>
+    <Block at={[0,1.8,.07]} size={[w,2.5,.15]} material={materials.hallRed}/>
+    <Block at={[0,(h+.55)/2,.17]} size={[w-.08,h-.55,.12]} material={finishes.glass}/>
+    {Array.from({length:rows},(_,row)=>Array.from({length:cols},(_,col)=><Block key={`${row}-${col}`} at={[-w/2+(col+.5)*w/cols,.55+(row+.6)*(h-.55)/rows,.245]} size={[w/cols-.14,(h-.55)/rows*.68,.025]} material={finishes.gardenGlass}/>))}
+    {Array.from({length:cols+1},(_,i)=><group key={i}>
+      <Block at={[-w/2+i*w/cols,(h+.55)/2,.29]} size={[.045,h-.55,.12]} material={finishes.frame}/>
+      <Block at={[-w/2+i*w/cols+.11,(h+.55)/2,.3]} size={[.025,h-.55,.1]} material={finishes.frame}/>
+    </group>)}
+    {Array.from({length:rows+1},(_,i)=><group key={i}>
+      <Block at={[0,.55+i*(h-.55)/rows,.27]} size={[w,.085,.17]} material={finishes.frame}/>
+      <Block at={[0,.78+i*(h-.55)/rows,.29]} size={[w,.035,.1]} material={finishes.frame}/>
+    </group>)}
+    {[-1,1].map(side=><Block key={side} at={[side*(w/2-.08),h/2,.32]} size={[.16,h,.3]} material={finishes.iron}/>)}
+    <Block at={[0,h-.14,.32]} size={[w+.15,.25,.3]} material={finishes.iron}/>
+    <Block at={[0,h+.08,.1]} size={[w+.18,.16,.55]} material={materials.tealRoof}/>
   </group>
 }
 function GlazedTower({at,size,finishes}:{at:Point;size:Point;finishes:{glass:MeshStandardMaterial;frame:MeshStandardMaterial}}) {

@@ -14,6 +14,9 @@ import {
 import type { OutdoorRoute } from '../lib/outdoor'
 import type { BuildingPlan, GraphNode, Route, Vec2 } from '../types'
 import { INITIAL_VIEW, MapCamera, type MapCameraHandle, type MapFocus } from './MapCamera'
+import { WalkCamera } from './WalkCamera'
+import type { WalkInput } from '../lib/walkInput'
+import type { CampusAnimalId } from '../lib/campusAnimals'
 import { MapLabel } from './MapLabel'
 import { FacadeDetails } from './FacadeDetails'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
@@ -66,6 +69,7 @@ import { CachedShadows, useLightweightRendering } from './RenderSettings'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 
 const LEVEL_HEIGHT = 3.5
+const ignoreSelection = () => {}
 // Floors of the open building are drawn further apart than in reality so each one stays visible.
 const FLOOR_GAP = 9
 
@@ -129,10 +133,15 @@ interface SceneProps {
   cameraRef: Ref<MapCameraHandle>
   onViewChange: (azimuth: number, tilted: boolean) => void
   names: boolean
+  walking: boolean
+  walkInput: WalkInput
+  onExitWalk: () => void
+  onNearbyAnimalChange: (id:CampusAnimalId|null) => void
 }
 
 export const CampusScene = memo(function CampusScene(props: SceneProps) {
-  const { selectedBuildingId, plan } = props
+  const { selectedBuildingId } = props
+  const plan = props.walking ? undefined : props.plan
   const lightweight = useLightweightRendering()
   const materials = useMemo(createCampusMaterials, [])
   useEffect(() => () => materials.dispose(), [materials])
@@ -152,7 +161,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
   }, [selectedBuildingId, props.outdoorRoute])
 
   return (
-    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, antialias: true, powerPreference: 'high-performance' }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4 }} dpr={[1, 2]} frameloop="demand" shadows="percentage">
+    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, antialias: true, powerPreference: 'high-performance' }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4 }} dpr={[1, 2]} frameloop={props.walking ? 'always' : 'demand'} shadows="percentage">
       <color attach="background" args={[COLOR.city]} />
       {import.meta.env.DEV && <SceneMetrics />}
       <fog attach="fog" args={[COLOR.city, 900, 2400]} />
@@ -202,7 +211,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <MiguelGardenEntrance materials={materials} />
       <MaxwellDragon materials={materials} />
       </StaticDetails>
-      <CampusAnimals />
+      <CampusAnimals walking={props.walking} onNearbyAnimalChange={props.onNearbyAnimalChange}/>
       <CachedShadows sceneKey={`${plan?.buildingId}|${props.activeFloor}|${lightweight}`} />
 
       {CAMPUS_BUILDINGS.filter((building) => building.onCampus).map((building) =>
@@ -211,9 +220,9 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
             key={building.osmId}
             building={building}
             materials={materials}
-            selected={!!building.info && building.info.id === selectedBuildingId}
-            labelled={props.names && building.onCampus}
-            onSelect={props.onSelectBuilding}
+            selected={!props.walking && !!building.info && building.info.id === selectedBuildingId}
+            labelled={!props.walking && props.names && building.onCampus}
+            onSelect={props.walking ? ignoreSelection : props.onSelectBuilding}
           />
         ),
       )}
@@ -221,15 +230,15 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <FacadeDetails buildings={CAMPUS_BUILDINGS} />
 
       {plan && <IndoorPlan plan={plan} route={props.route} activeFloor={props.activeFloor} />}
-      {props.outdoorRoute && <OutdoorRouteLine route={props.outdoorRoute} />}
-      {props.userPosition && <UserMarker position={props.userPosition} />}
+      {props.outdoorRoute && !props.walking && <OutdoorRouteLine route={props.outdoorRoute} />}
+      {props.userPosition && !props.walking && <UserMarker position={props.userPosition} />}
 
-      <MapCamera
+      {props.walking ? <WalkCamera buildingId={selectedBuildingId} input={props.walkInput} onExit={props.onExitWalk}/> : <MapCamera
         ref={props.cameraRef}
         focus={focus}
         focusKey={`${selectedBuildingId}|${props.originId}|${!!props.outdoorRoute}`}
         onViewChange={props.onViewChange}
-      />
+      />}
     </Canvas>
   )
 })
