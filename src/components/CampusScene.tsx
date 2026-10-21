@@ -55,6 +55,8 @@ import { HallMiniPlaza } from './HallMiniPlaza'
 import { HALL_MINI_WORLD_OUTLINE } from '../lib/hallMiniPlaza'
 import { Pagoda } from './Pagoda'
 import { ColiseoInterior } from './ColiseoInterior'
+import { AcademicComplexInterior } from './AcademicComplexInterior'
+import { ACADEMIC_COMPLEX } from '../lib/academicComplex'
 import { SPORT_ZONES, TERRAIN_CUTOUTS, terrainHeightAt } from '../lib/terrain'
 import { LandscapeDetails } from './LandscapeDetails'
 import { createWalkwayGeometry, createTerrainShapes, createPavedShapes } from '../lib/architecture'
@@ -120,7 +122,7 @@ function ringShape(ring: Vec2[]): Shape {
 interface SceneProps {
   selectedBuildingId?: string
   plan?: BuildingPlan
-  /** Building drawn roofless with its modelled interior instead of its exterior volume. */
+  /** Building (or ACADEMIC_COMPLEX.id) drawn roofless with its modelled interior instead of its exterior volume. */
   interiorBuildingId?: string
   route: Route | null
   outdoorRoute: OutdoorRoute | null
@@ -136,7 +138,9 @@ interface SceneProps {
 
 export const CampusScene = memo(function CampusScene(props: SceneProps) {
   const { selectedBuildingId, plan, interiorBuildingId } = props
-  const exteriors = useMemo(() => CAMPUS_BUILDINGS.filter((building) => !interiorBuildingId || building.info?.id !== interiorBuildingId), [interiorBuildingId])
+  const exteriors = useMemo(() => CAMPUS_BUILDINGS.filter((building) => interiorBuildingId === ACADEMIC_COMPLEX.id
+    ? !ACADEMIC_COMPLEX.buildings.includes(building.info?.id ?? '') && !ACADEMIC_COMPLEX.extraFootprints.includes(building.osmId)
+    : !interiorBuildingId || building.info?.id !== interiorBuildingId), [interiorBuildingId])
   const lightweight = useLightweightRendering()
   const materials = useMemo(createCampusMaterials, [])
   useEffect(() => () => materials.dispose(), [materials])
@@ -224,6 +228,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
 
       <FacadeDetails buildings={exteriors} />
       {interiorBuildingId === 'coliseo' && <ColiseoInterior materials={materials} />}
+      {interiorBuildingId === ACADEMIC_COMPLEX.id && <AcademicComplexInterior materials={materials} floor={props.activeFloor} />}
 
       {plan && <IndoorPlan plan={plan} route={props.route} activeFloor={props.activeFloor} />}
       {props.outdoorRoute && <OutdoorRouteLine route={props.outdoorRoute} />}
