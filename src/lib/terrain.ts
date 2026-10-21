@@ -14,6 +14,7 @@ import { epicuroHeightAt, isEpicuroForecourt } from './epicuro'
 import { newtonHeightAt } from './newton'
 import { galileoHeightAt } from './galileo'
 import type { Vec2 } from '../types'
+import { COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT, COLISEO, campusToColiseo, coliseoToCampus } from './coliseo'
 
 export const PATH_LEVEL = 0.55
 export const BRIDGE_LEVEL = HAYEK_ENTRANCE.level
@@ -105,6 +106,12 @@ export function bridgeHeightAt(point: Vec2): number | undefined {
 }
 
 export function terrainHeightAt(point: Vec2): number {
+  if (!pointInPolygon(point,COLISEO_GARDEN_STAIRS) && (pointInPolygon(point,COLISEO_ANNEX_APRON) || pointInPolygon(point,COLISEO_LOWER_FORECOURT))) return campusBaseHeightAt(coliseoToCampus([campusToColiseo(point)[0],3.6]))+.02
+  if (pointInPolygon(point, COLISEO_GARDEN_STAIRS)) {
+    const [, z] = campusToColiseo(point)
+    const low = campusBaseHeightAt(coliseoToCampus([COLISEO.stairX, COLISEO.stairBottom])) + .02
+    return low + (COLISEO.platformLevel - low) * Math.min(1, (z - COLISEO.stairBottom) / (COLISEO.stairTop - COLISEO.stairBottom))
+  }
   const pagoda = pagodaEntranceHeightAt(point)
   if (pagoda !== undefined) return pagoda
   const epicuro = epicuroHeightAt(point)
@@ -143,6 +150,7 @@ export function terrainHeightAt(point: Vec2): number {
 /** Top terrain must be cut away so recessed floors remain visible from above and at eye level. */
 export const TERRAIN_CUTOUTS: Vec2[][] = [
   PAGODA_POND,
+  COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT,
   ...SPORT_ZONES.filter((zone) => zone.height < 0).map((zone) => zone.area.ring),
   ...SPORT_STAIRS.map(stairOutline), TENNIS_LANDING, SPORT_GATE,
 ]

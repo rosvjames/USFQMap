@@ -1,6 +1,7 @@
 import { BufferGeometry, Float32BufferAttribute } from 'three'
 import { CAMPUS_WALKWAYS, findCampusBuilding } from './campus'
 import type { Vec2 } from '../types'
+import { COLISEO_LANE, coliseoLaneHeightAt, coliseoPlatformBaseAt } from './coliseo'
 
 const pagoda = findCampusBuilding('pagoda')!
 const a = pagoda.ring[0], b = pagoda.ring[1], c = pagoda.ring[2]
@@ -16,7 +17,7 @@ export const CAMPUS_SLOPE = {
   upperLevel: .55,
   // A visual estimate of the downhill fall supplied in the reference description;
   // these are relative model heights, not a surveyed topographic measurement.
-  drop: 1.8,
+  drop: 3.2,
   plateau: 14,
   upperHalfWidth: 32,
   lowerHalfWidth: 11,
@@ -38,7 +39,8 @@ export function campusBaseHeightAt(point: Vec2): number {
   const side = 1 - smooth((across - halfWidth) / CAMPUS_SLOPE.shoulder)
   // Fade back into existing terrain beyond the approach; the crossing itself remains raised.
   const end = 1 - smooth((along - length - 4) / 16)
-  return CAMPUS_SLOPE.upperLevel - CAMPUS_SLOPE.drop * smooth(t) * side * end
+  const surrounding = CAMPUS_SLOPE.upperLevel - CAMPUS_SLOPE.drop * smooth(t) * side * end
+  return coliseoPlatformBaseAt(point, coliseoLaneHeightAt(point, CAMPUS_SLOPE.upperLevel, CAMPUS_SLOPE.drop, surrounding))
 }
 
 export function campusSlopeOffsetAt(point: Vec2): number {
@@ -62,10 +64,10 @@ export function createGradedSurfaceGeometry(input: BufferGeometry, frame: 'shape
     vertices.push(...p); uvs.push(...v.uv)
   }
   const bounds = {
-    minX: Math.min(CAMPUS_SLOPE.start[0], CAMPUS_SLOPE.end[0]) - 52,
-    maxX: Math.max(CAMPUS_SLOPE.start[0], CAMPUS_SLOPE.end[0]) + 52,
-    minY: Math.min(CAMPUS_SLOPE.start[1], CAMPUS_SLOPE.end[1]) - 52,
-    maxY: Math.max(CAMPUS_SLOPE.start[1], CAMPUS_SLOPE.end[1]) + 52,
+    minX: Math.min(CAMPUS_SLOPE.start[0], ...COLISEO_LANE.map(p => p[0])) - 52,
+    maxX: Math.max(CAMPUS_SLOPE.start[0], ...COLISEO_LANE.map(p => p[0])) + 52,
+    minY: Math.min(CAMPUS_SLOPE.start[1], ...COLISEO_LANE.map(p => p[1])) - 52,
+    maxY: Math.max(CAMPUS_SLOPE.start[1], ...COLISEO_LANE.map(p => p[1])) + 52,
   }
   const triangle = (a: Vertex, b: Vertex, c: Vertex, depth: number) => {
     const points = [a, b, c].map(map)

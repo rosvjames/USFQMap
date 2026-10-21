@@ -19,6 +19,7 @@ import { MIGUEL_GARDEN_ENTRANCE, miguelGardenToCampus } from './lib/miguelGarden
 import { CAMPUS_SLOPE, campusBaseHeightAt } from './lib/campusSlope'
 import { PAGODA, PAGODA_STAIR_FOOT } from './lib/pagoda'
 import { CASITA, casitaToCampus } from './lib/casita'
+import { COLISEO, coliseoToCampus } from './lib/coliseo'
 import { EPICURO_FRONT, epicuroToCampus } from './lib/epicuro'
 import { NEWTON_ENTRANCE, newtonToCampus } from './lib/newton'
 import { GALILEO_ENTRANCE, galileoToCampus } from './lib/galileo'
@@ -339,6 +340,18 @@ export default function App() {
             mapCamera.current?.flyTo({center:daVinciFrontToCampus([19,17]),span:narrow?34:44,aboveThePanel:true,azimuth:2.88,height:3.5,tilt:.95})
           }}>Ver pileta y toldo <span aria-hidden="true">↗</span></button>}
 
+          {building?.id === 'coliseo' && <button className="entrance-button" onClick={() => {
+            mapCamera.current?.flyTo({ center: coliseoToCampus([4, 5]), span: window.innerWidth < 760 ? 38 : 48, aboveThePanel: true, azimuth: COLISEO.angle + .55, height: 1.5, tilt: 1.15 })
+          }}>Ver fachada y bajada <span aria-hidden="true">↗</span></button>}
+          {building?.id === 'coliseo' && <button className="entrance-button" onClick={() => {
+            mapCamera.current?.flyTo({center:coliseoToCampus([1,10]),span:42,aboveThePanel:true,azimuth:.3,height:1.5,tilt:1.0})
+          }}>Ver gradas y jardín elevado <span aria-hidden="true">↗</span></button>}
+          {(building?.id === 'coliseo' || building?.id === 'banos-deportes') && <button className="entrance-button" onClick={() => {
+            mapCamera.current?.flyTo({center:coliseoToCampus([-15,10]),span:24,aboveThePanel:true,azimuth:COLISEO.angle+Math.PI+.65,height:1.8,tilt:1.08})
+          }}>Ver casita y mural <span aria-hidden="true">↗</span></button>}
+          {building?.id === 'coliseo' && <button className="entrance-button" onClick={() => {
+            mapCamera.current?.flyTo({center:[-42,-69],span:65,aboveThePanel:true,azimuth:-.55,height:.5,tilt:.8})
+          }}>Ver vóley y patio <span aria-hidden="true">↗</span></button>}
           {building?.id === 'pagoda' && <button className="entrance-button" onClick={()=>mapCamera.current?.flyTo({center:PAGODA_STAIR_FOOT,span:30,aboveThePanel:true,azimuth:PAGODA.angle-Math.PI/2,height:1.8,tilt:1.1})}>Ver gradas de la Pagoda <span aria-hidden="true">↗</span></button>}
           {building?.id === 'pagoda' && <button className="entrance-button" onClick={()=>{
             const center:[number,number]=[(CAMPUS_SLOPE.start[0]+CAMPUS_SLOPE.end[0])/2,(CAMPUS_SLOPE.start[1]+CAMPUS_SLOPE.end[1])/2]

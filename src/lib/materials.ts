@@ -20,14 +20,24 @@ function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
       : kind === 'stone' ? y % 32 < 1.5 || (x + Math.floor(y / 32) % 2 * 32) % 64 < 1.5 : false
     const pattern = kind === 'wood' ? Math.sin(x * 0.48 + Math.sin(y * 0.07) * 3 + Math.sin(y * 0.019) * 4) * 17 + Math.sin(x * 2.2 + Math.sin(y * 0.09)) * 5
       : kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 3
+      : kind === 'sand' ? Math.sin(x*.5+Math.sin(y*.13)*3)*9+Math.sin(y*.8+x*.23)*5
       : kind === 'grass' ? Math.sin(x * 1.7 + y * 2.4) * 10
       : kind === 'stone' ? Math.sin(Math.floor(x / 32) * 21 + Math.floor(y / 32) * 17) * 18 : 0
-    const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : kind === 'stone' ? 210 : 155 : 230) + noise * (kind === 'grass' ? 65 : 22) + pattern))
+    const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : kind === 'stone' ? 210 : 155 : 230) + noise * (kind === 'grass' ? 65 : kind === 'sand' ? 48 : 22) + pattern))
     const i = (y * 256 + x) * 4
     pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = shade
     pixels.data[i + 3] = 255
   }
   ctx.putImageData(pixels, 0, 0)
+  if (kind === 'sand') {
+    // Shallow scuffs and footprints in the sand, at the scale of the UV tile.
+    for(let i=0;i<18;i++) {
+      const x=random()*256,y=random()*256
+      ctx.save();ctx.translate(x,y);ctx.rotate(random()*Math.PI)
+      ctx.fillStyle=bump?'#9f9f9f':'#bdbdbd';ctx.beginPath();ctx.ellipse(0,0,4,10,0,0,Math.PI*2);ctx.fill()
+      ctx.strokeStyle='#ededed';ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(.5,.5,5,11,0,.2,Math.PI*1.2);ctx.stroke();ctx.restore()
+    }
+  }
   const texture = new CanvasTexture(canvas)
   texture.wrapS = texture.wrapT = RepeatWrapping
   texture.anisotropy = 4
@@ -57,6 +67,8 @@ export function createCampusMaterials() {
     cream: material('stucco', '#e4ddc8'),
     epicuroStone: material('stucco', '#b6b09c', 0.96, 0.025),
     academicOrange: material('stucco', '#db7842', 0.95, 0.025),
+    coliseoOrange: material('stucco', '#c85e35', .95, .025),
+    coliseoLane: material('paving', '#73766e', .98, .025),
     hallRed: material('stucco', '#c3654f', 0.95, 0.025),
     entranceStone: material('stone', '#b8b6a8', 0.95, 0.025),
     redStone: material('stone', '#aa705a', 0.95, 0.025),
@@ -71,7 +83,7 @@ export function createCampusMaterials() {
     paving: material('paving', '#c1b8a2', 0.95, 0.04),
     lakePaving: material('paving', '#b79578', 0.95, 0.025),
     road: material('stucco', '#aaa9a0', 1, 0.025),
-    sand: material('sand', '#d4bd8b', 1, 0.025),
+    sand: material('sand', '#cec0a0', 1, 0.09),
     tennis: material('stucco', '#286fa8', 0.95, 0.008),
     synthetic: material('grass', '#3b6a48', 0.95, 0.009),
     water: material('water', '#557e63', 0.22, 0.035, 0.35),
