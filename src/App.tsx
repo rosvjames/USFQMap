@@ -162,7 +162,7 @@ export default function App() {
       <CampusScene
         selectedBuildingId={destination?.buildingId}
         plan={plan}
-        interiorBuildingId={!interiorOpen ? undefined : building?.id === 'coliseo' ? 'coliseo' : isAcademicComplexBuilding(building?.id) ? ACADEMIC_COMPLEX.id : undefined}
+        interiorBuildingId={!interiorOpen ? undefined : building?.id === 'coliseo' ? 'coliseo' : ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) ? ACADEMIC_COMPLEX.id : undefined}
         route={route}
         outdoorRoute={outdoorRoute}
         originId={originId}
@@ -217,7 +217,7 @@ export default function App() {
 
       {!destination && !query && <CampusGuide collapsed={guideCollapsed} onToggle={() => setGuideCollapsed((value) => !value)} onSelectBuilding={selectBuilding} onPagoda={() => selectBuilding('pagoda')} onSports={() => mapCamera.current?.flyTo({ center: [-25, -97], span: 140, aboveThePanel: false })} />}
 
-      {interiorOpen && isAcademicComplexBuilding(building?.id) && (
+      {interiorOpen && ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) && (
         <nav className="floors" aria-label="Piso">
           {[...ACADEMIC_COMPLEX.floors].reverse().map((level) => (
             <button key={level} className={level === activeFloor ? 'active' : ''} onClick={() => setActiveFloor(level)}>{level}</button>
@@ -376,14 +376,14 @@ export default function App() {
             setInteriorOpen(!interiorOpen)
           }}>{interiorOpen ? 'Volver al exterior' : 'Ver interior · piso 1'} <span aria-hidden="true">↗</span></button>}
           {building?.id === 'coliseo' && interiorOpen && <p className="warning">Prototipo trazado sobre una foto del plano de evacuación: medidas aproximadas y espacios aún sin identificar.</p>}
-          {isAcademicComplexBuilding(building?.id) && <button className="entrance-button" aria-pressed={interiorOpen} onClick={() => {
+          {ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) && <button className="entrance-button" aria-pressed={interiorOpen} onClick={() => {
             if (!interiorOpen) {
               setActiveFloor(1)
               mapCamera.current?.flyTo({ center: ACADEMIC_COMPLEX_CENTER, span: window.innerWidth < 760 ? 90 : 110, aboveThePanel: true, azimuth: 0, height: complexFloorElevation(1), tilt: 0.55 })
             }
             setInteriorOpen(!interiorOpen)
           }}>{interiorOpen ? 'Volver al exterior' : 'Ver interior · Galileo, Einstein, Darwin y Newton'} <span aria-hidden="true">↗</span></button>}
-          {isAcademicComplexBuilding(building?.id) && interiorOpen && <p className="warning">Muros trazados automáticamente desde fotos de los planos de evacuación: posiciones aproximadas (±1 m) y aulas aún sin identificar. Cambia de piso con los botones 1–3.</p>}
+          {ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) && interiorOpen && <p className="warning">Muros trazados automáticamente desde fotos de los planos de evacuación: posiciones aproximadas (±1 m) y aulas aún sin identificar. Cambia de piso con los botones 1–3.</p>}
 
           {building?.id === 'gobe' && <button className="entrance-button" onClick={() => {
             const narrow=window.innerWidth<760

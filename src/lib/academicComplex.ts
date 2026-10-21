@@ -7,6 +7,8 @@ import type { Vec2 } from '../types'
 // drawn as single lines, curved or diagonal (the arched stair, the courtyard curve) are not traced.
 export const ACADEMIC_COMPLEX = {
   id: 'complejo-academico',
+  /** Hidden from the app: the photo tracing is too far off the real layout. Re-enable with CAD walls. */
+  visible: false,
   buildings: ['galileo', 'einstein', 'darwin', 'newton'],
   /** Newton's wing towards Casa Blanca, mapped in OSM as part of Casa Blanca. */
   extraFootprints: ['way/395849376'],
