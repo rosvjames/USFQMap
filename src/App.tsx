@@ -20,7 +20,7 @@ import { CAMPUS_SLOPE, campusBaseHeightAt } from './lib/campusSlope'
 import { PAGODA, PAGODA_STAIR_FOOT } from './lib/pagoda'
 import { CASITA, casitaToCampus } from './lib/casita'
 import { COLISEO, coliseoToCampus } from './lib/coliseo'
-import { COLISEO_CENTER } from './lib/coliseoInterior'
+import { COLISEO_CENTER, COLISEO_INTERIOR_VISIBLE } from './lib/coliseoInterior'
 import { ACADEMIC_COMPLEX, ACADEMIC_COMPLEX_CENTER, complexFloorElevation, isAcademicComplexBuilding } from './lib/academicComplex'
 import { EPICURO_FRONT, epicuroToCampus } from './lib/epicuro'
 import { NEWTON_ENTRANCE, newtonToCampus } from './lib/newton'
@@ -163,7 +163,7 @@ export default function App() {
       <CampusScene
         selectedBuildingId={destination?.buildingId}
         plan={plan}
-        interiorBuildingId={!interiorOpen ? undefined : building?.id === 'coliseo' ? 'coliseo' : ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) ? ACADEMIC_COMPLEX.id : undefined}
+        interiorBuildingId={!interiorOpen ? undefined : COLISEO_INTERIOR_VISIBLE && building?.id === 'coliseo' ? 'coliseo' : ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) ? ACADEMIC_COMPLEX.id : undefined}
         route={route}
         outdoorRoute={outdoorRoute}
         originId={originId}
@@ -372,11 +372,11 @@ export default function App() {
             mapCamera.current?.flyTo({center,span:95,aboveThePanel:true,azimuth:-.7,height:campusBaseHeightAt(center)+2,tilt:1.1})
           }}>Ver bajada hacia el puente <span aria-hidden="true">↗</span></button>}
 
-          {building?.id === 'coliseo' && <button className="entrance-button" aria-pressed={interiorOpen} onClick={() => {
+          {COLISEO_INTERIOR_VISIBLE && building?.id === 'coliseo' && <button className="entrance-button" aria-pressed={interiorOpen} onClick={() => {
             if (!interiorOpen) mapCamera.current?.flyTo({ center: COLISEO_CENTER, span: window.innerWidth < 760 ? 52 : 64, aboveThePanel: true, azimuth: 0, height: 1, tilt: 0.5 })
             setInteriorOpen(!interiorOpen)
           }}>{interiorOpen ? 'Volver al exterior' : 'Ver interior · piso 1'} <span aria-hidden="true">↗</span></button>}
-          {building?.id === 'coliseo' && interiorOpen && <p className="warning">Prototipo trazado sobre una foto del plano de evacuación: medidas aproximadas y espacios aún sin identificar.</p>}
+          {COLISEO_INTERIOR_VISIBLE && building?.id === 'coliseo' && interiorOpen && <p className="warning">Prototipo trazado sobre una foto del plano de evacuación: medidas aproximadas y espacios aún sin identificar.</p>}
           {ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) && <button className="entrance-button" aria-pressed={interiorOpen} onClick={() => {
             if (!interiorOpen) {
               setActiveFloor(1)

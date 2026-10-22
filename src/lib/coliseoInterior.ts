@@ -24,6 +24,8 @@ export function coliseoToCampus([x, y]: Vec2): Vec2 {
   return [origin[0] + ux * x - uy * y, origin[1] + uy * x + ux * y]
 }
 export const COLISEO_CENTER = coliseoToCampus([width / 2, depth / 2])
+/** Hidden from the app, like the academic complex: a photo of the sign is too rough a source. */
+export const COLISEO_INTERIOR_VISIBLE: boolean = false
 
 export interface Door { at: number; width: number }
 export interface Wall { from: Vec2; to: Vec2; outer?: boolean; doors?: Door[] }
