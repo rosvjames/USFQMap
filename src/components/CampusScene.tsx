@@ -18,6 +18,7 @@ import { WalkCamera } from './WalkCamera'
 import type { WalkInput } from '../lib/walkInput'
 import type { CampusAnimalId } from '../lib/campusAnimals'
 import { MapLabel } from './MapLabel'
+import { LabelCollision } from './LabelCollision'
 import { FacadeDetails } from './FacadeDetails'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
 import { SportsGround } from './SportsGround'
@@ -225,6 +226,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <CampusAnimals walking={props.walking} onNearbyAnimalChange={props.onNearbyAnimalChange}/>
       <CachedShadows sceneKey={`${plan?.buildingId}|${interiorBuildingId}|${props.activeFloor}|${lightweight}`} />
 
+      <LabelCollision>
       {exteriors.filter((building) => building.onCampus).map((building) =>
         plan && building.info?.id === plan.buildingId ? null : (
           <BuildingMesh
@@ -237,6 +239,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
           />
         ),
       )}
+      </LabelCollision>
 
       <FacadeDetails buildings={exteriors} />
       {interiorBuildingId === 'coliseo' && <ColiseoInterior materials={materials} />}
@@ -357,6 +360,16 @@ function FlatArea({ ring, height, color, material, cutTerrain = false, graded = 
   </mesh>
 }
 
+/** The selected building always keeps its name; then catalogued university buildings, the larger first; then minor services. */
+function labelPriority(building: CampusBuilding, selected: boolean): number {
+  if (selected) return Infinity
+  const area = Math.abs(building.ring.reduce((sum, [x, y], i) => {
+    const [nx, ny] = building.ring[(i + 1) % building.ring.length]
+    return sum + x * ny - nx * y
+  }, 0)) / 2
+  return (building.info ? 1e6 : 0) + area
+}
+
 function BuildingMesh(props: { building: CampusBuilding; materials: CampusMaterials; selected: boolean; labelled: boolean; onSelect: (id: string) => void }) {
   const { building, selected, onSelect, materials } = props
   const shape = useMemo(() => building.info?.id === 'guardiania-norte' ? createTerrainShapes(building.ring,[CAMPUS_GATE_CUTOUT]) : building.info?.id === 'einstein' ? createTerrainShapes(building.ring,[HALL_TUNNEL_CUTOUT]) : ringShape(building.ring), [building])
@@ -414,8 +427,8 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
       {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
       {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} scale={info?.id === 'pagoda' ? 0.5 : info?.id === 'gobe' ? .3 : 1} />}
-      {props.labelled && (
-        <MapLabel text={building.name ?? 'Nombre pendiente'} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={false} />
+      {props.labelled && building.name && (
+        <MapLabel text={building.name} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={false} priority={labelPriority(building, selected)} />
       )}
     </group>
   )
