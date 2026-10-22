@@ -30,7 +30,9 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
       </p>
       <p className="nav-step">{instruction}</p>
       {detail && <p className="nav-detail">{detail}</p>}
-      <img className={`nav-mascot${last ? ' arrived' : ''}`} src={last ? '/mascota/logrado.png' : '/mascota/guiando.png'} alt="" />
+      {last
+        ? <img className="nav-mascot arrived" src="/mascota/logrado.png" width={172} height={172} alt="" />
+        : <img className="nav-mascot" src="/mascota/guiando.png" width={184} height={173} alt="" />}
       {!last && <button className="nav-next" onClick={() => onStep(step + 1)} aria-label="Siguiente paso" />}
     </section>
 
@@ -38,7 +40,7 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
       <div className="nav-summary">
         {walk && <p className="eta-inline"><strong>{walk.minutes} min</strong> · {walk.meters} m</p>}
         <p className="sub">Hacia {destination}</p>
-        <span className="progress" aria-hidden="true"><span style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></span>
+        <span className="progress" aria-hidden="true"><span style={{ transform: `scaleX(${(step + 1) / steps.length})` }} /></span>
       </div>
       {step > 0 && <button className="secondary-button icon-only" onClick={() => onStep(step - 1)} aria-label="Paso anterior"><BackIcon /></button>}
       <button className="secondary-button" onClick={onEnd}>Terminar</button>

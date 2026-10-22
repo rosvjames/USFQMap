@@ -198,7 +198,7 @@ export default function App() {
       />
 
       {!walking && <>
-      {!destination && <p className="brand-pill"><span className="brand-mark" aria-hidden="true">U</span>USFQ <span>Explora</span></p>}
+      {!destination && <h1 className="brand-pill"><span className="brand-mark" aria-hidden="true">U</span>USFQ <span>Explora</span></h1>}
 
       {destination && !navigatingNow && (
         <div className="route-top">
@@ -245,7 +245,7 @@ export default function App() {
         <button className="round-button zoom" onClick={() => mapCamera.current?.zoomBy(0.6)} aria-label="Acercar">+</button>
         <button className="round-button zoom" onClick={() => mapCamera.current?.zoomBy(1.6)} aria-label="Alejar">−</button>
       </div>}
-      {!destination && originId === GPS && gps.error && <p className="toast">{gps.error}</p>}
+      {!destination && originId === GPS && gps.error && <p className="toast" role="status">{gps.error}</p>}
 
       {!destination && (
         <HomeSheet

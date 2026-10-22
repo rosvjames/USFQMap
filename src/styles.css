@@ -44,6 +44,8 @@ select {
 
 button {
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :focus-visible {
@@ -135,6 +137,7 @@ button {
   left: 50%;
   bottom: -9%;
   width: min(540px, 138vw);
+  height: auto;
   animation: splash-float 2.6s ease-in-out infinite;
 }
 
@@ -257,9 +260,45 @@ button {
   color: var(--muted);
 }
 
+@media (hover: hover) {
+  .round-button:hover,
+  .chip:hover,
+  .secondary-button:hover,
+  .info-button:hover,
+  .results button:hover {
+    background-color: var(--soft);
+  }
+
+  .round-button.active:hover {
+    background-color: #1f5cc0;
+  }
+
+  .primary-button:hover,
+  .tile-walk:hover {
+    background-color: #b00e28;
+  }
+
+  .tile-pagoda:hover {
+    background-color: #ffe9a8;
+  }
+
+  .tile-sports:hover {
+    background-color: #cdedd5;
+  }
+
+  .secondary-button:hover {
+    background-color: var(--line);
+  }
+
+  .location-list button:hover strong {
+    color: var(--red);
+  }
+}
+
 /* Over the map */
 
 .brand-pill {
+  font-weight: 400;
   position: absolute;
   top: var(--top);
   left: var(--gutter);
@@ -355,6 +394,8 @@ button {
   flex: 1;
   min-width: 0;
   padding: 0 14px 0 0;
+  color: var(--ink);
+  background-color: var(--surface);
   font-size: 16px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -438,6 +479,7 @@ button {
   right: 30px;
   bottom: calc(100% - 46px);
   width: 150px;
+  height: auto;
   pointer-events: none;
 }
 
@@ -473,6 +515,8 @@ button {
 }
 
 .sheet-handle {
+  -webkit-user-select: none;
+  user-select: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -656,6 +700,10 @@ button {
   color: var(--muted);
 }
 
+.destination-head > div {
+  min-width: 0;
+}
+
 .destination-head h1 {
   margin: 6px 0 0;
   font-family: var(--display);
@@ -832,6 +880,7 @@ button {
   right: 0;
   bottom: -12px;
   width: 104px;
+  height: auto;
   transform: scaleX(-1);
   pointer-events: none;
 }
@@ -907,7 +956,8 @@ button {
   height: 100%;
   background: var(--red);
   border-radius: 999px;
-  transition: width 0.3s ease;
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
 .nav-locate {

@@ -26,9 +26,9 @@ export function SplashScreen({ ready }: { ready: boolean }) {
       <div className="splash-brand">
         <p className="wordmark">USFQ <span>Explora</span></p>
         <span className="splash-bar" aria-hidden="true"><span /></span>
-        <span className="visually-hidden">{leaving ? 'Campus listo' : 'Cargando el campus'}</span>
+        <span className="visually-hidden">{leaving ? 'Campus listo' : 'Cargando el campus…'}</span>
       </div>
-      <img className="splash-mascot" src="/mascota/saludo.png" alt="" />
+      <img className="splash-mascot" src="/mascota/saludo.png" width={457} height={445} alt="" />
     </div>
   )
 }

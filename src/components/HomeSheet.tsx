@@ -30,7 +30,7 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
 
   return (
     <div className="sheet-dock home">
-      <img className="peek" src="/mascota/asomado.png" alt="" />
+      <img className="peek" src="/mascota/asomado.png" width={182} height={170} alt="" />
       <a className="osm-credit-map" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OSM</a>
       <section ref={sheet} className="sheet" aria-label="Buscar en el campus">
         <div className="sheet-handle" {...handle}>
@@ -41,11 +41,15 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
           <span className="visually-hidden">Buscar aula o edificio</span>
           <input
             type="search"
+            name="destino"
+            autoComplete="off"
+            spellCheck={false}
+            enterKeyHint="search"
             value={query}
             onChange={(event) => onQuery(event.target.value)}
             onKeyDown={(event) => { if (event.key === 'Enter' && results[0]) onChoose(results[0]) }}
             onFocus={() => setFolded(false)}
-            placeholder="¿A dónde vas? Prueba M302"
+            placeholder="¿A dónde vas? Prueba M302…"
           />
         </label>
 
