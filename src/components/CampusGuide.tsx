@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { BUILDINGS } from '../data/buildings'
 import { LOCATIONS, MAP_NUMBERS, SOURCES } from '../data/references'
 
-export function CampusGuide({ onSelectBuilding, onPagoda, onSports, collapsed, onToggle }: { onSelectBuilding: (id: string) => void; onPagoda: () => void; onSports: () => void; collapsed: boolean; onToggle: () => void }) {
+export function CampusGuide({ onSelectBuilding, onPagoda, onSports, onWalk, collapsed, onToggle }: { onSelectBuilding: (id: string) => void; onPagoda: () => void; onSports: () => void; onWalk: () => void; collapsed: boolean; onToggle: () => void }) {
   if (collapsed) return <button className="campus-tab" aria-label="Mostrar información del campus" aria-expanded={false} onClick={onToggle}><span aria-hidden="true">›</span> Campus</button>
   return (
     <section className="guide">
@@ -10,7 +10,8 @@ export function CampusGuide({ onSelectBuilding, onPagoda, onSports, collapsed, o
       <p className="eyebrow">Universidad San Francisco de Quito</p>
       <h1>Campus Cumbayá</h1>
       <p className="guide-intro">Explora Cumbayá en 3D, encuentra un edificio o busca el código de tu aula.</p>
-      <button className="pagoda-button" onClick={onPagoda}>Ver la Pagoda <span aria-hidden="true">↗</span></button>
+      <button className="walk-button" onClick={onWalk}>Explorar a pie <span aria-hidden="true">↗</span></button>
+      <button className="sports-button" onClick={onPagoda}>Ver la Pagoda <span aria-hidden="true">↗</span></button>
       <button className="sports-button" onClick={onSports}>Ver canchas y terrazas <span aria-hidden="true">↗</span></button>
       <div className="guide-stats"><span><strong>{BUILDINGS.length}</strong> lugares en el mapa</span><span><strong>{LOCATIONS.length}</strong> referencias de aulas y oficinas</span></div>
       <details className="directory">

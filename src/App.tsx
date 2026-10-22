@@ -15,7 +15,7 @@ import { MIGUEL_ENTRANCE, miguelToCampus } from './lib/miguel'
 import { DA_VINCI_PASSAGE, daVinciToCampus } from './lib/daVinci'
 import { DA_VINCI_FRONT, daVinciFrontToCampus } from './lib/daVinciPlaza'
 import { HAYEK_ENTRANCE, HAYEK_APICE, HAYEK_LOWER_FLOORS, hayekToCampus } from './lib/hayek'
-import { MIGUEL_GARDEN_ENTRANCE, miguelGardenToCampus } from './lib/miguelGarden'
+import { MIGUEL_GARDEN_ENTRANCE, MIGUEL_ROCKET, miguelGardenToCampus } from './lib/miguelGarden'
 import { CAMPUS_SLOPE, campusBaseHeightAt } from './lib/campusSlope'
 import { PAGODA, PAGODA_STAIR_FOOT } from './lib/pagoda'
 import { CASITA, casitaToCampus } from './lib/casita'
@@ -29,6 +29,11 @@ import { useGeolocation } from './lib/useGeolocation'
 import type { BuildingPlan } from './types'
 import { CampusGuide, SourcesDialog } from './components/CampusGuide'
 import { LOCATIONS, MAP_NUMBERS, SOURCES } from './data/references'
+import { clearWalkInput, type WalkInputState } from './lib/walkInput'
+import type { CampusAnimalId } from './lib/campusAnimals'
+import { WalkControls } from './components/WalkControls'
+import { CAMPUS_BOUNDARY, findCampusBuilding } from './lib/campus'
+import { pointInPolygon } from './lib/geo'
 
 const GPS = 'gps'
 // Building next to the main gate on the official campus map.
@@ -69,6 +74,10 @@ export default function App() {
   const [interiorOpen, setInteriorOpen] = useState(false)
   const [sourcesOpen, setSourcesOpen] = useState(false)
   const [guideCollapsed, setGuideCollapsed] = useState(false)
+  const [walking, setWalking] = useState(false)
+  const [nearbyAnimal, setNearbyAnimal] = useState<CampusAnimalId|null>(null)
+  const walkInput = useRef<WalkInputState>({actions:new Set(),movement:[0,0]})
+  const exitWalk = useCallback(() => { clearWalkInput(walkInput.current); setNearbyAnimal(null); setWalking(false) }, [])
   const mapCamera = useRef<MapCameraHandle>(null)
   const compassNeedle = useRef<SVGSVGElement>(null)
 
@@ -102,6 +111,13 @@ export default function App() {
   const plan = destination ? PLANS[destination.buildingId] : undefined
   const reference = destination?.kind === 'building' ? destination.reference : undefined
   const buildingLocations = LOCATIONS.filter((location) => location.buildingId === destination?.buildingId)
+  const footprint = building && findCampusBuilding(building.id)
+  const canWalkHere = footprint && (pointInPolygon(footprint.center, CAMPUS_BOUNDARY) || building?.id === 'hayek')
+  function startWalk() {
+    if(destination && !canWalkHere)setDestination(null)
+    clearWalkInput(walkInput.current)
+    setWalking(true)
+  }
   const route = useMemo(
     () => (plan && destination?.kind === 'room' ? findRoute(plan, pickIndoorOrigin(plan), destination.node.id) : null),
     [plan, destination],
@@ -159,7 +175,7 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className={`app${walking ? ' walking' : ''}`}>
       <CampusScene
         selectedBuildingId={destination?.buildingId}
         plan={plan}
@@ -173,10 +189,15 @@ export default function App() {
         cameraRef={mapCamera}
         onViewChange={handleViewChange}
         names={names}
+        walking={walking}
+        walkInput={walkInput}
+        onExitWalk={exitWalk}
+        onNearbyAnimalChange={setNearbyAnimal}
       />
 
       <div className="brand-bar"><div className="brand"><span className="brand-mark">U</span><div><strong>USFQ<span>Explora</span></strong><small>Campus Santiago Gangotena</small></div></div><span className="exhibit-label">Cumbayá, Ecuador <i /> Casa abierta</span></div>
 
+      {!walking && <>
       <header className="search">
         <div className="search-field">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
@@ -216,7 +237,7 @@ export default function App() {
         )}
       </header>
 
-      {!destination && !query && <CampusGuide collapsed={guideCollapsed} onToggle={() => setGuideCollapsed((value) => !value)} onSelectBuilding={selectBuilding} onPagoda={() => selectBuilding('pagoda')} onSports={() => mapCamera.current?.flyTo({ center: [-25, -97], span: 140, aboveThePanel: false })} />}
+      {!destination && !query && <CampusGuide collapsed={guideCollapsed} onToggle={() => setGuideCollapsed((value) => !value)} onSelectBuilding={selectBuilding} onWalk={startWalk} onPagoda={() => selectBuilding('pagoda')} onSports={() => mapCamera.current?.flyTo({ center: [-25, -97], span: 140, aboveThePanel: false })} />}
 
       {interiorOpen && ACADEMIC_COMPLEX.visible && isAcademicComplexBuilding(building?.id) && (
         <nav className="floors" aria-label="Piso">
@@ -237,6 +258,9 @@ export default function App() {
       )}
 
       <div className="map-controls">
+        <button className="explore-control" onClick={startWalk} aria-label="Explorar a pie" title="Explorar a pie">
+          <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="m8 21 3-7 3 3v4M6 12l3-4 4 1 2 4 4 1M11 9l-1 5"/></svg>
+        </button>
         <button className="building-label-toggle" role="switch" aria-checked={names} onClick={() => setNames((visible) => !visible)}>
           <span>Nombres de edificios</span>
           <span className="names-switch" aria-hidden="true" />
@@ -323,6 +347,9 @@ export default function App() {
             const narrow=window.innerWidth<760
             mapCamera.current?.flyTo({center:miguelGardenToCampus([0,3]),span:narrow?30:40,aboveThePanel:true,azimuth:MIGUEL_GARDEN_ENTRANCE.angle+.14,height:5,tilt:1.12})
           }}>Ver entrada del jardín <span aria-hidden="true">↗</span></button>}
+          {building?.id === 'miguel-de-santiago' && <button className="entrance-button" onClick={() => {
+            mapCamera.current?.flyTo({center:miguelGardenToCampus(MIGUEL_ROCKET.at),span:window.innerWidth<760?25:29,aboveThePanel:true,azimuth:MIGUEL_GARDEN_ENTRANCE.angle+1.22,height:8,tilt:1.23})
+          }}>Ver cohete y jardín <span aria-hidden="true">↗</span></button>}
 
           {building?.id === 'epicuro' && <button className="entrance-button" onClick={() => {
             const narrow=window.innerWidth<760
@@ -444,8 +471,11 @@ export default function App() {
           {!plan && !interiorOpen && <p className="note">{building?.id === 'hayek' ? 'La ruta exterior llega a la entrada del puente. Ápice está abajo, en el piso 0; el plano interior y las rutas a los subsuelos aún no están disponibles.' : 'La ruta llega al exterior del edificio, a un acceso aproximado. El plano interior aún no está disponible.'}</p>}
           {plan?.placeholder && <p className="warning">Plano de ejemplo: las aulas y pasillos aún no son los reales.</p>}
           {buildingLocations.length > 0 && !roomCode && <div className="location-list"><h2>Aulas y oficinas documentadas</h2>{buildingLocations.map((location) => <button key={location.code} onClick={() => choose(search(location.code)[0])}><strong>{location.code}</strong><span>{floorName(location.floor, building?.id)} · {location.historical ? 'histórica' : location.label}</span><span aria-hidden="true">↗</span></button>)}</div>}
+          <button className="walk-button panel-walk" onClick={startWalk}>{canWalkHere ? 'Explorar este sector a pie' : 'Recorrer el campus principal'} <span aria-hidden="true">↗</span></button>
         </section>
       )}
+      </>}
+      {walking && <WalkControls input={walkInput} onExit={exitWalk} nearbyAnimal={nearbyAnimal}/>}
       <footer className="map-footer"><span><i className="legend-dot" /> Modelo 3D · detalles visuales aproximados</span><button onClick={() => setSourcesOpen(true)}>Fuentes y cobertura ↗</button><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a></footer>
       {sourcesOpen && <SourcesDialog onClose={() => setSourcesOpen(false)} />}
     </div>

@@ -16,6 +16,7 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 ## Controles
 
 - Mapa: arrastrar para desplazar, rueda/pellizco para acercar y botón derecho/dos dedos para girar. El botón 2D/3D cambia la perspectiva.
+- «Explorar a pie» abre el recorrido exterior desde la pantalla inicial o desde el icono de persona; la ficha de cada edificio permite iniciar cerca de ese sector. WASD desplaza, las flechas arriba/abajo avanzan y retroceden y las flechas izquierda/derecha giran. Arrastrar sobre la escena permite mirar; en móvil hay un joystick analógico pequeño para caminar y se puede arrastrar con otro dedo sobre la escena para mirar. «Volver al mapa» o Esc termina el recorrido.
 - Buscar M302, G111, DW010, H100F, un edificio o un servicio como Registro.
 - «Fuentes y cobertura» muestra las referencias y los límites de los datos.
 - «Ver canchas y terrazas» acerca la cámara al sector deportivo. El interruptor «Nombres de edificios», arriba a la derecha, muestra u oculta sus etiquetas, incluida la del edificio seleccionado. Los nombres están activados inicialmente.
@@ -28,7 +29,7 @@ Los detalles arquitectónicos son una interpretación visual de fotografías pú
 
 La revisión satelital en Apple Maps del 1 de octubre de 2026 diferencia cubiertas terracota, oscuras, verdes y turquesa, añade claraboyas a Da Vinci, Einstein, Galileo y Newton, y combina azoteas claras con bandas de cubierta oscura en Hayek. Los patios pavimentados se recortan alrededor de edificios, agua, jardines y desniveles; los centros de los céspedes se mantienen despejados y se concentra la plantación junto a la laguna. La vista general incluye el campus, el puente y Hayek. Los edificios ajenos a la universidad se dibujan como volúmenes bajos y neutros. Las posiciones y dimensiones interpretadas desde la imagen son aproximaciones visuales: no modifican las huellas ni añaden senderos confirmados al grafo de navegación.
 
-Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. Se retiró el recorrido de primera persona para concentrar el proyecto en orientación y GPS; se mantiene el mapa 3D con sus rutas exteriores.
+Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. El botón «Explorar a pie» activa de nuevo el recorrido exterior en primera persona; el mapa 3D mantiene sus rutas y el GPS.
 
 La zona deportiva se corrigió según la descripción del estudiante: dos canchas de vóley sobre arena, terraza inferior de césped con mesas y sillas metálicas, dos canchas de tenis azules más abajo, fútbol sintético con reja y fútbol natural a desnivel. Hay accesos por gradas a la izquierda del tenis y del campo natural. Las huellas se conservan, pero las profundidades, mobiliario, accesos y altura del puente son aproximaciones visuales, no un levantamiento topográfico.
 
@@ -121,7 +122,9 @@ El frente de Newton hacia la laguna se ajustó con la fotografía transversal: a
 
 Epicuro tiene ahora el frente elevado visto desde Da Vinci: base roja, balcón, tres filas de ventanas con molduras, torre con cubierta piramidal verde y fuente baja con nicho arqueado. El acceso a la derecha desde Pampite baja por gradas al patio; su forma es provisional hasta recibir la fotografía de ese acceso. Se revisa desde «Ver torre y fuente» en la ficha de Epicuro.
 
-La segunda entrada de Miguel de Santiago, hacia el jardín del lado sur, está modelada con torre de vidrio desde el suelo, cubierta plana verde, puertas centrales, pequeño alero y camino flanqueado por setos y árboles altos. La ficha del edificio incluye «Ver entrada del jardín».
+La segunda entrada de Miguel de Santiago, hacia el jardín del lado sur, está modelada con torre de vidrio desde el suelo, cubierta plana verde, puertas centrales, pequeño alero y camino junto al césped. La ficha del edificio incluye «Ver entrada del jardín».
+
+La fotografía aportada el 21 de octubre de 2026 corrige el jardín contiguo: se sustituyen los tres árboles altos frente a la fachada por el cohete blanco y negro con etapas, aletas, motores, soportes y pedestal. Las alas escalonadas que miran al jardín tienen vidrio con perfiles verde menta, pilares oscuros y base rojiza. Se añaden palmeras, árboles ramificados en el borde, mesas y sillas blancas sobre grava, césped desgastado, arbustos bajos, un poste de cámara y el basurero verde de tres compartimentos. «Ver cohete y jardín» muestra el conjunto desde una perspectiva cercana a la foto. Ubicación, escala y detalles son aproximaciones visuales sobre las huellas existentes; no se modifica el grafo de rutas. El pedestal y el mobiliario se incluyen en los obstáculos de los animales.
 
 Ápice se representa bajo la terraza de Hayek y aparece en la búsqueda como cafetería y punto de encuentro del piso 0. La ficha también identifica los subsuelos −1 y −2 de aulas. La ruta exterior llega a la entrada del puente; el descenso interior y los planos de los subsuelos están pendientes.
 
@@ -157,3 +160,9 @@ Solo se trazan los muros rectos dibujados con línea doble. Las gradas en arco, 
 ### Paso por el Hall hacia Da Vinci, Epicuro y Maxwell
 
 OSM no tiene senderos al norte de Einstein, así que hasta ahora las rutas a Da Vinci, Epicuro y Maxwell terminaban con una línea recta que cruzaba edificios. Según el estudiante, a esa zona se llega atravesando el Hall Principal y saliendo por su patio trasero, y entre Einstein y Da Vinci hay un paso abierto hasta el patio de Maxwell. `src/lib/northCourts.ts` añade esos recorridos al grafo: el cruce del Hall hasta la plaza de Da Vinci, un ramal al frente de Epicuro y otro, por el paso, a la puerta de Maxwell. Los puntos intermedios se ubicaron a ojo en el espacio libre entre huellas, y un test comprueba que solo el tramo dentro del Hall pasa bajo techo. La ruta del Coliseo termina ahora frente a su puerta acristalada. La puerta de Epicuro a nivel de calle sigue sin confirmar: la ruta llega a la explanada bajo su fachada fotografiada.
+
+### Exploración a pie
+
+El recorrido sigue las alturas actuales de gradas, desniveles y puente. Las huellas de edificios, lagunas, rejas del campo sintético y de Miguel, el mural de bebederos y el pedestal y mobiliario del jardín del cohete bloquean el paso. El acceso abierto de Guardianía y el túnel exterior Hall–Einstein conservan sus pasos. El movimiento se divide en tramos pequeños para evitar atravesar paredes o caer desde el puente en cuadros lentos; al ocultar la pestaña o abrir Fuentes se detiene. La exploración es una simulación exterior sobre geometría aproximada; no incorpora interiores reales ni constituye una ruta accesible verificada.
+
+En primera persona, acercarse a Gastón, Pancho o Pancha permite acariciarlos: E en computadora o tocar directamente al animal en móvil. Dentro del alcance aparece un aviso y el animal espera para facilitar el toque. Siete corazones rosados suben y se desvanecen al acariciarlo. Se comprueba la distancia, la altura y que no haya una pared en medio; el mapa general no activa ni muestra este efecto. El joystick vuelve al centro al soltar o cancelar el toque, ocultar la pestaña o salir del recorrido.

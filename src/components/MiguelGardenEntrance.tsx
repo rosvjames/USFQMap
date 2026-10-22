@@ -1,10 +1,10 @@
 import { useEffect,useMemo } from 'react'
-import { DoubleSide,MeshStandardMaterial } from 'three'
+import { MeshStandardMaterial } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import { createPavedShapes,createWalkwayGeometry } from '../lib/architecture'
 import { CAMPUS_BUILDINGS } from '../lib/campus'
 import { MIGUEL_GARDEN_ENTRANCE as h,MIGUEL_GARDEN_APPROACH,MIGUEL_GARDEN_FORECOURT } from '../lib/miguelGarden'
-import { foliageTexture } from './LandscapeDetails'
+import { MiguelRocketGarden } from './MiguelRocketGarden'
 const noRaycast=()=>null
 type Point=[number,number,number]
 function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMaterial}) {
@@ -12,20 +12,16 @@ function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMate
 }
 /** Full-height glazed garden entrance from the second Miguel photograph. */
 export function MiguelGardenEntrance({materials}:{materials:CampusMaterials}) {
-  const foliage=useMemo(foliageTexture,[])
   const finish=useMemo(()=>({
     glass:new MeshStandardMaterial({color:'#779c8f',metalness:.46,roughness:.19}),
     reflection:new MeshStandardMaterial({color:'#9aa79a',metalness:.4,roughness:.22}),
     door:new MeshStandardMaterial({color:'#3c6359',metalness:.4,roughness:.2}),
-    frame:new MeshStandardMaterial({color:'#c0c6b4',metalness:.4,roughness:.52}),
+    frame:new MeshStandardMaterial({color:'#8bbcab',metalness:.35,roughness:.52}),
     dark:new MeshStandardMaterial({color:'#52665b',roughness:.8}),
-    hedge:new MeshStandardMaterial({color:'#69883c',roughness:1}),
-    bark:new MeshStandardMaterial({color:'#837657',roughness:1}),
-    leaves:new MeshStandardMaterial({color:'#6f8050',map:foliage,alphaTest:.45,side:DoubleSide,roughness:1}),
-  }),[foliage])
-  const walk=useMemo(()=>createWalkwayGeometry(MIGUEL_GARDEN_APPROACH,4.4,h.ground+.01),[])
+  }),[])
+  const walk=useMemo(()=>createWalkwayGeometry(MIGUEL_GARDEN_APPROACH,2.2,h.ground+.01),[])
   const garden=useMemo(()=>createPavedShapes([MIGUEL_GARDEN_FORECOURT],CAMPUS_BUILDINGS.map(b=>b.ring)),[])
-  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());foliage.dispose();walk.dispose()},[finish,foliage,walk])
+  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());walk.dispose()},[finish,walk])
   return <group>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,.51,0]} material={materials.grass} receiveShadow raycast={noRaycast}><shapeGeometry args={[garden]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/></mesh>
     <mesh geometry={walk} material={materials.lakePaving} receiveShadow raycast={noRaycast}/>
@@ -58,18 +54,10 @@ export function MiguelGardenEntrance({materials}:{materials:CampusMaterials}) {
       <Block at={[0,h.ground+2.98,.89]} size={[h.width+1.1,.13,1.8]} material={materials.tealRoof}/>
       {[-1,1].map(side=><group key={side}>
         <Block at={[side*(h.width/2+.42),h.ground+1.47,1.51]} size={[.07,2.94,.07]} material={finish.frame}/>
-        {[3.4,8.4].map(z=><group key={z}>
-          <Block at={[side*3.75,.72,z]} size={[1.6,.36,4.65]} material={materials.entranceStone}/>
-          <Block at={[side*3.75,1.16,z]} size={[1.46,.65,4.47]} material={finish.hedge}/>
-          <Block at={[side*3.75,1.51,z]} size={[1.44,.12,4.45]} material={finish.hedge}/>
-        </group>)}
       </group>)}
       {/* Light inlaid paving bands lead directly to the doors. */}
-      {[3.6,7.0,10.4,13.7].map(z=><Block key={z} at={[.1,.59,z]} size={[4.2,.015,.12]} material={materials.cream}/>)}
-      {[[8.5,3.7,12.2],[10.6,7.8,13.1],[8.3,12,10.8]].map(([x,z,height],i)=><group key={i} position={[x,.55,z]}>
-        <mesh position={[0,height/2,0]} material={finish.bark} castShadow raycast={noRaycast}><cylinderGeometry args={[.12,.3,height,10]}/></mesh>
-        {Array.from({length:7},(_,j)=><mesh key={j} position={[Math.cos(j*2.4+i)*1.05,height-1.4+Math.sin(j*1.7)*1.15,Math.sin(j*2.4+i)*1.05]} scale={[1.35,2.3,1.45]} rotation={[.1,j,0]} material={finish.leaves} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,2]}/></mesh>)}
-      </group>)}
+      {[3.6,7.0,10.4,13.7].map(z=><Block key={z} at={[.1,.59,z]} size={[2.1,.015,.12]} material={materials.cream}/>)}
     </group>
+    <MiguelRocketGarden materials={materials}/>
   </group>
 }
