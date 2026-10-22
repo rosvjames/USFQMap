@@ -1,33 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { BUILDINGS } from '../data/buildings'
-import { LOCATIONS, MAP_NUMBERS, SOURCES } from '../data/references'
-
-export function CampusGuide({ onSelectBuilding, onPagoda, onSports, onWalk, collapsed, onToggle }: { onSelectBuilding: (id: string) => void; onPagoda: () => void; onSports: () => void; onWalk: () => void; collapsed: boolean; onToggle: () => void }) {
-  if (collapsed) return <button className="campus-tab" aria-label="Mostrar información del campus" aria-expanded={false} onClick={onToggle}><span aria-hidden="true">›</span> Campus</button>
-  return (
-    <section className="guide">
-      <button className="guide-collapse" aria-label="Ocultar información del campus" aria-expanded={true} onClick={onToggle}><span aria-hidden="true">‹</span></button>
-      <p className="eyebrow">Universidad San Francisco de Quito</p>
-      <h1>Campus Cumbayá</h1>
-      <p className="guide-intro">Explora Cumbayá en 3D, encuentra un edificio o busca el código de tu aula.</p>
-      <button className="walk-button" onClick={onWalk}>Explorar a pie <span aria-hidden="true">↗</span></button>
-      <button className="sports-button" onClick={onPagoda}>Ver la Pagoda <span aria-hidden="true">↗</span></button>
-      <button className="sports-button" onClick={onSports}>Ver canchas y terrazas <span aria-hidden="true">↗</span></button>
-      <div className="guide-stats"><span><strong>{BUILDINGS.length}</strong> lugares en el mapa</span><span><strong>{LOCATIONS.length}</strong> referencias de aulas y oficinas</span></div>
-      <details className="directory">
-        <summary>Explorar directorio <span aria-hidden="true">＋</span></summary>
-        <div className="directory-list">
-          {BUILDINGS.map((building) => <button key={building.id} onClick={() => onSelectBuilding(building.id)}>
-            <span className="map-number">{MAP_NUMBERS[building.id]?.toString().padStart(2, '0') ?? '—'}</span>
-            <span>{building.name}</span><span aria-hidden="true">↗</span>
-          </button>)}
-        </div>
-      </details>
-      <p className="guide-hint guide-hint-desktop">Arrastra para moverte · rueda para acercar<br />Botón derecho para girar el mapa</p>
-      <p className="guide-hint guide-hint-touch">Un dedo para desplazar · pellizca para acercar<br />Gira dos dedos para orientar el mapa</p>
-    </section>
-  )
-}
+import { SOURCES } from '../data/references'
 
 export function SourcesDialog({ onClose }: { onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null)

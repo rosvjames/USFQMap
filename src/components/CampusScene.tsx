@@ -142,6 +142,8 @@ interface SceneProps {
   walkInput: WalkInput
   onExitWalk: () => void
   onNearbyAnimalChange: (id:CampusAnimalId|null) => void
+  /** Called once the first frame of the campus is on screen. */
+  onReady?: () => void
 }
 
 export const CampusScene = memo(function CampusScene(props: SceneProps) {
@@ -170,7 +172,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
   }, [selectedBuildingId, props.outdoorRoute])
 
   return (
-    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, antialias: true, powerPreference: 'high-performance' }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4 }} dpr={[1, 2]} frameloop={props.walking ? 'always' : 'demand'} shadows="percentage">
+    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, antialias: true, powerPreference: 'high-performance' }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4; requestAnimationFrame(() => props.onReady?.()) }} dpr={[1, 2]} frameloop={props.walking ? 'always' : 'demand'} shadows="percentage">
       <color attach="background" args={[COLOR.city]} />
       {import.meta.env.DEV && <SceneMetrics />}
       <fog attach="fog" args={[COLOR.city, 900, 2400]} />

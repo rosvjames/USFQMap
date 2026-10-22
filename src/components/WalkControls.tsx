@@ -1,18 +1,18 @@
 import type { WalkInput } from '../lib/walkInput'
 import { ANIMAL_ROUTES, type CampusAnimalId } from '../lib/campusAnimals'
 import { WalkJoystick } from './WalkJoystick'
+import { CloseIcon, HeartIcon, WalkerIcon } from './icons'
 
 export function WalkControls({input,onExit,nearbyAnimal}:{input:WalkInput;onExit:()=>void;nearbyAnimal:CampusAnimalId|null}) {
   return <>
-    <section className="walking-banner" aria-label="Exploración a pie">
-      <span className="status-tag">Recorrido exterior</span>
-      <h1>Camina por la universidad</h1>
-      <p className="walk-hint-desktop">WASD para caminar · flechas para girar<br/>Arrastra para mirar · Esc para volver</p>
-      <p className="walk-hint-mobile">Joystick para caminar · arrastra para mirar</p>
-      <button onClick={onExit}>Volver al mapa <span aria-hidden="true">↗</span></button>
+    <section className="walk-top" aria-label="Exploración a pie">
+      <h1 className="pill-title"><WalkerIcon size={20}/>Recorrido a pie</h1>
+      <button className="round-button" onClick={onExit} aria-label="Volver al mapa"><CloseIcon size={18}/></button>
     </section>
+    <p className="walk-hint walk-hint-desktop">WASD para caminar · flechas para girar · arrastra para mirar · Esc para volver</p>
+    <p className="walk-hint walk-hint-mobile">Arrastra para mirar</p>
     <WalkJoystick input={input}/>
-    {nearbyAnimal && <div className="pet-hint" role="status"><span className="walk-hint-desktop"><kbd>E</kbd> Acariciar a {ANIMAL_ROUTES[nearbyAnimal].name}</span><span className="walk-hint-mobile">Toca a {ANIMAL_ROUTES[nearbyAnimal].name} para acariciarlo</span></div>}
+    {nearbyAnimal && <div className="pet-hint" role="status"><span className="pet-heart"><HeartIcon size={20}/></span><span className="walk-hint-desktop"><kbd>E</kbd> Acariciar a {ANIMAL_ROUTES[nearbyAnimal].name}</span><span className="walk-hint-mobile">Toca a {ANIMAL_ROUTES[nearbyAnimal].name} para acariciarlo</span></div>}
     <div className="crosshair" aria-hidden="true">＋</div>
     <nav className="walk-pad" aria-label="Controles para caminar">
       {([
