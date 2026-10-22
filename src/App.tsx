@@ -146,6 +146,7 @@ export default function App() {
     }
   }
   if (outdoorRoute?.usesHallPassage) steps.push('Recorre el pasillo exterior, con gradas a la derecha de la entrada del Hall. La puerta de Einstein está a la derecha del pasillo, justo antes del túnel.')
+  if (outdoorRoute?.crossesHall) steps.push('Atraviesa el Hall Principal desde su entrada y sal por el patio trasero: la plaza de Da Vinci queda al frente y el paso hacia el patio de Maxwell, a la derecha.')
   if (outdoorRoute?.usesBridge) steps.push('Cruza por el puente peatonal elevado hacia Hayek; el recorrido pasa por encima de la vía.')
   if (outdoorRoute && (building?.id === 'newton' || originId === 'newton')) steps.push('La entrada de Newton mira a la laguna, junto a Galileo.')
   if (outdoorRoute && (building?.id === 'galileo' || originId === 'galileo')) steps.push('El acceso de Galileo está frente a la laguna: las gradas suben al portal acristalado.')
