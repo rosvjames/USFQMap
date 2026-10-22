@@ -15,7 +15,7 @@ import { SourcesDialog } from './components/SourcesDialog'
 import { HomeSheet } from './components/HomeSheet'
 import { DestinationSheet } from './components/DestinationSheet'
 import { NavigationView } from './components/NavigationView'
-import { SplashScreen } from './components/SplashScreen'
+import { useSplashExit } from './components/SplashScreen'
 import { BackIcon, LayersIcon, LocateIcon } from './components/icons'
 import { viewsFor } from './lib/buildingViews'
 import { useKeyboardInset } from './lib/useSheetGestures'
@@ -67,6 +67,7 @@ export default function App() {
   const mapCamera = useRef<MapCameraHandle>(null)
   const compassNeedle = useRef<SVGSVGElement>(null)
   useKeyboardInset()
+  useSplashExit(sceneReady)
 
   // The compass turns on every frame of a rotation, so it is moved directly instead of through state.
   const handleViewChange = useCallback((azimuth: number, isTilted: boolean) => {
@@ -307,7 +308,6 @@ export default function App() {
       </>}
       {walking && <WalkControls input={walkInput} onExit={exitWalk} nearbyAnimal={nearbyAnimal}/>}
       {sourcesOpen && <SourcesDialog onClose={() => setSourcesOpen(false)} />}
-      <SplashScreen ready={sceneReady} />
     </div>
   )
 }

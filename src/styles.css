@@ -32,7 +32,7 @@ body,
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background: #dcdcd5;
+  background: var(--cream);
 }
 
 button,
@@ -73,82 +73,6 @@ button {
   overscroll-behavior: none;
   -webkit-user-select: none;
   user-select: none;
-}
-
-/* Splash: the mascot waves from the bottom edge while the campus is built. */
-
-.splash {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  overflow: hidden;
-  background: var(--cream);
-  transition: opacity 0.45s ease, visibility 0.45s;
-}
-
-.splash.leaving {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.splash-brand {
-  position: absolute;
-  top: 20%;
-  left: 0;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-}
-
-.wordmark {
-  margin: 0;
-  font-family: var(--display);
-  font-size: 36px;
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-
-.wordmark span {
-  color: var(--red);
-}
-
-.splash-bar {
-  width: 120px;
-  height: 6px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #f5d6dc;
-}
-
-.splash-bar span {
-  display: block;
-  width: 40%;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--red);
-  animation: splash-bar 1.3s ease-in-out infinite;
-}
-
-.splash-mascot {
-  position: absolute;
-  left: 50%;
-  bottom: -9%;
-  width: min(540px, 138vw);
-  height: auto;
-  animation: splash-float 2.6s ease-in-out infinite;
-}
-
-@keyframes splash-bar {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(250%); }
-}
-
-@keyframes splash-float {
-  0%, 100% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, -10px); }
 }
 
 /* Shared controls */
@@ -1142,5 +1066,4 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
-  .splash-mascot, .splash-bar span { animation: none; }
 }
