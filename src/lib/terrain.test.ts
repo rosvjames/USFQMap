@@ -1,6 +1,6 @@
 import { CAMPUS_ELEVATION } from './elevation'
 import { describe, expect, it } from 'vitest'
-import { NATURAL_PITCH_STAIRS, SPORT_STAIRS, terrainHeightAt } from './terrain'
+import { NATURAL_PITCH_STAIRS, SPORT_STAIRS, terrainHeightAt, wallStepsLevels } from './terrain'
 import { endpointForBuilding, findOutdoorRoute } from './outdoor'
 import { campusBaseHeightAt } from './campusSlope'
 import { coliseoToCampus } from './coliseo'
@@ -27,7 +27,7 @@ describe('sports terraces and bridge', () => {
     expect(terrainHeightAt(stair.top)).toBeCloseTo(campusBaseHeightAt(stair.top) + CAMPUS_ELEVATION)
     expect(terrainHeightAt(stair.bottom)).toBeCloseTo(stair.low + CAMPUS_ELEVATION)
     // The natural pitch is reached by the flight behind its north goal, not from the lane's side.
-    const { a, b, count, tread, low } = NATURAL_PITCH_STAIRS, top: [number, number] = [(a[0] + b[0]) / 2, a[1] - .01]
+    const { a, b, count, tread } = NATURAL_PITCH_STAIRS, top: [number, number] = [(a[0] + b[0]) / 2, a[1] - .01], { low } = wallStepsLevels(NATURAL_PITCH_STAIRS, top)
     expect(terrainHeightAt(top)).toBeCloseTo(campusBaseHeightAt(top) + CAMPUS_ELEVATION, 1)
     expect(terrainHeightAt([top[0], a[1] - count * tread + .01])).toBeCloseTo(low + CAMPUS_ELEVATION, 1)
     expect(terrainHeightAt([2.5, -121])).toBeCloseTo(low + CAMPUS_ELEVATION)

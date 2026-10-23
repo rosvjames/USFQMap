@@ -1,3 +1,4 @@
+import { coliseoToCampus } from './coliseo'
 import { describe, expect, it } from 'vitest'
 import { BUILDINGS } from '../data/buildings'
 import { CAMPUS_AREAS, CAMPUS_STREET_ACCESS, findCampusBuilding } from './campus'
@@ -67,6 +68,14 @@ describe('exterior exploration', () => {
       expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)
     }
     expect(moveWalker([-4.3, -121], [7.6, 0])[0]).toBeLessThan(1.8)
+  })
+
+  it('walks down the tennis bleachers from the straight walkway, and up the steps to the Obelisk lawn', () => {
+    const routes: Vec2[][] = [[[-63.3, -115], [-55, -115]], [coliseoToCampus([6.3, 5]), coliseoToCampus([6.3, 12])]]
+    for (const route of routes) for (const [a, b] of [route, route.slice().reverse()]) {
+      const end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
+      expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)
+    }
   })
 
   it('walks downhill past the Coliseo corner without being pinched by the pitch fence', () => {
