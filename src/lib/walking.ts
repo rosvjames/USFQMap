@@ -1,4 +1,4 @@
-import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, findCampusBuilding } from './campus'
+import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, CAMPUS_STREET_CUTOUTS, findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
 import { boundarySegments, bridgeHeightAt, segmentProjection, SPORT_ZONES, terrainHeightAt } from './terrain'
 import { hallToCampus } from './hall'
@@ -42,7 +42,7 @@ export function isWalkable(point:Vec2):boolean {
   return clearance.every(([dx,dy])=>{
     const p:Vec2=[point[0]+dx,point[1]+dy]
     const bridge=bridgeHeightAt(p)
-    if(!pointInPolygon(p,CAMPUS_BOUNDARY)&&bridge===undefined&&hayekLandingHeightAt(p)===undefined)return false
+    if(!pointInPolygon(p,CAMPUS_BOUNDARY)&&bridge===undefined&&hayekLandingHeightAt(p)===undefined&&!CAMPUS_STREET_CUTOUTS.some(r=>pointInPolygon(p,r)))return false
     if(solids.some(b=>insideBounds(p,b)&&pointInPolygon(p,b.ring)))return false
     if(buildings.some(b=>insideBounds(p,b)&&pointInPolygon(p,b.ring)&&
       !(b.info?.id==='einstein'&&pointInPolygon(p,HALL_TUNNEL_CUTOUT))&&
@@ -71,14 +71,20 @@ export function walkingStart(buildingId='hall-principal'):Vec2 {
 
 /** Substeps prevent tunnelling; a step-height check prevents falling off decks and retaining walls. */
 export function moveWalker(start:Vec2,movement:Vec2):Vec2 {
-  if(!movement.every(Number.isFinite))return [...start]
+  return moveWalkerOnSurface(start, movement).point
+}
+
+export function moveWalkerOnSurface(start: Vec2, movement: Vec2, height = terrainHeightAt(start)): { point: Vec2; height: number } {
+  if(!movement.every(Number.isFinite))return { point: [...start], height }
   let point:Vec2=[...start]
   const steps=Math.max(1,Math.ceil(Math.hypot(...movement)/.15))
   const dx=movement[0]/steps,dy=movement[1]/steps
   for(let i=0;i<steps;i++) {
     const next:Vec2=[point[0]+dx,point[1]+dy]
-    if(!isWalkable(next)||Math.abs(terrainHeightAt(next)-terrainHeightAt(point))>.38)break
+    const nextHeight = terrainHeightAt(next, height)
+    if(!isWalkable(next)||Math.abs(nextHeight-height)>.38)break
     point=next
+    height=nextHeight
   }
-  return point
+  return { point, height }
 }

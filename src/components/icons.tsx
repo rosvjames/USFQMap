@@ -3,7 +3,7 @@ import type { SVGProps } from 'react'
 type IconProps = SVGProps<SVGSVGElement> & { size?: number }
 
 function Stroke({ size = 22, children, ...props }: IconProps) {
-  return <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{children}</svg>
+  return <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{children}</svg>
 }
 
 export const WalkerIcon = (props: IconProps) => <Stroke {...props}><circle cx="13" cy="4" r="2" /><path d="m8 21 3-7 3 3v4M6 12l3-4 4 1 2 4 4 1M11 9l-1 5" /></Stroke>

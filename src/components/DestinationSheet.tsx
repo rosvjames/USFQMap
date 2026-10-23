@@ -36,10 +36,10 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, onGo, views
           </div>
         </div>
         {notice && <p className="sheet-note" role="status">{notice}</p>}
-        {onGo && <button className="primary-button" onClick={onGo}>¡Vamos! <ArrowIcon /></button>}
+        {onGo && <button className="primary-button" onClick={onGo}>Iniciar ruta <ArrowIcon /></button>}
         {(views.length > 0 || onWalk) && (
           <div className="views">
-            <h2>Mira antes de ir</h2>
+            <h2>Explora este lugar</h2>
             <div className="chips">
               {views.map((view) => <button key={view.label} className="chip" onClick={() => onView(view)}><EyeIcon size={18} />{view.label}</button>)}
               {onWalk && <button className="chip" onClick={onWalk}><WalkerIcon size={18} />A pie</button>}

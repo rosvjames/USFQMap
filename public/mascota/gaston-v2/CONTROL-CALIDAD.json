@@ -1,0 +1,610 @@
+{
+  "product": "MiCampus USFQ",
+  "pngCount": 17,
+  "animationCount": 12,
+  "optimizedCount": 17,
+  "appIcon": {
+    "width": 180,
+    "height": 180,
+    "opaque": true
+  },
+  "checks": [
+    "Original generated canvases ≥1024px preserved under output/gaston-v2/originales",
+    "PNG true alpha, nonempty content, no opaque canvas edges",
+    "Normalized margins and bottom anchor",
+    "512px static WebP true alpha",
+    "512px multi-frame WebP once per event",
+    "SHA-256 and byte sizes"
+  ],
+  "limitations": [
+    "CSS/WebP gestures transform the artwork; no independent limb rig or walking cycle.",
+    "Blink is a generated matched frame revealed only over two eye regions to avoid silhouette drift.",
+    "Flat illustration uses subtle tonal variation inherited from the approved reference, no paper grain, crayon or 3D rendering."
+  ],
+  "results": [
+    {
+      "id": "saludando",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.7,
+      "bounds": {
+        "left": 233,
+        "top": 104,
+        "right": 1019,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 233,
+        "top": 104,
+        "right": 234,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 843942,
+      "optimizedBytes": 34182,
+      "sha256": "7c6d4e5da9ced62a14de62f03da276afa97638b3e694ae3bdda863b35cd13250",
+      "animation": {
+        "frames": 33,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 816168
+      }
+    },
+    {
+      "id": "saludando-parpadeo",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.7,
+      "bounds": {
+        "left": 233,
+        "top": 104,
+        "right": 1020,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 233,
+        "top": 104,
+        "right": 233,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 837122,
+      "optimizedBytes": 33936,
+      "sha256": "83342f9a66d448cd9a7b3fe64ffef41672bd0e58e56ef81a64c79cdf6eb7c264"
+    },
+    {
+      "id": "asomado",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 59.5,
+      "bounds": {
+        "left": 102,
+        "top": 194,
+        "right": 1151,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 102,
+        "top": 194,
+        "right": 102,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 907281,
+      "optimizedBytes": 34716,
+      "sha256": "3478ef6f63965987d647da5eb59d269060e2d391cb2e888746d6c935c2513ebc",
+      "animation": {
+        "frames": 15,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 324322
+      }
+    },
+    {
+      "id": "guiando",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.3,
+      "bounds": {
+        "left": 178,
+        "top": 104,
+        "right": 1074,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 178,
+        "top": 104,
+        "right": 179,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 853501,
+      "optimizedBytes": 35036,
+      "sha256": "ede8e6b555e83f4cc2ea0a378da75e9d5eebe83cce386dd5b538a1dad919d007",
+      "animation": {
+        "frames": 20,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 506722
+      }
+    },
+    {
+      "id": "guiando-izquierda",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.4,
+      "bounds": {
+        "left": 181,
+        "top": 104,
+        "right": 1071,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 181,
+        "top": 104,
+        "right": 182,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 848457,
+      "optimizedBytes": 34030,
+      "sha256": "3b4aa283b57f66024278f90b320a1b9953f93a172c01facad2d16cfadff7659e",
+      "animation": {
+        "frames": 20,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 495016
+      }
+    },
+    {
+      "id": "logrado",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 63,
+      "bounds": {
+        "left": 127,
+        "top": 104,
+        "right": 1126,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 127,
+        "top": 104,
+        "right": 127,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 899993,
+      "optimizedBytes": 39628,
+      "sha256": "3ef08e1b2606e825e53589af9841cf688000cdee8dcad66fd8d5ea7a6f9140a7",
+      "animation": {
+        "frames": 23,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 661876
+      }
+    },
+    {
+      "id": "buscando",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 54.1,
+      "bounds": {
+        "left": 135,
+        "top": 104,
+        "right": 1117,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 135,
+        "top": 104,
+        "right": 136,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 1063169,
+      "optimizedBytes": 39500,
+      "sha256": "bd3e71e3afead2e3e01eee55ce4771566da7f99b5d4c26e7c44cb40b1dcea53c",
+      "animation": {
+        "frames": 27,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 781284
+      }
+    },
+    {
+      "id": "ubicacion",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.5,
+      "bounds": {
+        "left": 216,
+        "top": 104,
+        "right": 1036,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 216,
+        "top": 104,
+        "right": 217,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 851348,
+      "optimizedBytes": 34642,
+      "sha256": "7cec98d0935dd5b99c641f329423ff07907a7e2766e86836a9d2c117702ff44e",
+      "animation": {
+        "frames": 21,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 565292
+      }
+    },
+    {
+      "id": "sin-conexion",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 59,
+      "bounds": {
+        "left": 162,
+        "top": 104,
+        "right": 1091,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 162,
+        "top": 104,
+        "right": 162,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 999901,
+      "optimizedBytes": 38442,
+      "sha256": "fc7f7602f91d0d1a307c8c16a48d92cf426713fa21f2ce36e15b0246d70475f6",
+      "animation": {
+        "frames": 15,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 358276
+      }
+    },
+    {
+      "id": "cabeza",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 66.8,
+      "bounds": {
+        "left": 102,
+        "top": 375,
+        "right": 1151,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 102,
+        "top": 375,
+        "right": 102,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 712971,
+      "optimizedBytes": 25740,
+      "sha256": "47884c25ac45f43d80de80f76425e9fa4f04ebc7c894200f712bb8d19d9e5263"
+    },
+    {
+      "id": "explorando",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.8,
+      "bounds": {
+        "left": 228,
+        "top": 104,
+        "right": 1024,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 228,
+        "top": 104,
+        "right": 229,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 902185,
+      "optimizedBytes": 36458,
+      "sha256": "f28888cf91aab7473ad5ce226f4da224f747271f705ff213f47b641c7335c00c",
+      "animation": {
+        "frames": 27,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 718272
+      }
+    },
+    {
+      "id": "carino",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 66.1,
+      "bounds": {
+        "left": 193,
+        "top": 104,
+        "right": 1060,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 193,
+        "top": 104,
+        "right": 193,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 842915,
+      "optimizedBytes": 35236,
+      "sha256": "e8258097b797caa45cb4aec4cfaa51097aedcb811983b730f23eebcbbf3ce3af",
+      "animation": {
+        "frames": 23,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 591598
+      }
+    },
+    {
+      "id": "ayuda",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 65.3,
+      "bounds": {
+        "left": 232,
+        "top": 104,
+        "right": 1021,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 232,
+        "top": 104,
+        "right": 232,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 845307,
+      "optimizedBytes": 34480,
+      "sha256": "895ae5ef26af679f37998e06b579d602ff9a85984dd7f003422c004f1d0aabc4",
+      "animation": {
+        "frames": 21,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 525854
+      }
+    },
+    {
+      "id": "pin",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 61,
+      "bounds": {
+        "left": 200,
+        "top": 104,
+        "right": 1053,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 200,
+        "top": 104,
+        "right": 200,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 918847,
+      "optimizedBytes": 32058,
+      "sha256": "24103ffc9c2dad4799bbd6af337961524eb722755f4d20e9373fecc7c253c256",
+      "animation": {
+        "frames": 19,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 404416
+      }
+    },
+    {
+      "id": "vista-frontal",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 64.6,
+      "bounds": {
+        "left": 225,
+        "top": 104,
+        "right": 1028,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 225,
+        "top": 104,
+        "right": 225,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 852214,
+      "optimizedBytes": 34308,
+      "sha256": "bb2b5a0cf3bb7ffc50f34b34a5002ae2bd8d92e11076b4c538f656893afe8244"
+    },
+    {
+      "id": "vista-lateral",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 75.9,
+      "bounds": {
+        "left": 318,
+        "top": 104,
+        "right": 934,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 318,
+        "top": 104,
+        "right": 319,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 622378,
+      "optimizedBytes": 24768,
+      "sha256": "2f60b856e298781e80869e1220caf89a6cca3631fff5ef7c901169f4ccad7ea4"
+    },
+    {
+      "id": "vista-posterior",
+      "width": 1254,
+      "height": 1254,
+      "trueAlpha": true,
+      "transparentPercent": 67.1,
+      "bounds": {
+        "left": 229,
+        "top": 104,
+        "right": 1024,
+        "bottom": 1153
+      },
+      "margins": {
+        "left": 229,
+        "top": 104,
+        "right": 229,
+        "bottom": 100
+      },
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "edgeOpaque": 0,
+      "bytes": 789344,
+      "optimizedBytes": 31372,
+      "sha256": "fcef42e9fb732130d6b1ef4ba8673de77758c68a0306e2d9bc5c60cd1ae9b723"
+    }
+  ],
+  "visualReview": {
+    "date": "2026-10-23",
+    "contactSheets": [
+      "output/gaston-v2/revision-claro.png",
+      "output/gaston-v2/revision-oscuro.png"
+    ],
+    "reviewed": [
+      "17 intact silhouettes on ivory and charcoal backgrounds",
+      "correct eye patch on viewer right in frontal poses",
+      "separately generated left and right directions, not mirrored",
+      "three consistent construction views",
+      "48, 80 and 128px head previews",
+      "desktop/mobile gallery, pause/replay and both reduced-motion controls"
+    ],
+    "gallery": {
+      "images": 23,
+      "broken": [],
+      "paused": "paused",
+      "simulatedReduced": "none",
+      "systemReduced": "none",
+      "mobileOverflow": false,
+      "errors": []
+    }
+  },
+  "totals": {
+    "pngBytes": 14590875,
+    "staticWebpBytes": 578532,
+    "animatedWebpBytes": 6749096
+  }
+}

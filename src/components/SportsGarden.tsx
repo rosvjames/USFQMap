@@ -48,7 +48,7 @@ for (const side of [-1,1]) {
 export function GardenTerrace({ materials }: { materials: CampusMaterials }) {
   return <group>
     {/* Open circulation between planting islands and the shaded stone seating pads. */}
-    <mesh position={[0,.016,0]} rotation={[-Math.PI/2,0,0]} receiveShadow><planeGeometry args={[25,25]} /><meshStandardMaterial color="#92916a" roughness={1} map={materials.grass.map} /></mesh>
+    <mesh position={[0,.016,0]} rotation={[-Math.PI/2,0,0]} material={materials.grass} receiveShadow><planeGeometry args={[25,25]} /></mesh>
     <mesh position={[0,.035,0]} material={materials.paving} receiveShadow><boxGeometry args={[2.4,.045,26]} /></mesh>
     <mesh position={[0,.04,0]} material={materials.paving} receiveShadow><boxGeometry args={[26,.045,2.1]} /></mesh>
     {GARDEN_TABLES.map(([x,z],i) => <group key={i} position={[x,0,z]}>

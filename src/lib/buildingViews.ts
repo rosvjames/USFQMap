@@ -1,3 +1,4 @@
+import { CAMPUS_ELEVATION } from './elevation'
 import type { MapFocus } from '../components/MapCamera'
 import type { CampusAnimalId } from './campusAnimals'
 import { MAXWELL_ENTRANCE, maxwellToCampus } from './maxwell'
@@ -59,5 +60,5 @@ const VIEWS: { buildings: string[]; view: BuildingView }[] = [
 ]
 
 export function viewsFor(buildingId: string | undefined): BuildingView[] {
-  return buildingId ? VIEWS.filter((entry) => entry.buildings.includes(buildingId)).map((entry) => entry.view) : []
+  return buildingId ? VIEWS.filter((entry) => entry.buildings.includes(buildingId)).map(({ view }) => buildingId === 'hayek' || !('focus' in view) ? view : ({ ...view, focus: () => { const focus = view.focus(); return { ...focus, height: (focus.height ?? 0) + CAMPUS_ELEVATION } } })) : []
 }

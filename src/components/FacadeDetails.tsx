@@ -8,6 +8,7 @@ import { HALL_PASSAGE } from '../lib/hallPassage'
 import { isHallPlazaEdge } from '../lib/hallPlaza'
 import { isHayekFrontEdge } from '../lib/hayek'
 import { isEpicuroFrontEdge } from '../lib/epicuro'
+import { CAMPUS_ELEVATION } from '../lib/elevation'
 import { campusSlopeOffsetAt } from '../lib/campusSlope'
 import { NEWTON_ENTRANCE, isNewtonFrontEdge } from '../lib/newton'
 import { isGalileoFrontEdge, campusToGalileo, GALILEO_ENTRANCE } from '../lib/galileo'
@@ -71,7 +72,7 @@ export function FacadeDetails({ buildings }: { buildings: CampusBuilding[] }) {
         const galileoFace = building.info?.id === 'galileo' && isGalileoFrontEdge(a,b)
         const angle = Math.atan2(dy, dx)
         const at = (t: number, offset: number, height: number, width: number, tall: number, depth: number): Detail => ({
-          x: a[0] + dx * t + sign * dy / length * offset, z: -(a[1] + dy * t - sign * dx / length * offset), height:height+campusSlopeOffsetAt(building.center), angle, width, tall, depth,
+          x: a[0] + dx * t + sign * dy / length * offset, z: -(a[1] + dy * t - sign * dx / length * offset), height:height+campusSlopeOffsetAt(building.center)+(building.info?.id==='hayek'?0:CAMPUS_ELEVATION), angle, width, tall, depth,
         })
         for (let floor = 0; floor < floors; floor++) {
           const corniceHeight = (floor + 1) * floorHeight - 0.12

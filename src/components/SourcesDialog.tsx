@@ -8,7 +8,7 @@ export function SourcesDialog({ onClose }: { onClose: () => void }) {
     <dialog ref={dialog} className="sources-dialog" onCancel={onClose} onClick={(event) => { if (event.target === event.currentTarget) onClose() }} aria-labelledby="sources-title">
       <button className="dialog-close" onClick={onClose} aria-label="Cerrar fuentes">×</button>
       <p className="eyebrow">Detrás del mapa</p>
-      <h2 id="sources-title">Lo que conocemos.</h2>
+      <h2 id="sources-title">Fuentes y cobertura</h2>
       <p>El campus se construye con huellas y senderos de OpenStreetMap. Los números de referencia siguen el mapa de la USFQ de 2023. Los servicios menores conservan los nombres de OpenStreetMap; dos huellas sin identificación se muestran como «Nombre pendiente».</p>
       <div className="coverage-note"><strong>Interiores pendientes de levantar</strong><p>No encontramos planos públicos de distribución de aulas. Las referencias identifican edificio y piso; no la puerta ni el recorrido interior. Las publicaciones antiguas se señalan como históricas.</p></div>
       <p>Los materiales, la cúpula, las ventanas, molduras y vegetación se inspiran en fotografías públicas de la USFQ y en la ilustración del campus. Los detalles y las posiciones de los árboles son aproximados. Usamos alturas de OpenStreetMap cuando existen y estimaciones visuales en los demás casos; no son mediciones arquitectónicas.</p>

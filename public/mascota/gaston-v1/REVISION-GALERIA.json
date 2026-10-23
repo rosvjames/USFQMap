@@ -1,0 +1,14 @@
+{
+  "desktop": "1440x1000",
+  "mobile": "390x844",
+  "cards": 13,
+  "imagesDecoded": 21,
+  "pause": true,
+  "replay": true,
+  "darkBackground": true,
+  "reducedMotionRunningAnimations": 0,
+  "mobileOverflow": false,
+  "pageErrors": [],
+  "failedResponses": [],
+  "pngOriginalsByteIdentical": true
+}

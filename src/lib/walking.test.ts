@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { BUILDINGS } from '../data/buildings'
-import { CAMPUS_AREAS, findCampusBuilding } from './campus'
+import { CAMPUS_AREAS, CAMPUS_STREET_ACCESS, findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
 import { hallToCampus } from './hall'
 import { HALL_PASSAGE } from './hallPassage'
 import { miguelGardenToCampus } from './miguelGarden'
 import { ELEVATED_WALKWAYS, terrainHeightAt } from './terrain'
-import { isWalkable, moveWalker, walkingStart } from './walking'
+import { isWalkable, moveWalker, moveWalkerOnSurface, walkingStart } from './walking'
 import type { Vec2 } from '../types'
 
 describe('exterior exploration', () => {
@@ -58,5 +58,50 @@ describe('exterior exploration', () => {
     const end=moveWalker(start,movement)
     expect(isWalkable(end)).toBe(true)
     expect(Math.hypot(end[0]-start[0],end[1]-start[1])).toBeLessThan(Math.hypot(...movement))
+  })
+
+  it('reaches the natural football pitch from the sloping western approach and back', () => {
+    const start: Vec2 = [-4.3, -121], bottom: Vec2 = [3.3, -121]
+    const end = moveWalker(start, [7.6, 0])
+    expect(end[0]).toBeCloseTo(bottom[0])
+    expect(moveWalker(bottom, [-7.6, 0])[0]).toBeCloseTo(start[0])
+  })
+
+  it('walks downhill past the Coliseo corner without being pinched by the pitch fence', () => {
+    const points: Vec2[] = [[-6, -104], [-6, -106], [-5.8, -108.6], [-3.5, -110], [-3.5, -118], [-4.3, -121]]
+    for (const route of [points, points.slice().reverse()]) for (let i = 1; i < route.length; i++) {
+      const a = route[i - 1], b = route[i], end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
+      expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)
+    }
+  })
+
+  it('connects the main quadrangle to the pitch through the central downhill lane', () => {
+    const route: Vec2[] = [[-20, 33], [-22.5, 0], [-16, -2.5], [-9.5, -27], [-5, -108], [-2.5, -120], [12, -128.5], [12, -132]]
+    for (const points of [route, route.slice().reverse()]) for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1], b = points[i], end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
+      expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)
+    }
+  })
+
+  it('enters the bridge directly from the passage between the pitches, without taking the street ramp', () => {
+    const route: Vec2[] = [[-3.5, -132], [-2.8, -141], [-3.2, -152.5], [-4.920314975700418, -155.45598659999865], [-8, -162]]
+    for (const points of [route, route.slice().reverse()]) for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1], b = points[i], end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
+      expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)
+    }
+    expect(terrainHeightAt([-2.8, -141])).toBeGreaterThan(5.5)
+  })
+
+  it('follows the street approach underneath the bridge before climbing the side ramp', () => {
+    const ramp = ELEVATED_WALKWAYS.find(w => w.osmId === 'way/1032704764')!
+    const points = [...CAMPUS_STREET_ACCESS.slice().reverse(), ...ramp.line.slice(0, -1).reverse()]
+    let walker = { point: points[0], height: .55 }
+    for (let i = 1; i < points.length; i++) {
+      const b = points[i], a = walker.point
+      walker = moveWalkerOnSurface(a, [b[0] - a[0], b[1] - a[1]], walker.height)
+      expect(Math.hypot(walker.point[0] - b[0], walker.point[1] - b[1]), `blocked at ${walker.point}`).toBeLessThan(.01)
+      if (i === 1) expect(walker.height).toBeCloseTo(.55)
+    }
+    expect(walker.height).toBeCloseTo(6)
   })
 })

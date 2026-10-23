@@ -1,0 +1,319 @@
+{
+  "product": "MiCampus USFQ",
+  "character": "Gastón",
+  "version": "2.0",
+  "created": "2026-10-23",
+  "generator": "Herramienta integrada image_gen",
+  "palette": {
+    "red": "#E11B22",
+    "charcoal": "#231F20",
+    "ivory": "#F6EFE6",
+    "pink": "#E8AEA3",
+    "ochre": "#C89B48"
+  },
+  "identity": "Cerdito con disfraz de dragón; parche en ojo izquierdo anatómico (derecha del espectador en vista frontal)",
+  "motionPolicy": "Una reproducción por evento; PNG/WebP estático con CSS preferido en la app; movimiento reducido y pausa al ocultar pestaña",
+  "assets": [
+    {
+      "id": "saludando",
+      "title": "Bienvenida",
+      "use": "Carga y bienvenida",
+      "file": "saludando.png",
+      "optimized": "optimizados/saludando.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "saludo",
+      "duration": 1600,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/saludando.webp"
+    },
+    {
+      "id": "saludando-parpadeo",
+      "title": "Parpadeo",
+      "use": "Capa opcional de párpados",
+      "file": "saludando-parpadeo.png",
+      "optimized": "optimizados/saludando-parpadeo.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "",
+      "duration": 0,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      }
+    },
+    {
+      "id": "asomado",
+      "title": "¿A dónde vamos?",
+      "use": "Borde del buscador",
+      "file": "asomado.png",
+      "optimized": "optimizados/asomado.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "asomado",
+      "duration": 700,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/asomado.webp"
+    },
+    {
+      "id": "guiando",
+      "title": "Por aquí →",
+      "use": "Indicación decorativa hacia la derecha",
+      "file": "guiando.png",
+      "optimized": "optimizados/guiando.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "guia",
+      "duration": 950,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/guiando.webp"
+    },
+    {
+      "id": "guiando-izquierda",
+      "title": "← Por aquí",
+      "use": "Indicación decorativa hacia la izquierda",
+      "file": "guiando-izquierda.png",
+      "optimized": "optimizados/guiando-izquierda.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "guia-izquierda",
+      "duration": 950,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/guiando-izquierda.webp"
+    },
+    {
+      "id": "logrado",
+      "title": "¡Llegamos!",
+      "use": "Llegada al destino",
+      "file": "logrado.png",
+      "optimized": "optimizados/logrado.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "logrado",
+      "duration": 1100,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/logrado.webp"
+    },
+    {
+      "id": "buscando",
+      "title": "Vamos a encontrarlo",
+      "use": "Sin resultados",
+      "file": "buscando.png",
+      "optimized": "optimizados/buscando.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "buscando",
+      "duration": 1300,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/buscando.webp"
+    },
+    {
+      "id": "ubicacion",
+      "title": "Te estoy ubicando",
+      "use": "Consulta de ubicación",
+      "file": "ubicacion.png",
+      "optimized": "optimizados/ubicacion.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "ubicacion",
+      "duration": 1000,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/ubicacion.webp"
+    },
+    {
+      "id": "sin-conexion",
+      "title": "Hacemos una pausa",
+      "use": "Error recuperable o conexión",
+      "file": "sin-conexion.png",
+      "optimized": "optimizados/sin-conexion.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "pausa",
+      "duration": 700,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/sin-conexion.webp"
+    },
+    {
+      "id": "cabeza",
+      "title": "Siempre contigo",
+      "use": "Avatar e identidad",
+      "file": "cabeza.png",
+      "optimized": "optimizados/cabeza.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "",
+      "duration": 0,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      }
+    },
+    {
+      "id": "explorando",
+      "title": "Descubramos el campus",
+      "use": "Entrada al recorrido a pie",
+      "file": "explorando.png",
+      "optimized": "optimizados/explorando.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "explorando",
+      "duration": 1300,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/explorando.webp"
+    },
+    {
+      "id": "carino",
+      "title": "Gracias por el cariño",
+      "use": "Respuesta a una caricia",
+      "file": "carino.png",
+      "optimized": "optimizados/carino.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "carino",
+      "duration": 1100,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/carino.webp"
+    },
+    {
+      "id": "ayuda",
+      "title": "Yo te acompaño",
+      "use": "Ayuda y consejos",
+      "file": "ayuda.png",
+      "optimized": "optimizados/ayuda.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "ayuda",
+      "duration": 1000,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/ayuda.webp"
+    },
+    {
+      "id": "pin",
+      "title": "Tu destino",
+      "use": "Recurso opcional de destino",
+      "file": "pin.png",
+      "optimized": "optimizados/pin.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "pin",
+      "duration": 900,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      },
+      "animated": "animados/pin.webp"
+    },
+    {
+      "id": "vista-frontal",
+      "title": "Vista frontal",
+      "use": "Construcción del personaje",
+      "file": "vista-frontal.png",
+      "optimized": "optimizados/vista-frontal.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "",
+      "duration": 0,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      }
+    },
+    {
+      "id": "vista-lateral",
+      "title": "Vista lateral derecha",
+      "use": "Construcción: perfil sin parche visible",
+      "file": "vista-lateral.png",
+      "optimized": "optimizados/vista-lateral.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "",
+      "duration": 0,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      }
+    },
+    {
+      "id": "vista-posterior",
+      "title": "Vista posterior",
+      "use": "Construcción del disfraz",
+      "file": "vista-posterior.png",
+      "optimized": "optimizados/vista-posterior.webp",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "motion": "",
+      "duration": 0,
+      "loop": false,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.9202551834130781
+      }
+    }
+  ]
+}

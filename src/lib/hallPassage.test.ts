@@ -1,3 +1,4 @@
+import { CAMPUS_ELEVATION } from './elevation'
 import { describe, expect, it } from 'vitest'
 import raw from '../data/campus.json'
 import { findCampusBuilding } from './campus'
@@ -28,16 +29,16 @@ describe('Hall–Einstein side passage',()=>{
   })
   it('descends continuously through the covered tunnel to the open passage',()=>{
     const t=HALL_TUNNEL
-    let previous=t.upper
+    let previous=t.upper+CAMPUS_ELEVATION
     for(let i=0;i<=18;i++) {
       const z=t.back+(t.mouth-t.back)*i/18,p=hallToCampus([HALL_PASSAGE.center,z]),height=terrainHeightAt(p)
       expect(height).toBeLessThanOrEqual(previous+1e-8)
-      expect(height).toBeCloseTo(t.upper-(t.upper-t.lower)*i/18)
-      expect(t.ceiling-height).toBeGreaterThan(2.5)
+      expect(height).toBeCloseTo(t.upper-(t.upper-t.lower)*i/18+CAMPUS_ELEVATION)
+      expect(t.ceiling+CAMPUS_ELEVATION-height).toBeGreaterThan(2.5)
       if(i>0&&i<18)expect(pointInPolygon(p,HALL_TUNNEL_CUTOUT)).toBe(true)
       previous=height
     }
-    expect(previous).toBeCloseTo(HALL_ENTRANCE.ground)
+    expect(previous).toBeCloseTo(HALL_ENTRANCE.ground+CAMPUS_ELEVATION)
   })
   it('preserves the entire Hall and places a constant-width passage outside its right side',()=>{
     const hall=findCampusBuilding('hall-principal')!,einstein=findCampusBuilding('einstein')!
@@ -51,9 +52,9 @@ describe('Hall–Einstein side passage',()=>{
       expect(pointInPolygon(p,einstein.ring)).toBe(false)
     }
     expect(pointInPolygon(hallToCampus([6.1,-5]),hall.ring)).toBe(true)
-    expect(terrainHeightAt(hallToCampus([HALL_PASSAGE.center,0]))).toBeCloseTo(HALL_ENTRANCE.level)
-    expect(terrainHeightAt(hallToCampus([HALL_PASSAGE.center,HALL_PASSAGE.stairBack]))).toBeCloseTo(HALL_ENTRANCE.ground)
-    expect(terrainHeightAt(EINSTEIN_HALL_DOOR)).toBeCloseTo(HALL_ENTRANCE.ground)
+    expect(terrainHeightAt(hallToCampus([HALL_PASSAGE.center,0]))).toBeCloseTo((HALL_ENTRANCE.level) + CAMPUS_ELEVATION)
+    expect(terrainHeightAt(hallToCampus([HALL_PASSAGE.center,HALL_PASSAGE.stairBack]))).toBeCloseTo((HALL_ENTRANCE.ground) + CAMPUS_ELEVATION)
+    expect(terrainHeightAt(EINSTEIN_HALL_DOOR)).toBeCloseTo((HALL_ENTRANCE.ground) + CAMPUS_ELEVATION)
   })
   it('walks along the exterior passage in both directions without entering either building',()=>{
     const hall=endpointForBuilding('hall-principal')!,einstein=endpointForBuilding('einstein')!

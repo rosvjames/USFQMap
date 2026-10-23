@@ -3,12 +3,28 @@ import polygonClipping from 'polygon-clipping'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import type { Vec2 } from '../types'
 
-export function createTerrainShapes(outline: Vec2[], cutouts: Vec2[][]): Shape[] {
-  return polygonClipping.difference([outline], ...cutouts.map((ring) => [ring])).map((polygon) => {
+/** Polygon strips let junctions be united before triangulation, rather than stacked. */
+export function walkwayOutlines(line: Vec2[], width: number): Vec2[][] {
+  const strips = line.slice(1).flatMap((b, i): Vec2[][] => {
+    const a = line[i], dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
+    if (length < .001) return []
+    const nx = -dy / length * width / 2, ny = dx / length * width / 2
+    return [[[a[0] - nx, a[1] - ny], [b[0] - nx, b[1] - ny], [b[0] + nx, b[1] + ny], [a[0] + nx, a[1] + ny]]]
+  })
+  const joins = line.slice(1, -1).map(([x, y]): Vec2[] => Array.from({ length: 16 }, (_, i) => [x + Math.cos(i * Math.PI / 8) * width / 2, y + Math.sin(i * Math.PI / 8) * width / 2]))
+  return [...strips, ...joins]
+}
+
+export function shapesFromPolygons(polygons: polygonClipping.MultiPolygon): Shape[] {
+  return polygons.map((polygon) => {
     const shape = new Shape(polygon[0].map(([x, y]) => new Vector2(x, y)))
     shape.holes = polygon.slice(1).map((ring) => new Path(ring.map(([x, y]) => new Vector2(x, y))))
     return shape
   })
+}
+
+export function createTerrainShapes(outline: Vec2[], cutouts: Vec2[][]): Shape[] {
+  return shapesFromPolygons(polygonClipping.difference([outline], ...cutouts.map((ring) => [ring])))
 }
 
 /** Plazas overlap at junctions, but must never fill buildings, ponds or garden islands. */
@@ -16,11 +32,7 @@ export function createPavedShapes(outlines: Vec2[][], cutouts: Vec2[][]): Shape[
   if (!outlines.length) return []
   const polygons = outlines.map((ring) => [ring] as polygonClipping.Polygon)
   const paved = polygonClipping.union(polygons[0], ...polygons.slice(1))
-  return polygonClipping.difference(paved, ...cutouts.map((ring) => [ring] as polygonClipping.Polygon)).map((polygon) => {
-    const shape = new Shape(polygon[0].map(([x, y]) => new Vector2(x, y)))
-    shape.holes = polygon.slice(1).map((ring) => new Path(ring.map(([x, y]) => new Vector2(x, y))))
-    return shape
-  })
+  return shapesFromPolygons(polygonClipping.difference(paved, ...cutouts.map((ring) => [ring] as polygonClipping.Polygon)))
 }
 
 /** Narrow pitched sections beside a recessed courtyard, clipped to the actual building outline. */
@@ -89,19 +101,16 @@ export function createRoofGeometry(outline: Vec2[], height: number, maxRise = 3.
 /** Paving is a lit surface that receives shadows, instead of a screen-space line. */
 export function createWalkwayGeometry(line: Vec2[], width: number, height: number | ((point: Vec2) => number)): BufferGeometry {
   const vertices: number[] = [], uv: number[] = []
-  let distance = 0
   for (let i = 1; i < line.length; i++) {
     const a = line[i - 1], b = line[i]
     const dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
     if (length < 0.001) continue
     const nx = -dy / length * width / 2, ny = dx / length * width / 2
     const corners = [[a[0] - nx, a[1] - ny], [b[0] - nx, b[1] - ny], [b[0] + nx, b[1] + ny], [a[0] + nx, a[1] + ny]]
-    const coords = [[0, distance], [0, distance + length], [width, distance + length], [width, distance]]
     for (const index of [0, 1, 2, 0, 2, 3]) {
       vertices.push(corners[index][0], typeof height === 'function' ? height(corners[index] as Vec2) : height, -corners[index][1])
-      uv.push(coords[index][0] / 2.4, coords[index][1] / 2.4)
+      uv.push(corners[index][0] / 2.4, corners[index][1] / 2.4)
     }
-    distance += length
   }
   const geometry = new BufferGeometry()
   geometry.setAttribute('position', new Float32BufferAttribute(vertices, 3))

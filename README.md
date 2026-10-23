@@ -1,4 +1,4 @@
-# USFQ · Explora
+# MiCampus USFQ
 
 Mapa 3D del campus de Cumbayá para una casa abierta. Permite buscar edificios y códigos de aula, consultar las fuentes, trazar rutas exteriores aproximadas y navegar por el campus mediante el mapa y el GPS.
 
@@ -22,7 +22,7 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 
 ## Interfaz
 
-La interfaz sigue un estilo inspirado en Waze: paneles inferiores, botones con volumen, Paytone One para títulos y cifras y Rubik para el texto. La mascota, un pin-dragón diseñado por un amigo del equipo, aparece en la pantalla de carga, asomada sobre el panel inicial y guiando cada paso de la navegación. Las imágenes de `public/mascota/` son recortes provisionales de su lámina de concepto y se reemplazarán por sus PNG en alta resolución. Las vistas «Mira antes de ir» de cada edificio están en `src/lib/buildingViews.ts`.
+La interfaz de MiCampus USFQ toma como referencia la web actual de la universidad: rojo #E11B22, superficies blancas, controles agrupados, Zalando Sans Expanded para títulos breves y Lato para texto. Las fuentes se sirven localmente y conservan sus licencias en `public/fonts/`. Gastón, el cerdito con disfraz de dragón, usa colores sólidos y contorno de tinta; su kit versionado está en `public/mascota/gaston-v2/`, con originales, variantes de interfaz, movimiento reducido y galería de revisión. Solo se cargan los recursos necesarios para cada estado. Las vistas «Mira antes de ir» de cada edificio están en `src/lib/buildingViews.ts`.
 
 ## Datos y precisión
 

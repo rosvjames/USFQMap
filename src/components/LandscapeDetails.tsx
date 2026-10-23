@@ -12,6 +12,7 @@ import { isMiguelGardenForecourt } from '../lib/miguelGarden'
 import { isEpicuroForecourt } from '../lib/epicuro'
 import { campusToPagoda, isPagodaStairApproach } from '../lib/pagoda'
 import { isHallFlagGarden } from '../lib/hallFlags'
+import { CAMPUS_ELEVATION, cityBaseHeightAt } from '../lib/elevation'
 import { campusSlopeOffsetAt } from '../lib/campusSlope'
 import { isHallMiniPlaza } from '../lib/hallMiniPlaza'
 import { isColiseoLane, isColiseoRetainingEdge, COLISEO_GARDEN_STAIRS } from '../lib/coliseo'
@@ -117,13 +118,13 @@ export function LandscapeDetails() {
     const crownItems: Instance[] = [], trunkItems: Instance[] = [], palmItems: Instance[] = []
     for (const [index, tree] of trees.entries()) {
       const [x, y] = tree.point, s = tree.size, h = (tree.palm ? 7.4 : 5.5) * s
-      trunkItems.push({ position: [x, h / 2 + 0.4 + campusSlopeOffsetAt(tree.point), -y], scale: [s * (tree.palm ? 0.7 : 1), h, s * (tree.palm ? 0.7 : 1)] })
+      trunkItems.push({ position: [x, h / 2 + 0.4 + (pointInPolygon(tree.point, CAMPUS_BOUNDARY) ? campusSlopeOffsetAt(tree.point) + CAMPUS_ELEVATION : cityBaseHeightAt(tree.point) - .55), -y], scale: [s * (tree.palm ? 0.7 : 1), h, s * (tree.palm ? 0.7 : 1)] })
       if (tree.palm) {
-        for (let i = 0; i < 11; i++) palmItems.push({ position: [x, h + 0.2 + i % 3 * 0.22 + campusSlopeOffsetAt(tree.point), -y], scale: [s, s * (0.8 + i % 3 * 0.18), s], rotation: i * Math.PI * 2 / 11 + index, tone: tree.tone })
+        for (let i = 0; i < 11; i++) palmItems.push({ position: [x, h + 0.2 + i % 3 * 0.22 + (pointInPolygon(tree.point, CAMPUS_BOUNDARY) ? campusSlopeOffsetAt(tree.point) + CAMPUS_ELEVATION : cityBaseHeightAt(tree.point) - .55), -y], scale: [s, s * (0.8 + i % 3 * 0.18), s], rotation: i * Math.PI * 2 / 11 + index, tone: tree.tone })
       } else {
         for (let i = 0; i < 7; i++) {
           const angle = i * 2.4 + index, radius = i === 0 ? 0 : s * 1.35
-          crownItems.push({ position: [x + Math.sin(angle) * radius, h + 0.7 + Math.sin(i * 7) * s * 0.7 + campusSlopeOffsetAt(tree.point), -y + Math.cos(angle) * radius],
+          crownItems.push({ position: [x + Math.sin(angle) * radius, h + 0.7 + Math.sin(i * 7) * s * 0.7 + (pointInPolygon(tree.point, CAMPUS_BOUNDARY) ? campusSlopeOffsetAt(tree.point) + CAMPUS_ELEVATION : cityBaseHeightAt(tree.point) - .55), -y + Math.cos(angle) * radius],
             scale: [s * (1.5 + i % 3 * 0.2), s * (1.35 + i % 2 * 0.4), s * (1.35 + i % 3 * 0.22)], rotation: angle, tone: tree.tone })
         }
       }

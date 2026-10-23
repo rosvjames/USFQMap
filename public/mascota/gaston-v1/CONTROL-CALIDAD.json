@@ -1,0 +1,307 @@
+{
+  "pngCount": 13,
+  "animationCount": 11,
+  "checks": "Resolución original, alpha real, contenido no vacío, WebP con múltiples cuadros y transparencia, SHA-256",
+  "results": [
+    {
+      "id": "saludando",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 50.1,
+      "coreBounds": {
+        "left": 115,
+        "top": 29,
+        "right": 1108,
+        "bottom": 1194
+      },
+      "edgeOpaque": 0,
+      "bytes": 1506373,
+      "sha256": "a1a6d261c82cc92322e677cbe76274b4b2130c3cb2a5481bed7779fcfe236a49",
+      "animation": {
+        "frames": 96,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 0,
+        "bytes": 2440616
+      }
+    },
+    {
+      "id": "saludando-parpadeo",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 49.3,
+      "coreBounds": {
+        "left": 114,
+        "top": 28,
+        "right": 1111,
+        "bottom": 1195
+      },
+      "edgeOpaque": 0,
+      "bytes": 1414307,
+      "sha256": "c75ab4d0d33bb21da53eb661449f89c4c8d4dc2e127d3612a391930153712e27"
+    },
+    {
+      "id": "asomado",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 53.2,
+      "coreBounds": {
+        "left": 113,
+        "top": 88,
+        "right": 1192,
+        "bottom": 1034
+      },
+      "edgeOpaque": 0,
+      "bytes": 1366724,
+      "sha256": "ed69a73c8d8157995e883f22141eb0bb770416cac517fd58815ffc3f4534541d",
+      "animation": {
+        "frames": 11,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 207796
+      }
+    },
+    {
+      "id": "guiando",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 54.3,
+      "coreBounds": {
+        "left": 131,
+        "top": 63,
+        "right": 1201,
+        "bottom": 1186
+      },
+      "edgeOpaque": 0,
+      "bytes": 1361838,
+      "sha256": "c7dd3f5f29d96f83210baddd00c8181524921969d6b6b88f5785032822bad9e3",
+      "animation": {
+        "frames": 15,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 382282
+      }
+    },
+    {
+      "id": "logrado",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 52.9,
+      "coreBounds": {
+        "left": 123,
+        "top": 55,
+        "right": 1162,
+        "bottom": 1192
+      },
+      "edgeOpaque": 0,
+      "bytes": 1389779,
+      "sha256": "c2eb6f5051673d46c92eb01a514c5d05f817ddd32ea1f32f42991bdff421802b",
+      "animation": {
+        "frames": 19,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 508460
+      }
+    },
+    {
+      "id": "buscando",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 50.4,
+      "coreBounds": {
+        "left": 123,
+        "top": 25,
+        "right": 1164,
+        "bottom": 1202
+      },
+      "edgeOpaque": 0,
+      "bytes": 1408284,
+      "sha256": "3c24aed27cea302e1805ce662471c6abd3e4d55c3636519c466b98c6f6c30f5b",
+      "animation": {
+        "frames": 76,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 0,
+        "bytes": 2333242
+      }
+    },
+    {
+      "id": "ubicacion",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 55,
+      "coreBounds": {
+        "left": 201,
+        "top": 34,
+        "right": 1115,
+        "bottom": 1196
+      },
+      "edgeOpaque": 0,
+      "bytes": 1317819,
+      "sha256": "4e9aac294068e170f326992a94c1fdd147da192a79f6d35274e67077a5c1928c",
+      "animation": {
+        "frames": 39,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 0,
+        "bytes": 286598
+      }
+    },
+    {
+      "id": "sin-conexion",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 52.6,
+      "coreBounds": {
+        "left": 203,
+        "top": 52,
+        "right": 1127,
+        "bottom": 1189
+      },
+      "edgeOpaque": 0,
+      "bytes": 1384861,
+      "sha256": "ceb85c0710330c537d82ab6096fa574660ff500adeb42a97b50417966840185e",
+      "animation": {
+        "frames": 9,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 175738
+      }
+    },
+    {
+      "id": "cabeza",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 45.6,
+      "coreBounds": {
+        "left": 37,
+        "top": 133,
+        "right": 1234,
+        "bottom": 1187
+      },
+      "edgeOpaque": 0,
+      "bytes": 1569258,
+      "sha256": "0080f46466bfac55cf94e3ec86e11c08d76860a5ee05eda42b4c3eadab832945"
+    },
+    {
+      "id": "explorando",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 55.7,
+      "coreBounds": {
+        "left": 243,
+        "top": 48,
+        "right": 1127,
+        "bottom": 1187
+      },
+      "edgeOpaque": 0,
+      "bytes": 1285163,
+      "sha256": "37e1390374c2eaab69866b9860444430a895ddf7260ddde0afe867216db66510",
+      "animation": {
+        "frames": 72,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 0,
+        "bytes": 1791650
+      }
+    },
+    {
+      "id": "carino",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 54.5,
+      "coreBounds": {
+        "left": 199,
+        "top": 36,
+        "right": 1163,
+        "bottom": 1189
+      },
+      "edgeOpaque": 0,
+      "bytes": 1339336,
+      "sha256": "f5b388e857e4aae1bd93a9ed0ea09922a7e874385ee2ab72002162ca41104089",
+      "animation": {
+        "frames": 19,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 432526
+      }
+    },
+    {
+      "id": "ayuda",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 48.3,
+      "coreBounds": {
+        "left": 142,
+        "top": 33,
+        "right": 1146,
+        "bottom": 1203
+      },
+      "edgeOpaque": 0,
+      "bytes": 1505509,
+      "sha256": "859d80a55cb3f4fe35de5f61d302ab28fcf2b9075f46d9832d495f44d5ff07e8",
+      "animation": {
+        "frames": 13,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 392048
+      }
+    },
+    {
+      "id": "pin",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "transparentPercent": 55.4,
+      "coreBounds": {
+        "left": 171,
+        "top": 63,
+        "right": 1081,
+        "bottom": 1182
+      },
+      "edgeOpaque": 0,
+      "bytes": 1205988,
+      "sha256": "b76e9db438517163cc64b12eb34e261c8c9db7bbb0bdec0e9057ddf3d1a3e1e8",
+      "suggestedAnchor": {
+        "x": 0.5,
+        "y": 0.9426
+      },
+      "animation": {
+        "frames": 14,
+        "width": 512,
+        "height": 512,
+        "alpha": true,
+        "loop": 1,
+        "bytes": 266332
+      }
+    }
+  ]
+}

@@ -65,18 +65,24 @@ export function bridgeJunctions(ways: CampusWalkway[]) {
 }
 
 /** Unioned perimeter keeps the far rail continuous while opening the side ramp. */
-export function bridgeBoundaryRails(ways: CampusWalkway[]) {
-  const polygons = ways.map(way => { const sections=bridgeSections(way); return [[...sections.map(s=>s.left),...sections.map(s=>s.right).reverse()]] as polygonClipping.Polygon })
-  const patches = bridgeJunctions(ways).map(({point,radius})=>[Array.from({length:16},(_,i):Vec2=>[point[0]+Math.cos(i*Math.PI/8)*radius,point[1]+Math.sin(i*Math.PI/8)*radius])] as polygonClipping.Polygon)
+export function bridgeBoundaryRails(ways: CampusWalkway[], groundAccess: CampusWalkway[] = []) {
+  const joined = [...ways, ...groundAccess]
+  const polygons = joined.map(way => { const sections=bridgeSections(way); return [[...sections.map(s=>s.left),...sections.map(s=>s.right).reverse()]] as polygonClipping.Polygon })
+  const patches = bridgeJunctions(joined).map(({point,radius})=>[Array.from({length:16},(_,i):Vec2=>[point[0]+Math.cos(i*Math.PI/8)*radius,point[1]+Math.sin(i*Math.PI/8)*radius])] as polygonClipping.Polygon)
   const outline = polygonClipping.union(polygons[0],...polygons.slice(1),...patches)
   const degree = new Map<string,number>()
-  for (const way of ways) for (let i=1;i<way.line.length;i++) for (const p of [way.line[i-1],way.line[i]]) degree.set(p.join(','),(degree.get(p.join(','))??0)+1)
-  const terminals = ways.flatMap(way=>[0,way.line.length-1].filter(i=>degree.get(way.line[i].join(','))===1).map(i=>{
+  for (const way of joined) for (let i=1;i<way.line.length;i++) for (const p of [way.line[i-1],way.line[i]]) degree.set(p.join(','),(degree.get(p.join(','))??0)+1)
+  const terminals = joined.flatMap(way=>[0,way.line.length-1].filter(i=>degree.get(way.line[i].join(','))===1).map(i=>{
     const end=way.line[i], next=way.line[i===0?1:i-1], length=Math.hypot(next[0]-end[0],next[1]-end[1])
     return {end,dir:[(next[0]-end[0])/length,(next[1]-end[1])/length] as Vec2}
   }))
   return outline.flatMap(polygon=>polygon.flatMap(ring=>ring.slice(1).flatMap((b,i)=>{
     const a=ring[i], middle: Vec2=[(a[0]+b[0])/2,(a[1]+b[1])/2]
+    // An opening can shape the rail perimeter without turning the campus path into a bridge.
+    if (groundAccess.length && !ways.some(way => way.line.slice(1).some((q,j) => {
+      const {t,distance} = segmentProjection(middle,way.line[j],q)
+      return t >= -.015 && t <= 1.015 && distance <= Math.max(way.width,2.8)/2 + .02
+    }))) return []
     if (terminals.some(({end,dir})=> Math.abs((middle[0]-end[0])*dir[0]+(middle[1]-end[1])*dir[1])<0.02 && Math.hypot(middle[0]-end[0],middle[1]-end[1])<2)) return []
     return [{a:a as Vec2,b:b as Vec2,ah:surfaceHeight(a as Vec2,ways),bh:surfaceHeight(b as Vec2,ways)}]
   })))

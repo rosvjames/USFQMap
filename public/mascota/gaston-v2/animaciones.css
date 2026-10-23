@@ -1,0 +1,35 @@
+/* Gastón v2 — MiCampus USFQ. Gestos breves; añadir la clase de nuevo para repetir. */
+.gaston{position:relative;display:inline-block;width:var(--gaston-size,180px);aspect-ratio:1;vertical-align:middle;transform-origin:50% 92%;pointer-events:none;object-fit:contain}
+.gaston>img{display:block;width:100%;height:100%;object-fit:contain}
+.gaston>.gaston-parpado{position:absolute;inset:0;opacity:0;mask-image:radial-gradient(ellipse 3.4% 5.5% at 43% 35.8%,#000 88%,transparent 100%),radial-gradient(ellipse 3.4% 5.5% at 60.6% 34.1%,#000 88%,transparent 100%);animation:gaston-parpadeo 1600ms step-end 1}
+.gaston--saludo{animation:gaston-saludar 1600ms ease-in-out 1}
+.gaston--asomado{animation:gaston-asomarse 700ms ease-out 1}
+.gaston--guia{animation:gaston-indicar 950ms ease-in-out 1}
+.gaston--guia-izquierda{animation:gaston-indicar-izquierda 950ms ease-in-out 1}
+.gaston--logrado{animation:gaston-celebrar 1100ms ease-out 1}
+.gaston--buscando{animation:gaston-pensar 1300ms ease-in-out 1}
+.gaston--ubicacion{animation:gaston-escuchar 1000ms ease-in-out 1}
+.gaston--ubicacion::before{content:'';position:absolute;inset:83% 30% 4%;border:2px solid #e11b22;border-radius:50%;z-index:-1;animation:gaston-localizar 1000ms ease-out 1;opacity:0}
+.gaston--pausa{animation:gaston-aparecer 700ms ease-out 1}
+.gaston--explorando{animation:gaston-explorar 1300ms ease-in-out 1}
+.gaston--carino{animation:gaston-carino 1100ms ease-in-out 1}
+.gaston--ayuda{animation:gaston-escuchar 1000ms ease-in-out 1}
+.gaston--pin{animation:gaston-pin 900ms ease-out 1}
+.gaston--quieto,.gaston--quieto *,.gaston--quieto::before,.gaston-pausado .gaston,.gaston-pausado .gaston *,.gaston-pausado .gaston::before,.gaston-oculto .gaston,.gaston-oculto .gaston *,.gaston-oculto .gaston::before{animation-play-state:paused!important}
+@keyframes gaston-parpadeo{0%,37%,52%,100%{opacity:0}38%,51%{opacity:1}}
+@keyframes gaston-saludar{0%,100%{transform:rotate(0)}30%{transform:rotate(-1.5deg)}65%{transform:rotate(1deg)}}
+@keyframes gaston-asomarse{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes gaston-indicar{0%,100%{transform:translateX(0)}45%{transform:translateX(4px)}}
+@keyframes gaston-indicar-izquierda{0%,100%{transform:translateX(0)}45%{transform:translateX(-4px)}}
+@keyframes gaston-celebrar{0%,100%{transform:translateY(0) scale(1)}38%{transform:translateY(-6px) scale(1.02)}70%{transform:scale(.99)}}
+@keyframes gaston-pensar{0%,100%{transform:rotate(0)}45%{transform:rotate(-1.8deg)}}
+@keyframes gaston-localizar{0%{transform:scale(.65);opacity:.55}100%{transform:scale(1.2);opacity:0}}
+@keyframes gaston-aparecer{0%{opacity:0}100%{opacity:1}}
+@keyframes gaston-explorar{0%,100%{transform:rotate(0)}45%{transform:rotate(1.5deg)}}
+@keyframes gaston-carino{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@keyframes gaston-escuchar{0%,100%{transform:rotate(0)}45%{transform:rotate(-1.5deg)}}
+@keyframes gaston-pin{0%{opacity:0;transform:translateY(-8px)}70%{opacity:1;transform:translateY(1px)}100%{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.gaston,.gaston *,.gaston::before{animation:none!important}.gaston>.gaston-parpado{opacity:0}.gaston--ubicacion::before{display:none}}
+.gaston-reducido .gaston,.gaston-reducido .gaston *,.gaston-reducido .gaston::before{animation:none!important}
+.gaston-reducido .gaston>.gaston-parpado{opacity:0}
+.gaston-reducido .gaston--ubicacion::before{display:none}

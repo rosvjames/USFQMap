@@ -1,0 +1,33 @@
+/* Gastón v1 · PNG de GPT Image + movimiento de interfaz. */
+.gaston { position: relative; display: inline-block; width: var(--gaston-size, 180px); aspect-ratio: 1; vertical-align: middle; transform-origin: 50% 85%; }
+.gaston > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.gaston > .gaston-parpado { position: absolute; inset: 0; opacity: 0; mask-image: radial-gradient(ellipse 13% 12% at 37% 32%, #000 75%, transparent 100%), radial-gradient(ellipse 13% 12% at 64% 36%, #000 75%, transparent 100%); animation: gaston-parpadeo 4.8s step-end infinite; }
+.gaston--saludo { animation: gaston-respirar 2.4s ease-in-out infinite; }
+.gaston--asomado { transform-origin: 50% 80%; animation: gaston-asomarse 500ms ease-out both; }
+.gaston--guia { animation: gaston-indicar 700ms ease-in-out 1; }
+.gaston--logrado { animation: gaston-celebrar 900ms ease-out 1; }
+.gaston--buscando { animation: gaston-pensar 3.8s ease-in-out infinite; }
+.gaston--ubicacion::before { content: ''; position: absolute; inset: 60% 30% 4%; border: 2px solid #e11b22; border-radius: 50%; z-index: -1; animation: gaston-localizar 2s ease-out infinite; }
+.gaston--pausa { animation: gaston-aparecer 400ms ease-out both; }
+.gaston--explorando { animation: gaston-explorar 3.6s ease-in-out infinite; }
+.gaston--carino { animation: gaston-celebrar 900ms ease-out 1; }
+.gaston--ayuda { animation: gaston-escuchar 600ms ease-out 1; }
+.gaston--pin { transform-origin: 50% 92%; animation: gaston-pin 650ms ease-out 1; }
+.gaston--quieto, .gaston--quieto *, .gaston--quieto::before,
+.gaston-pausado .gaston, .gaston-pausado .gaston *, .gaston-pausado .gaston::before { animation-play-state: paused !important; }
+@keyframes gaston-parpadeo { 0%, 43%, 47%, 100% { opacity: 0; } 44%, 46% { opacity: 1; } }
+@keyframes gaston-respirar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes gaston-asomarse { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes gaston-indicar { 0%, 100% { transform: translateX(0); } 45% { transform: translateX(-5px); } }
+@keyframes gaston-celebrar { 0% { transform: scale(.92); } 35% { transform: translateY(-10px) scale(1.035); } 65% { transform: scale(.98); } 100% { transform: translateY(0) scale(1); } }
+@keyframes gaston-pensar { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes gaston-localizar { from { transform: scale(.6); opacity: .5; } to { transform: scale(1.4); opacity: 0; } }
+@keyframes gaston-aparecer { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gaston-explorar { 0%, 100% { transform: rotate(-1deg) translateY(0); } 50% { transform: rotate(1deg) translateY(-3px); } }
+@keyframes gaston-escuchar { 0% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes gaston-pin { 0% { opacity: 0; transform: translateY(-12px) scale(.9); } 65% { opacity: 1; transform: scale(1.04); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .gaston, .gaston *, .gaston::before { animation: none !important; }
+  .gaston > .gaston-parpado { opacity: 0; }
+  .gaston--ubicacion::before { display: none; }
+}

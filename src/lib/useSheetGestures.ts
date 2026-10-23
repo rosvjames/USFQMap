@@ -26,7 +26,9 @@ export function useSwipeDown<T extends HTMLElement>(onDismiss: () => void) {
         if (event.button !== 0 || (event.target as HTMLElement).closest('a, input, select, button:not(.grabber)')) return
         start.current = event.clientY
         moved.current = false
-        event.currentTarget.setPointerCapture(event.pointerId)
+        // Capturing on the header would retarget the grabber's click away from its button.
+        const captureTarget = (event.target as HTMLElement).closest('.grabber') ?? event.currentTarget
+        captureTarget.setPointerCapture(event.pointerId)
         sheet.current?.classList.add('dragging')
       },
       onPointerMove(event: PointerEvent<HTMLElement>) {

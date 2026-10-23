@@ -1,14 +1,17 @@
 import { Line } from '@react-three/drei'
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { CanvasTexture, DoubleSide, InstancedMesh, Object3D, RepeatWrapping, Shape, Vector2 } from 'three'
-import { boundarySegments, SPORT_ZONES, SPORT_STAIRS, TENNIS_LANDING, SPORT_GATE, SPORT_ACCESS_AREAS, TERRAIN_CUTOUTS, PATH_LEVEL, type SportZone } from '../lib/terrain'
+import { CanvasTexture, DoubleSide, InstancedMesh, Object3D, RepeatWrapping, Shape, ShapeGeometry, Vector2 } from 'three'
+import { boundarySegments, SPORT_ZONES, SPORT_STAIRS, TENNIS_LANDING, SPORT_GATE, SPORT_ACCESS_AREAS, TERRAIN_CUTOUTS, PATH_LEVEL, sportStairTopHeight, type SportZone } from '../lib/terrain'
 import { createTerrainShapes } from '../lib/architecture'
+import { campusBaseHeightAt, createGradedSurfaceGeometry } from '../lib/campusSlope'
 import type { CampusMaterials } from '../lib/materials'
 import { GardenTerrace, GARDEN_TABLES, SandCourtPlanting } from './SportsGarden'
 import type { Vec2 } from '../types'
 
 function frame(ring: Vec2[]) {
-  const edge = ring.map((a, i) => [a, ring[(i + 1) % ring.length]]).find(([a, b]) => Math.abs(b[0] - a[0]) > Math.abs(b[1] - a[1]))!
+  const edge = ring.map((a, i) => [a, ring[(i + 1) % ring.length]])
+    .filter(([a, b]) => Math.abs(b[0] - a[0]) > Math.abs(b[1] - a[1]))
+    .sort(([a, b], [c, d]) => Math.hypot(d[0] - c[0], d[1] - c[1]) - Math.hypot(b[0] - a[0], b[1] - a[1]))[0]
   let dx = edge[1][0] - edge[0][0], dy = edge[1][1] - edge[0][1]
   if (dx < 0) { dx = -dx; dy = -dy }
   const angle = Math.atan2(dy, dx), ux = Math.cos(angle), uy = Math.sin(angle)
@@ -56,8 +59,8 @@ function Tennis({ width, texture }: { width: number; texture: CanvasTexture }) {
 function Football({ width, length, natural, texture }: { width: number; length: number; natural: boolean; texture: CanvasTexture }) {
   const w = width * 0.73, l = length * 0.78
   return <group>
-    {Array.from({ length: 8 }, (_, i) => <mesh key={i} position={[0, 0.015, -l / 2 + (i + 0.5) * l / 8]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-      <planeGeometry args={[w, l / 8]} /><meshStandardMaterial color={i % 2 ? natural ? '#748c50' : '#45784b' : natural ? '#6b8447' : '#376b45'} roughness={1} />
+    {!natural && Array.from({ length: 8 }, (_, i) => <mesh key={i} position={[0, 0.015, -l / 2 + (i + 0.5) * l / 8]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[w, l / 8]} /><meshStandardMaterial color={i % 2 ? '#45784b' : '#376b45'} roughness={1} />
     </mesh>)}
     <Rectangle width={w} length={l} />
     <Line points={[[-w / 2, 0.055, 0], [w / 2, 0.055, 0]]} color="#f0ede0" lineWidth={0.065} worldUnits />
@@ -116,11 +119,15 @@ function BoundaryWalls({ zone, texture }: { zone: SportZone; texture: CanvasText
   return <group>{segments.map(([a, b], i) => {
     const length = Math.hypot(b[0] - a[0], b[1] - a[1])
     if (length < 0.1) return null
-    const wallHeight = 0.25 - zone.height
+    const upperA = Math.max(zone.height, campusBaseHeightAt(a)), upperB = Math.max(zone.height, campusBaseHeightAt(b))
     const angle = Math.atan2(b[1] - a[1], b[0] - a[0])
     const center: [number, number, number] = [(a[0] + b[0]) / 2, zone.height, -(a[1] + b[1]) / 2]
     return <group key={i} position={center} rotation={[0, angle, 0]}>
-      {zone.height < 0 && <mesh position={[0, wallHeight / 2, 0]} receiveShadow><boxGeometry args={[length, wallHeight, 0.12]} /><meshStandardMaterial color="#a89e88" roughness={0.95} /></mesh>}
+      {zone.height < 0 && <mesh receiveShadow><boxGeometry args={[length, 1, 0.12]} onUpdate={geometry => {
+        const p = geometry.getAttribute('position')
+        for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) > 0 ? (p.getX(i) < 0 ? upperA : upperB) - zone.height : 0)
+        geometry.computeVertexNormals(); geometry.computeBoundingSphere()
+      }} /><meshStandardMaterial color="#a89e88" roughness={0.95} /></mesh>}
       {(zone.kind === 'synthetic' || zone.kind === 'sand') && <group>
         <group position={[0, 2.5, 0]}><Wire width={length} height={5} texture={texture} /></group>
         <Line points={[[-length / 2, 5, 0], [length / 2, 5, 0]]} color="#3f5043" lineWidth={0.075} worldUnits />
@@ -133,6 +140,12 @@ function BoundaryWalls({ zone, texture }: { zone: SportZone; texture: CanvasText
 }
 
 export function SportsGround({ materials }: { materials: CampusMaterials }) {
+  const access = useMemo(() => SPORT_ACCESS_AREAS.map(ring => {
+    const flat = new ShapeGeometry(createTerrainShapes(ring, TERRAIN_CUTOUTS))
+    const graded = createGradedSurfaceGeometry(flat)
+    flat.dispose(); return graded
+  }), [])
+  useEffect(() => () => access.forEach(g => g.dispose()), [access])
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas'); canvas.width = canvas.height = 32
     const ctx = canvas.getContext('2d')!; ctx.strokeStyle = '#a6ada3'; ctx.lineWidth = 1.2
@@ -148,9 +161,7 @@ export function SportsGround({ materials }: { materials: CampusMaterials }) {
   },[])
   useEffect(() => () => { texture.dispose(); volleyTexture.dispose() }, [texture,volleyTexture])
   return <group>
-    {SPORT_ACCESS_AREAS.map((ring, i) => <mesh key={`access-${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} material={materials.road} receiveShadow>
-      <shapeGeometry args={[createTerrainShapes(ring, TERRAIN_CUTOUTS)]} onUpdate={(geo) => { const uv = geo.getAttribute('uv'); for (let j = 0; j < uv.count; j++) uv.setXY(j, uv.getX(j) / 2.4, uv.getY(j) / 2.4); uv.needsUpdate = true }} />
-    </mesh>)}
+    {access.map((geometry, i) => <mesh key={`access-${i}`} geometry={geometry} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} material={materials.paving} receiveShadow />)}
     {SPORT_ZONES.map((zone) => {
       const f = frame(zone.area.ring), material = zone.kind === 'sand' ? materials.sand : zone.kind === 'tennis' ? materials.tennis : zone.kind === 'synthetic' ? materials.synthetic : materials.grass
       const shape = new Shape(zone.area.ring.map(([x, y]) => new Vector2(x, y)))
@@ -179,10 +190,11 @@ export function SportsGround({ materials }: { materials: CampusMaterials }) {
     })}
     {SPORT_STAIRS.map((stair, i) => {
       const dx = stair.bottom[0] - stair.top[0], dy = stair.bottom[1] - stair.top[1], length = Math.hypot(dx, dy)
-      const count = Math.ceil((PATH_LEVEL - stair.low) / 0.18)
+      const top = sportStairTopHeight(stair)
+      const count = Math.max(1, Math.ceil((top - stair.low) / 0.18))
       return <group key={i}>
         {Array.from({ length: count }, (_, j) => {
-          const t = (j + 0.5) / count, level = PATH_LEVEL + (stair.low - PATH_LEVEL) * t
+          const t = (j + 0.5) / count, level = top + (stair.low - top) * t
           return <mesh key={j} position={[stair.top[0] + dx * t, stair.low - 0.1 + (level - stair.low + 0.1) / 2, -stair.top[1] - dy * t]} rotation={[0, Math.atan2(dy, dx), 0]} receiveShadow castShadow>
             <boxGeometry args={[length / count + 0.025, level - stair.low + 0.1, stair.width]} /><meshStandardMaterial color="#b8b2a2" roughness={0.95} />
           </mesh>
