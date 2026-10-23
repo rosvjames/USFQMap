@@ -76,7 +76,7 @@ export function createCampusMaterials() {
     epicuroStone: material('stucco', '#b6b09c', 0.96, 0.025),
     academicOrange: material('stucco', '#db7842', 0.95, 0.025),
     coliseoOrange: material('stucco', '#c85e35', .95, .025),
-    coliseoLane: material('paving', '#73766e', .98, .025),
+    coliseoLane: material('paving', '#c1b8a2', .95, .025),
     hallRed: material('stucco', '#c3654f', 0.95, 0.025),
     entranceStone: material('stone', '#b8b6a8', 0.95, 0.025),
     redStone: material('stone', '#aa705a', 0.95, 0.025),
