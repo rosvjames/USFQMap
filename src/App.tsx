@@ -16,7 +16,7 @@ import { HomeSheet } from './components/HomeSheet'
 import { DestinationSheet } from './components/DestinationSheet'
 import { NavigationView } from './components/NavigationView'
 import { useSplashExit } from './components/SplashScreen'
-import { BackIcon, LayersIcon, LocateIcon } from './components/icons'
+import { BackIcon, InfoIcon, LayersIcon, LocateIcon } from './components/icons'
 import { viewsFor } from './lib/buildingViews'
 import { useKeyboardInset } from './lib/useSheetGestures'
 import { LOCATIONS, MAP_NUMBERS } from './data/references'
@@ -68,6 +68,17 @@ export default function App() {
   const compassNeedle = useRef<SVGSVGElement>(null)
   useKeyboardInset()
   useSplashExit(sceneReady)
+
+  // Gastón's gestures stop while the tab is hidden.
+  useEffect(() => {
+    const pauseMascot = () => document.documentElement.classList.toggle('gaston-pausado', document.hidden)
+    pauseMascot()
+    document.addEventListener('visibilitychange', pauseMascot)
+    return () => {
+      document.removeEventListener('visibilitychange', pauseMascot)
+      document.documentElement.classList.remove('gaston-pausado')
+    }
+  }, [])
 
   // The compass turns on every frame of a rotation, so it is moved directly instead of through state.
   const handleViewChange = useCallback((azimuth: number, isTilted: boolean) => {
@@ -199,7 +210,7 @@ export default function App() {
       />
 
       {!walking && <>
-      {!destination && <h1 className="brand-pill"><img className="brand-mark" src="/mascota/gaston/pin-2d.webp" width={96} height={114} alt="" />USFQ <span>Explora</span></h1>}
+      {!destination && <h1 className="brand-pill">Explora <span>USFQ</span></h1>}
 
       {destination && !navigatingNow && (
         <div className="route-top">
@@ -233,7 +244,7 @@ export default function App() {
         </nav>
       )}
 
-      {!navigatingNow && <div className="map-controls">
+      {!navigatingNow && <div className="map-controls" role="group" aria-label="Herramientas del mapa">
         <button className="round-button" aria-pressed={names} onClick={() => setNames((visible) => !visible)} aria-label="Nombres de edificios" title="Nombres de edificios"><LayersIcon /></button>
         <button className="round-button" onClick={() => mapCamera.current?.faceNorth()} aria-label="Orientar al norte" title="Orientar al norte">
           <svg ref={compassNeedle} viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
@@ -246,7 +257,7 @@ export default function App() {
         <button className="round-button zoom" onClick={() => mapCamera.current?.zoomBy(0.6)} aria-label="Acercar">+</button>
         <button className="round-button zoom" onClick={() => mapCamera.current?.zoomBy(1.6)} aria-label="Alejar">−</button>
       </div>}
-      {!destination && originId === GPS && gps.error && <p className="toast" role="status">{gps.error}</p>}
+      {!destination && originId === GPS && gps.error && <p className="toast" role="status"><InfoIcon size={20} /><span>{gps.error}</span></p>}
 
       {!destination && (
         <HomeSheet

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { BuildingView } from '../lib/buildingViews'
 import { useSwipeDown } from '../lib/useSheetGestures'
 import { ArrowIcon, EyeIcon, WalkerIcon } from './icons'
+import { Mascot } from './Mascot'
 
 interface DestinationSheetProps {
   kicker: string
@@ -37,16 +38,11 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
             {walk && <p className="eta"><strong>{walk.minutes} min</strong><span>{walk.meters} m a pie</span></p>}
           </div>
         </div>
-        {notice && (
-          <div className="sheet-note">
-            {noticeMascot && <img src="/mascota/gaston/ubicacion.webp" width={120} height={150} alt="" />}
-            <p role="status">{notice}</p>
-          </div>
-        )}
-        {onGo && <button className="primary-button" onClick={onGo}>¡Vamos! <ArrowIcon /></button>}
+        {notice && <div className="sheet-note">{noticeMascot && <Mascot pose="ubicacion" />}<p role="status">{notice}</p></div>}
+        {onGo && <button className="primary-button" onClick={onGo}>Iniciar ruta <ArrowIcon /></button>}
         {(views.length > 0 || onWalk) && (
           <div className="views">
-            <h2>Mira antes de ir</h2>
+            <h2>Explora este lugar</h2>
             <div className="chips">
               {views.map((view) => <button key={view.label} className="chip" onClick={() => onView(view)}><EyeIcon size={18} />{view.label}</button>)}
               {onWalk && <button className="chip" onClick={onWalk}><WalkerIcon size={18} />A pie</button>}

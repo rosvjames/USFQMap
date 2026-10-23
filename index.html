@@ -3,36 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#fff5f2" />
+    <meta name="theme-color" content="#231f20" />
     <meta name="description" content="Explora el campus de la USFQ en un mapa 3D ilustrado. Busca edificios y aulas, consulta fuentes y sigue la ruta a pie con GPS." />
     <link rel="preload" as="image" href="/mascota/gaston/saludando.webp" fetchpriority="high" />
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/paytone-one-latin-400-normal.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/zalando-sans-expanded-latin.woff2" crossorigin />
     <link rel="icon" type="image/png" href="/mascota/gaston/favicon.png" />
     <link rel="apple-touch-icon" href="/mascota/gaston/apple-touch-icon.png" />
     <title>USFQ Explora · Campus en 3D</title>
-    <!-- The splash lives here, not in React, so it shows while the app downloads and while the 3D campus is built. -->
+    <!-- Visible before React and the campus scene finish loading. -->
     <style>
-      @font-face {
-        font-family: 'Paytone One';
-        font-style: normal;
-        font-display: swap;
-        font-weight: 400;
-        src: url(/fonts/paytone-one-latin-400-normal.woff2) format('woff2');
-      }
-      html, body { margin: 0; background: #fff5f2; }
-      .splash { position: fixed; inset: 0; z-index: 100; overflow: hidden; background: #fff5f2; transition: opacity 0.45s ease, visibility 0.45s; }
+      @font-face { font-family: 'Zalando Sans Expanded'; font-style: normal; font-weight: 500 700; font-display: swap; src: url('/fonts/zalando-sans-expanded-latin.woff2') format('woff2'); }
+      @font-face { font-family: 'Lato'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/lato-latin-400.woff2') format('woff2'); }
+      html, body { margin: 0; background: #faf9f6; }
+      .splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; overflow: hidden; background: #faf9f6; transition: opacity .45s ease, visibility .45s; }
       .splash.leaving { opacity: 0; visibility: hidden; pointer-events: none; }
-      .splash-brand, .splash-mascot { opacity: 0; transition: opacity 0.25s ease; }
+      .splash-brand, .splash-mascot { opacity: 0; transition: opacity .2s ease; }
       .splash.shown .splash-brand, .splash.shown .splash-mascot { opacity: 1; }
-      .splash-brand { position: absolute; top: 20%; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 22px; }
-      .wordmark { margin: 0; font: 36px/1 'Paytone One', system-ui, sans-serif; letter-spacing: -0.02em; color: #1d1b26; }
-      .wordmark span { color: #c8102e; }
-      .splash-bar { width: 120px; height: 6px; overflow: hidden; border-radius: 999px; background: #f5d6dc; }
-      .splash-bar span { display: block; width: 40%; height: 100%; border-radius: 999px; background: #c8102e; animation: splash-bar 1.3s ease-in-out infinite; }
-      .splash-mascot { position: absolute; left: 50%; bottom: -7%; width: min(360px, 82vw); height: auto; transform-origin: 50% 100%; animation: splash-float 2.6s ease-in-out infinite; }
+      .splash-brand { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+      .wordmark { display: flex; align-items: center; gap: 14px; margin: 0; font: 700 28px/1.2 'Zalando Sans Expanded', system-ui, sans-serif; letter-spacing: -.04em; color: #231f20; }
+      .wordmark span { padding-left: 14px; border-left: 2px solid #e11b22; font-size: 15px; letter-spacing: .01em; }
+      .splash-caption { margin: 0; font: 400 14px/1.5 'Lato', system-ui, sans-serif; color: #686462; }
+      .splash-bar { width: 150px; height: 3px; overflow: hidden; background: #e4e1dc; }
+      .splash-bar span { display: block; width: 40%; height: 100%; background: #e11b22; animation: splash-bar 1.3s ease-in-out infinite; }
+      .splash-mascot { width: clamp(200px, 38vh, 300px); height: auto; object-fit: contain; animation: splash-wave 1.6s ease-in-out; transform-origin: 50% 92%; }
+      @keyframes splash-wave { 30% { transform: rotate(-1.5deg); } 65% { transform: rotate(1deg); } }
       .splash .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-      @keyframes splash-bar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-      @keyframes splash-float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+      @keyframes splash-bar { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
       @media (prefers-reduced-motion: reduce) { .splash-mascot, .splash-bar span { animation: none; } .splash, .splash-brand, .splash-mascot { transition: none; } }
     </style>
   </head>
@@ -40,19 +36,19 @@
     <div id="root"></div>
     <div id="splash" class="splash" role="status" aria-live="polite">
       <div class="splash-brand">
-        <p class="wordmark">USFQ <span>Explora</span></p>
-        <span class="splash-bar" aria-hidden="true"><span></span></span>
-        <span class="visually-hidden">Cargando el campus…</span>
+        <p class="wordmark">Explora <span>USFQ</span></p>
+        <p class="splash-caption">Campus Cumbayá</p>
       </div>
-      <img class="splash-mascot" src="/mascota/gaston/saludando.webp" width="640" height="853" alt="" />
+      <img class="splash-mascot" src="/mascota/gaston/saludando.webp" width="512" height="512" alt="" />
+      <span class="splash-bar" aria-hidden="true"><span></span></span>
+      <span class="visually-hidden">Cargando el campus…</span>
     </div>
     <script>
-      // Title and mascot appear together, once both the image and the title font are in; never later than 3 s.
       (function () {
         var splash = document.getElementById('splash')
         var show = function () { splash.classList.add('shown') }
         var mascot = splash.querySelector('img')
-        Promise.all([mascot.decode().catch(function () {}), document.fonts.load("36px 'Paytone One'").catch(function () {})]).then(show)
+        Promise.all([mascot.decode().catch(function () {}), document.fonts.load("700 28px 'Zalando Sans Expanded'").catch(function () {})]).then(show)
         setTimeout(show, 3000)
       })()
     </script>

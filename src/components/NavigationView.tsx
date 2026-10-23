@@ -1,4 +1,5 @@
 import { BackIcon, TurnIcon } from './icons'
+import { Mascot } from './Mascot'
 
 interface NavigationViewProps {
   steps: string[]
@@ -30,10 +31,8 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
       </p>
       <p className="nav-step">{instruction}</p>
       {detail && <p className="nav-detail">{detail}</p>}
-      {last
-        ? <img className="nav-mascot arrived" src="/mascota/gaston/logrado.webp" width={280} height={325} alt="" />
-        : <img key={step} className="nav-mascot" src="/mascota/gaston/guiando.webp" width={280} height={292} alt="" />}
-      {!last && <button className="nav-next" onClick={() => onStep(step + 1)} aria-label="Siguiente paso" />}
+      <Mascot key={step} className={`nav-mascot${last ? ' arrived' : ''}`} pose={last ? 'logrado' : 'guiando'} />
+      {!last && <button className="nav-next" onClick={() => onStep(step + 1)}>Siguiente paso <span aria-hidden="true">→</span></button>}
     </section>
 
     <section className="nav-bar" aria-label="Resumen del recorrido">
