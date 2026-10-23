@@ -60,11 +60,13 @@ describe('exterior exploration', () => {
     expect(Math.hypot(end[0]-start[0],end[1]-start[1])).toBeLessThan(Math.hypot(...movement))
   })
 
-  it('reaches the natural football pitch from the sloping western approach and back', () => {
-    const start: Vec2 = [-4.3, -121], bottom: Vec2 = [3.3, -121]
-    const end = moveWalker(start, [7.6, 0])
-    expect(end[0]).toBeCloseTo(bottom[0])
-    expect(moveWalker(bottom, [-7.6, 0])[0]).toBeCloseTo(start[0])
+  it('reaches the natural football pitch by the stairs behind its north goal, not over the lane railing', () => {
+    const route: Vec2[] = [[-3.5, -110], [1.5, -109.2], [6, -109.2], [6, -114]]
+    for (const points of [route, route.slice().reverse()]) for (let i = 1; i < points.length; i++) {
+      const a = points[i - 1], b = points[i], end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
+      expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)
+    }
+    expect(moveWalker([-4.3, -121], [7.6, 0])[0]).toBeLessThan(1.8)
   })
 
   it('walks downhill past the Coliseo corner without being pinched by the pitch fence', () => {
@@ -76,7 +78,7 @@ describe('exterior exploration', () => {
   })
 
   it('connects the main quadrangle to the pitch through the central downhill lane', () => {
-    const route: Vec2[] = [[-20, 33], [-22.5, 0], [-16, -2.5], [-9.5, -27], [-5, -108], [-2.5, -120], [12, -128.5], [12, -132]]
+    const route: Vec2[] = [[-20, 33], [-22.5, 0], [-16, -2.5], [-9.5, -27], [-5, -108], [1.5, -109.2], [6, -109.2], [12, -114], [12, -132]]
     for (const points of [route, route.slice().reverse()]) for (let i = 1; i < points.length; i++) {
       const a = points[i - 1], b = points[i], end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
       expect(Math.hypot(end[0] - b[0], end[1] - b[1]), `blocked at ${end}`).toBeLessThan(.01)

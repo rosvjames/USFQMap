@@ -42,14 +42,41 @@ export interface StairRun { top: Vec2; bottom: Vec2; width: number; low: number 
 export const SPORT_STAIRS: StairRun[] = [
   { top: [-60, -80], bottom: [-56.5, -80], width: 2.4, low: -1.45 },
   { top: [-63.3, -104], bottom: [-63.65, -111], width: 1.7, low: -3.25 },
-  { top: [-3.5, -121], bottom: [2.5, -121], width: 2.8, low: -3.8 },
 ]
 export function sportStairTopHeight(stair: StairRun): number {
   return campusBaseHeightAt(stair.top)
 }
 export const TENNIS_LANDING: Vec2[] = [[-64.5, -110.3], [-59.4, -110.3], [-59.4, -112.2], [-64.5, -112.2]]
-// Approximate pedestrian entrance between tennis and the fenced pitch.
-export const SPORT_GATE: Vec2[] = [[-29, -116.4], [-25, -116.4], [-25, -113.6], [-29, -113.6]]
+// Steps built against a sunken pitch's retaining wall, from a to b with the pitch on the left.
+// Step 0 sits against the wall; each step drops one rise toward the pitch floor at `low`.
+export interface WallSteps { a: Vec2; b: Vec2; count: number; tread: number; maxRise: number; low: number }
+// Student's description: a railing, not stairs, separates the lane from the natural pitch;
+// the descent is the full flight behind its north goal, and four large seating steps line
+// the lane wall, the tennis west wall and the synthetic pitch's wall shared with tennis.
+export const NATURAL_PITCH_STAIRS: WallSteps = { a: [30.8, -108.6], b: [1.5, -108.6], count: 10, tread: .4, maxRise: Infinity, low: -3.8 }
+export const SPORT_SEATING: WallSteps[] = [
+  { a: [1.73, -112.6], b: [1, -139.8], count: 4, tread: .55, maxRise: .45, low: -3.8 },
+  { a: [1, -139.8], b: [-1.5, -155.6], count: 4, tread: .55, maxRise: .45, low: -3.8 },
+  { a: [-60.9, -94.2], b: [-61.68, -110.3], count: 4, tread: .45, maxRise: .45, low: -3.25 },
+  { a: [-61.77, -112.2], b: [-62.8, -133.3], count: 4, tread: .45, maxRise: .45, low: -3.25 },
+  { a: [-26.9, -100], b: [-28.3, -138.6], count: 4, tread: .45, maxRise: .45, low: -3.25 },
+]
+// The lane's edge above the natural pitch, from the foot of its stairs to the south corner.
+export const NATURAL_PITCH_RAILING: Vec2[] = [[1.73, -112.6], [1, -139.8], [.9, -140.2], [-1.5, -155.6]]
+export function wallStepsOutline({ a, b, count, tread }: WallSteps): Vec2[] {
+  const length = Math.hypot(b[0] - a[0], b[1] - a[1]), depth = count * tread
+  const nx = -(b[1] - a[1]) / length * depth, ny = (b[0] - a[0]) / length * depth
+  return [a, b, [b[0] + nx, b[1] + ny], [a[0] + nx, a[1] + ny]]
+}
+/** Walkers follow the natural pitch's stairs as a ramp from the wall top down to the floor. */
+function naturalPitchStairsHeightAt(point: Vec2): number | undefined {
+  const { a, b, count, tread, low } = NATURAL_PITCH_STAIRS
+  const { t, length } = segmentProjection(point, a, b)
+  const depth = ((point[0] - a[0]) * -(b[1] - a[1]) + (point[1] - a[1]) * (b[0] - a[0])) / length
+  if (t < 0 || t > 1 || depth < 0 || depth > count * tread) return
+  const upper = campusBaseHeightAt([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t])
+  return upper + (low - upper) * depth / (count * tread)
+}
 export const SPORT_ACCESS_AREAS: Vec2[][] = [
   [[-64.15, -99], [-62.45, -99], [-62.45, -135], [-64.15, -135]],
   [[-4.04, -108.03], [-4.98, -139.32], [-2.73, -139.67], [-1.14, -108.59]],
@@ -77,7 +104,7 @@ export function stairOutline(stair: StairRun): Vec2[] {
 
 /** Split retaining edges at pedestrian openings so stairs never run through a wall. */
 export function boundarySegments(zone: SportZone): [Vec2, Vec2][] {
-  const openings = [...SPORT_STAIRS.map(stairOutline), TENNIS_LANDING, SPORT_GATE]
+  const openings = [...SPORT_STAIRS.map(stairOutline), TENNIS_LANDING]
   return zone.area.ring.flatMap((a, i) => {
     const b = zone.area.ring[(i + 1) % zone.area.ring.length]
     const dx = b[0] - a[0], dy = b[1] - a[1]
@@ -167,7 +194,9 @@ export function campusTerrainHeightAt(point: Vec2): number {
     const top = sportStairTopHeight(stair)
     if (distance <= stair.width / 2 && t >= -0.02 && t <= 1.02) return top + (stair.low - top) * Math.max(0, Math.min(1, t))
   }
-  if (pointInPolygon(point, TENNIS_LANDING) || pointInPolygon(point, SPORT_GATE)) return -3.25
+  const pitchStairs = naturalPitchStairsHeightAt(point)
+  if (pitchStairs !== undefined) return pitchStairs
+  if (pointInPolygon(point, TENNIS_LANDING)) return -3.25
   return SPORT_ZONES.find((zone) => pointInPolygon(point, zone.area.ring))?.height ?? campusBaseHeightAt(point)
 }
 
@@ -177,5 +206,5 @@ export const TERRAIN_CUTOUTS: Vec2[][] = [
   PAGODA_POND,
   COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT,
   ...SPORT_ZONES.filter((zone) => zone.height < 0).map((zone) => zone.area.ring),
-  ...SPORT_STAIRS.map(stairOutline), TENNIS_LANDING, SPORT_GATE,
+  ...SPORT_STAIRS.map(stairOutline), TENNIS_LANDING,
 ]

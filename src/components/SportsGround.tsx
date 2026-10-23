@@ -1,7 +1,7 @@
 import { Line } from '@react-three/drei'
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { CanvasTexture, DoubleSide, InstancedMesh, Object3D, RepeatWrapping, Shape, ShapeGeometry, Vector2 } from 'three'
-import { boundarySegments, SPORT_ZONES, SPORT_STAIRS, TENNIS_LANDING, SPORT_GATE, SPORT_ACCESS_AREAS, TERRAIN_CUTOUTS, PATH_LEVEL, sportStairTopHeight, type SportZone } from '../lib/terrain'
+import { CanvasTexture, DoubleSide, InstancedMesh, MeshStandardMaterial, Object3D, RepeatWrapping, Shape, ShapeGeometry, Vector2 } from 'three'
+import { boundarySegments, SPORT_ZONES, SPORT_STAIRS, TENNIS_LANDING, SPORT_ACCESS_AREAS, NATURAL_PITCH_STAIRS, NATURAL_PITCH_RAILING, SPORT_SEATING, TERRAIN_CUTOUTS, PATH_LEVEL, sportStairTopHeight, type SportZone, type WallSteps } from '../lib/terrain'
 import { createTerrainShapes } from '../lib/architecture'
 import { campusBaseHeightAt, createGradedSurfaceGeometry } from '../lib/campusSlope'
 import type { CampusMaterials } from '../lib/materials'
@@ -57,7 +57,8 @@ function Tennis({ width, texture }: { width: number; texture: CanvasTexture }) {
 }
 
 function Football({ width, length, natural, texture }: { width: number; length: number; natural: boolean; texture: CanvasTexture }) {
-  const w = width * 0.73, l = length * 0.78
+  // The natural pitch's margins leave room for the stairs behind its goal and the seating beside it.
+  const w = width * (natural ? .66 : .73), l = length * (natural ? .74 : .78)
   return <group>
     {!natural && Array.from({ length: 8 }, (_, i) => <mesh key={i} position={[0, 0.015, -l / 2 + (i + 0.5) * l / 8]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[w, l / 8]} /><meshStandardMaterial color={i % 2 ? '#45784b' : '#376b45'} roughness={1} />
@@ -72,6 +73,39 @@ function Football({ width, length, natural, texture }: { width: number; length: 
         <Line points={[[-(natural ? 2.5 : 1.8), 2.1, 0], [-(natural ? 2.5 : 1.8), 2.1, side * 0.8], [(natural ? 2.5 : 1.8), 2.1, side * 0.8], [(natural ? 2.5 : 1.8), 2.1, 0]]} color="#dddcd0" lineWidth={0.065} worldUnits />
       </group>
     </group>)}
+  </group>
+}
+
+/** Steps against a retaining wall; their tops follow the wall as the upper ground slopes. */
+function StepsAgainstWall({ run, material }: { run: WallSteps; material: MeshStandardMaterial }) {
+  const { a, b, count, tread, maxRise, low } = run
+  const length = Math.hypot(b[0] - a[0], b[1] - a[1]), angle = Math.atan2(b[1] - a[1], b[0] - a[0])
+  const riseA = Math.min(maxRise, Math.max(0, campusBaseHeightAt(a) - low) / count)
+  const riseB = Math.min(maxRise, Math.max(0, campusBaseHeightAt(b) - low) / count)
+  return <group position={[(a[0] + b[0]) / 2, low, -(a[1] + b[1]) / 2]} rotation={[0, angle, 0]}>
+    {Array.from({ length: count }, (_, i) => <mesh key={i} position={[0, 0, -(i + .5) * tread]} material={material} castShadow receiveShadow raycast={() => null}>
+      <boxGeometry args={[length, 1, tread + .01]} onUpdate={geometry => {
+        const p = geometry.getAttribute('position')
+        for (let j = 0; j < p.count; j++) p.setY(j, p.getY(j) > 0 ? (count - i) * (p.getX(j) < 0 ? riseA : riseB) : 0)
+        geometry.computeVertexNormals(); geometry.computeBoundingSphere()
+      }} />
+    </mesh>)}
+  </group>
+}
+
+function Railing({ line }: { line: Vec2[] }) {
+  const posts = line.flatMap((b, i) => {
+    if (!i) return [b]
+    const a = line[i - 1], n = Math.max(1, Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) / 2.2))
+    return Array.from({ length: n }, (_, j): Vec2 => [a[0] + (b[0] - a[0]) * (j + 1) / n, a[1] + (b[1] - a[1]) * (j + 1) / n])
+  })
+  const rail = (height: number) => posts.map(p => [p[0], campusBaseHeightAt(p) + height, -p[1]] as [number, number, number])
+  return <group>
+    {posts.map((p, i) => <mesh key={i} position={[p[0], campusBaseHeightAt(p) + .5, -p[1]]} castShadow raycast={() => null}>
+      <cylinderGeometry args={[.03, .03, 1, 6]} /><meshStandardMaterial color="#3f5043" metalness={.6} roughness={.6} />
+    </mesh>)}
+    <Line points={rail(1)} color="#3f5043" lineWidth={.06} worldUnits />
+    <Line points={rail(.5)} color="#3f5043" lineWidth={.035} worldUnits />
   </group>
 }
 
@@ -159,7 +193,8 @@ export function SportsGround({ materials }: { materials: CampusMaterials }) {
     ctx.strokeRect(.8,.8,30.4,30.4)
     const map=new CanvasTexture(canvas);map.wrapS=map.wrapT=RepeatWrapping;map.anisotropy=4;return map
   },[])
-  useEffect(() => () => { texture.dispose(); volleyTexture.dispose() }, [texture,volleyTexture])
+  const concrete = useMemo(() => new MeshStandardMaterial({ color: '#b8b2a2', roughness: .95 }), [])
+  useEffect(() => () => { texture.dispose(); volleyTexture.dispose(); concrete.dispose() }, [texture,volleyTexture,concrete])
   return <group>
     {access.map((geometry, i) => <mesh key={`access-${i}`} geometry={geometry} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} material={materials.paving} receiveShadow />)}
     {SPORT_ZONES.map((zone) => {
@@ -201,6 +236,8 @@ export function SportsGround({ materials }: { materials: CampusMaterials }) {
         })}
       </group>
     })}
-    {[TENNIS_LANDING, SPORT_GATE].map((ring, i) => <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.24, 0]} material={materials.paving} receiveShadow><shapeGeometry args={[new Shape(ring.map(([x, y]) => new Vector2(x, y)))]} /></mesh>)}
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.24, 0]} material={materials.paving} receiveShadow><shapeGeometry args={[new Shape(TENNIS_LANDING.map(([x, y]) => new Vector2(x, y)))]} /></mesh>
+    {[NATURAL_PITCH_STAIRS, ...SPORT_SEATING].map((run, i) => <StepsAgainstWall key={i} run={run} material={concrete} />)}
+    <Railing line={NATURAL_PITCH_RAILING} />
   </group>
 }

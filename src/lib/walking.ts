@@ -1,6 +1,6 @@
 import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, CAMPUS_STREET_CUTOUTS, findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
-import { boundarySegments, bridgeHeightAt, segmentProjection, SPORT_ZONES, terrainHeightAt } from './terrain'
+import { boundarySegments, bridgeHeightAt, segmentProjection, SPORT_SEATING, SPORT_ZONES, terrainHeightAt, wallStepsOutline } from './terrain'
 import { hallToCampus } from './hall'
 import { HALL_TUNNEL_CUTOUT } from './hallPassage'
 import { CAMPUS_GATE_CUTOUT, MIGUEL_DRINKING_WALL, miguelToCampus, MIGUEL_FORECOURT_RAILS, MIGUEL_RAIL_Z } from './miguel'
@@ -27,6 +27,7 @@ const solids=[MIGUEL_ROCKET_BASE,HALL_MINI_WORLD_OUTLINE,
   rectangle(wall.x,wall.z,wall.width,wall.depth,miguelToCampus),
   rectangle(...bin.at,bin.width+.2,bin.depth+.3,miguelGardenToCampus),
   ...MIGUEL_GARDEN_TABLES.map(([x,z])=>rectangle(x,z,3.4,3.4,miguelGardenToCampus)),
+  ...SPORT_SEATING.map(wallStepsOutline),
 ].map(ring=>({ring,minX:Math.min(...ring.map(p=>p[0])),maxX:Math.max(...ring.map(p=>p[0])),minY:Math.min(...ring.map(p=>p[1])),maxY:Math.max(...ring.map(p=>p[1]))}))
 const buildings=CAMPUS_BUILDINGS.map(b=>({...b,minX:Math.min(...b.ring.map(p=>p[0])),maxX:Math.max(...b.ring.map(p=>p[0])),minY:Math.min(...b.ring.map(p=>p[1])),maxY:Math.max(...b.ring.map(p=>p[1]))}))
 const fences:[Vec2,Vec2][]=[
