@@ -1,0 +1,200 @@
+[
+  [
+    "saludando-parpadeo",
+    "Same full-body waving pose as saludando / MASTER, same open smiling mouth, both eyes CLOSED in a soft blink, unchanged face spots and costume. This is the matching blink frame.",
+    "core",
+    null
+  ],
+  [
+    "asomado",
+    "Default kigurumi PEEKING over an invisible horizontal interface edge. Head, shoulders and TWO hooves resting on same horizontal baseline at 78% canvas height. Lower body hidden below edge; do not draw a physical shelf or border. Friendly attentive smile.",
+    "core",
+    null
+  ],
+  [
+    "guiando",
+    "Driving a SMALL RED DRAGON CONVERTIBLE CAR, costume/composition idea sheet2 #1. Gastón wearing full default kigurumi, one hoof on steering wheel, one waving; car has golden horns, yellow bumper, wings, four wheels and its OWN DRAGON styling, absolutely NO PIG SNOUT, no pig eyes or charcoal eye patch on the CAR. Car should be clearly distinguishable from Gastón.",
+    "core",
+    "sheet2"
+  ],
+  [
+    "logrado",
+    "Graduation costume idea sheet1 #7: red graduation GOWN with yellow/gold trim, red mortarboard cap with two golden HORNS, golden tassel, rolled diploma held in one hoof, other hoof celebratory. Full body, joyful eyes open. Same master pig face.",
+    "core",
+    "sheet1"
+  ],
+  [
+    "buscando",
+    "DETECTIVE costume idea sheet2 #5: red-brown checked deerstalker with golden horns, small red detective cape/jacket, magnifying glass in hoof beside the face (do not cover or distort eyes). Curious eyebrow, thinking smile, full body.",
+    "core",
+    "sheet2"
+  ],
+  [
+    "ubicacion",
+    "RED MAP-PIN HOOD costume idea sheet1 #2. Full-body Gastón wearing an oversized plain red teardrop pin-shaped hood ending at upper thighs, face through circular opening, golden horns, ears exposed, short warm-white legs and dark hooves, both hands lifted. Only Gastón face in opening, pin itself no face.",
+    "core",
+    "sheet1"
+  ],
+  [
+    "sin-conexion",
+    "UNPLUGGED CABLE idea sheet2 #7. Gastón full body in default red dragon kigurumi, holding clearly separated red power plug and black matching socket with a visible gap, CABLE ENDS NOT CONNECTED, apologetic worried expression but gentle, eyebrows raised, no sparks, no text. No spots on body.",
+    "core",
+    "sheet2"
+  ],
+  [
+    "explorando",
+    "SAFARI costume idea sheet1 #6: beige safari hat with golden horns, tan safari shirt, brown backpack with rolled red mat, holds unfolded simple campus map with paths and one red location marker (NO text). Full-body curious eager smile. No eye spots on map.",
+    "core",
+    "sheet1"
+  ],
+  [
+    "carino",
+    "Default dragon kigurumi, full body, eyes happily closed, hooves cuddled against cheeks, affectionate smile with two small red hearts floating nearby (hearts have no faces). Same master face patch and snout spot.",
+    "core",
+    null
+  ],
+  [
+    "ayuda",
+    "Default dragon kigurumi, full body, attentive caring expression, head slightly tilted, one hoof extended palm up inviting a question, other hoof over yellow belly. No other props, no text.",
+    "core",
+    null
+  ],
+  [
+    "cabeza",
+    "ONLY Gastón HEAD in default plain red dragon hood with two gold horns and two ears, no shoulders/body/hooves, circular friendly face, big brown eyes, cheerful open-mouth smile. Large icon composition, preserve patch viewer RIGHT and small gray snout spot.",
+    "core",
+    null
+  ],
+  [
+    "pin",
+    "A standalone RED MAP PIN with sharp bottom tip and golden horns. In its circular opening sits Gastón's HEAD wearing red plain dragon hood, ears visible, smiling. No body or legs outside the pin. Pin shell has NO face of its own. Whole marker fully in frame.",
+    "core",
+    null
+  ],
+  [
+    "cabeza-2d",
+    "FLAT VECTOR-STYLE 2D STICKER of Gastón head only in red dragon hood and golden horns. Simple solid shapes, strong dark outlines, NO 3D shading or texture, white die-cut border. Optimized legibility at 24–48 CSS pixels. Keep viewer RIGHT charcoal eye patch, gray snout spot, warm-white face and brown eyes.",
+    "sticker",
+    null
+  ],
+  [
+    "pin-2d",
+    "FLAT VECTOR-STYLE 2D STICKER of a red map pin with Gastón's smiling head inside, golden horns and exposed ears. Simple solid shapes, strong dark outlines, NO gradients/3D/texture, white die-cut border; very readable at 32–48px. The pin shell itself has no face.",
+    "sticker",
+    null
+  ],
+  [
+    "guiando-2d",
+    "FLAT VECTOR-STYLE 2D STICKER, Gastón in dragon kigurumi driving small red dragon convertible CAR inspired by sheet2 #1. Simple chunky silhouette, dark outlines, solid color fills, NO gradients/3D, white die-cut border. CAR has own non-pig dragon design, no pig snout or eye patch. Gastón face recognizable, simplified for 48–64px.",
+    "sticker",
+    "sheet2"
+  ],
+  [
+    "casco-dragon",
+    "Costume sheet1 #3: oversized handmade RED AND GOLD CARDBOARD DRAGON HELMET around Gastón head, angular orange cardboard crest, golden horns; plain helmet (no pig face on helmet), off-white unspotted bare chubby body and short hooves, proud smile.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "amigo-dragon",
+    "Idea sheet1 #4: Gastón wearing default kigurumi happily RIDING a separate small RED WINGED DRAGON with golden horns. Dragon is a real toy DRAGON with elongated reptile muzzle, its own amber eyes, NO PIG SNOUT, NO PATCH, NO map-pin-shaped pig head. Two distinct characters. Full scene compact.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "huevo",
+    "Idea sheet1 #5: Gastón hatching out of large cracked red egg with golden shell decorations. Head and hooves over broken rim, plain red dragon hood with golden horns. Egg has NO face. Off-white skin and master patch. A few shell fragments, no ground.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "danza-leon",
+    "Costume sheet1 #8: Gastón peeking out from elaborate red-and-gold Chinese lion dance costume, sculpted smooth trim (NO furry fibers). Lion costume has its OWN LION eyes and muzzle above Gastón, NEVER pig features or patch on lion mask. Gastón pig face visible below. Full compact body.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "hincha",
+    "Costume sheet1 #9: campus sports fan Gastón wearing red hooded sweatshirt with golden horns, holding big red foam NUMBER ONE HAND (no lettering), joyful cheering pose, one foot lifted. No cheek stripes or new spots, master face only.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "poncho",
+    "Costume sheet1 #10: Gastón wearing red and golden geometric Andean PONCHO over off-white unspotted body, hood rim with golden horns, waving warmly. Smooth vinyl, crisp geometric pattern, stylized short smooth tassels (no wool or fuzz).",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "superheroe",
+    "Costume sheet1 #11: heroic Gastón with red superhero eye mask and red flowing cape, round gold clasp, golden horns, small bat wings, red dragon tail, unspotted off-white body. Mask designed to leave his natural charcoal patch visible viewer right. Proud gentle flying-step pose.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "feliz",
+    "Pose sheet1 #12: delighted Gastón with eyes joyfully closed, tiny hooves at cheeks, wearing FULL default dragon kigurumi, big happy smile. No extra body spots, no extra creatures, no hearts.",
+    "extra",
+    "sheet1"
+  ],
+  [
+    "galapagos",
+    "Idea sheet2 #2: Gastón wearing red snorkel goggles pushed up forehead (both eyes visible), snorkel and red dragon swimming ring, compact blue water splash. A separate friendly GREEN SEA TURTLE next to ring with its OWN turtle face, reptile beak, green eyes, NO PIG SNOUT or gray patch. Ring has simple dragon head with reptile muzzle, NOT pig face.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "lluvia",
+    "Costume sheet2 #3: Gastón in shiny smooth red raincoat and matching red dragon-themed umbrella, gold horns, yellow rain boots, one foot up in shallow blue splash. Umbrella entirely plain, no face, no eyes or teeth. Friendly resilient expression.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "volcan",
+    "Costume sheet2 #4: Gastón mountain trekker with red winter beanie and golden horns, red jacket, brown backpack and orange rolled mat, two trekking poles, standing on compact dark volcanic rock with little snow cap. Same off-white vinyl skin, no body spots, no text.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "durmiendo",
+    "Idea sheet2 #6: Gastón peacefully sleeping curled into red dragon sleeping bag, plain hood with golden horns, orange fins, yellow belly motif. Eyes gently closed, cheek resting on dark hoof, face patch on viewer RIGHT, snout spot. NO Z letters or text.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "pinata",
+    "Idea sheet2 #8: Gastón in default kigurumi hugging small red-gold-purple DRAGON PIÑATA, with its OWN elongated paper DRAGON muzzle and own eyes, NEVER pig snout or charcoal patch. Piñata smooth layered paper fringe, Gastón vinyl, a few colored confetti pieces.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "caballero",
+    "Costume sheet2 #9: Gastón in handmade tan CARDBOARD KNIGHT armor, red plume, golden horns, cardboard toy sword and shield with a simple red DRAGON SILHOUETTE (no face or lettering). Master face warmly smiling, full body.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "skate",
+    "Idea sheet2 #10: Gastón wearing default full kigurumi on small red skateboard with gold flame motif, four small dark wheels, balancing playfully arms out. Safe low dynamic pose, no blur, no trail or dust ground, all wings and tail in frame.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "selfie",
+    "Idea sheet2 #11: Gastón in full default kigurumi taking selfie with red phone on short black selfie stick, small red cross-body campus bag, free hoof greeting; happy open eyes (both brown), same face patch. Phone has NO face or text.",
+    "extra",
+    "sheet2"
+  ],
+  [
+    "biblioteca",
+    "NEW PROPOSAL: Gastón in default kigurumi sitting cross-legged reading a small open cream-and-red book, curious calm face, golden horns, wings visible. Book has blank pages and NO face or lettering. A small red bookmark. Full body.",
+    "proposal",
+    null
+  ],
+  [
+    "hidratacion",
+    "NEW PROPOSAL: Gastón in default kigurumi, friendly relaxed smile, holding a small reusable red water bottle with a yellow lid and no face or lettering, free hoof inviting a gentle rest. Full body. No sweat droplets, no text.",
+    "proposal",
+    null
+  ]
+]

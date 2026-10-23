@@ -1,0 +1,77 @@
+{
+  "status": "pass",
+  "date": "2026-10-23",
+  "reviewer": "Codex · visual inspection of all generated assets and contact sheets",
+  "assets_reviewed": 34,
+  "identity": {
+    "master_priority": true,
+    "warm_offwhite_pig": true,
+    "patch_on_viewer_right": true,
+    "gray_snout_spot": true,
+    "no_body_spots": true,
+    "brown_eyes": true,
+    "no_fur_or_fuzz": true,
+    "default_plain_hood_with_horns_wings_fins_belly": true
+  },
+  "costumes": {
+    "core_matches_request": true,
+    "extras_sheet1": [
+      3,
+      4,
+      5,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "extras_sheet2": [
+      2,
+      3,
+      4,
+      6,
+      8,
+      9,
+      10,
+      11
+    ],
+    "other_creatures_have_own_faces": true,
+    "proposals_separate": true
+  },
+  "gallery": {
+    "browser": "Codex IAB",
+    "rendered": true,
+    "filters_verified": [
+      "Principal",
+      "2D pequeño"
+    ],
+    "backgrounds_verified": [
+      "Claro",
+      "Oscuro",
+      "Transparencia"
+    ],
+    "webp_toggle_and_display_verified": true,
+    "small_sticker_sizes_reviewed": [
+      24,
+      32,
+      48,
+      64
+    ],
+    "print_sheet_rendered": true,
+    "print_page_sections": 3
+  },
+  "repairs": [
+    {
+      "asset": "cabeza.png",
+      "reason": "First render clipped right ear; regenerated with full silhouette inside canvas."
+    }
+  ],
+  "limitations": [
+    "Blink frame is a separate render, not pixel-registered; automatic overlay is intentionally not implemented.",
+    "WebP uses interface transforms of a single illustration, not articulated character motion.",
+    "No fifth dragon-amigo material reference was supplied; explicit smooth vinyl requirements were followed.",
+    "Reduced-motion behavior verified in code; OS preference not changed during review.",
+    "Printable sheet is HTML with A4 page rules and manual cutting margins; no industrial cut paths."
+  ],
+  "technical_verification": "tools/verify.py passed: 34 PNGs, 11 WebPs, every frame alpha, dimensions, durations, loops, hashes, local links, 3 print sections."
+}

@@ -1,0 +1,1153 @@
+{
+  "version": "2.0",
+  "date": "2026-10-23",
+  "technical_status": "pass",
+  "native_png_minimum": 1254,
+  "png_count": 34,
+  "webp_count": 11,
+  "checks": [
+    {
+      "file": "saludando.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        185,
+        13,
+        1088,
+        1217
+      ],
+      "margin_px": [
+        185,
+        13,
+        166,
+        37
+      ],
+      "sha256": "31ca2ee34dce2b51f11d05d28205b0aecdd1343bc8bde2d6dbd39a713c89abde",
+      "bytes": 1227854,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/saludando.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 17,
+      "loop": 0,
+      "duration_ms": 2400,
+      "alpha": true,
+      "sha256": "b1f303479f64c4ced43245c631658fc8db03d11449d82b5f5db93d39004397c6",
+      "bytes": 549930
+    },
+    {
+      "file": "saludando-parpadeo.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        150,
+        12,
+        1161,
+        1251
+      ],
+      "margin_px": [
+        150,
+        12,
+        93,
+        3
+      ],
+      "sha256": "b9ad50411b3395fd5bbd63989577d01e99693bf3c64955209862e97007118bb1",
+      "bytes": 1443823,
+      "native_resolution": true
+    },
+    {
+      "file": "asomado.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        52,
+        56,
+        1197,
+        1060
+      ],
+      "margin_px": [
+        52,
+        56,
+        57,
+        194
+      ],
+      "sha256": "5b84e5af361447a7a4a3ed729f36d880a4f26ecc67ab92836d19c62631cbd16f",
+      "bytes": 1370994,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/asomado.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 10,
+      "loop": 1,
+      "duration_ms": 800,
+      "alpha": true,
+      "sha256": "d00d21e670649b060e5841aaf316fc944b3f68ebb707757c01df78531a6c3f58",
+      "bytes": 331614
+    },
+    {
+      "file": "guiando.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        57,
+        20,
+        1198,
+        1210
+      ],
+      "margin_px": [
+        57,
+        20,
+        56,
+        44
+      ],
+      "sha256": "5d7d6a0444e0d4f79964dafeb7d3e37bdb33be5227175ccbca3480b7e78188c7",
+      "bytes": 1502738,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/guiando.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 13,
+      "loop": 1,
+      "duration_ms": 1200,
+      "alpha": true,
+      "sha256": "e2d270f81a933b07d9bdc5248a73c41f7ec6a4490fcb4e0faf4268ef9904cb42",
+      "bytes": 556584
+    },
+    {
+      "file": "logrado.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        137,
+        27,
+        1155,
+        1209
+      ],
+      "margin_px": [
+        137,
+        27,
+        99,
+        45
+      ],
+      "sha256": "64645b9bf45daf09ee31a8a9c503533dbbd3bbda5d267337e4d23f8c2323a2bd",
+      "bytes": 1466479,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/logrado.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 23,
+      "loop": 1,
+      "duration_ms": 1400,
+      "alpha": true,
+      "sha256": "45fce4a3c07049ab5938268978a0a50837b8409e7b7fd7482642c62f8a5c82cf",
+      "bytes": 938842
+    },
+    {
+      "file": "buscando.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        182,
+        14,
+        1169,
+        1213
+      ],
+      "margin_px": [
+        182,
+        14,
+        85,
+        41
+      ],
+      "sha256": "7ba416544a650cdfaac70acac0f79ecb8fe140f1977f0aa590bc3fca047fa166",
+      "bytes": 1449340,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/buscando.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 64,
+      "loop": 0,
+      "duration_ms": 3200,
+      "alpha": true,
+      "sha256": "33edde3b87ae40a08133f08b3007e58e3ce7bb5663a72f7d2b6c8a9f38e3e2c6",
+      "bytes": 2832192
+    },
+    {
+      "file": "ubicacion.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        162,
+        14,
+        1118,
+        1206
+      ],
+      "margin_px": [
+        162,
+        14,
+        136,
+        48
+      ],
+      "sha256": "6346c7735ecced469fac5cec5d04e5d765690691c2a77b7e8db68459973091f3",
+      "bytes": 1218728,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/ubicacion.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 13,
+      "loop": 0,
+      "duration_ms": 2000,
+      "alpha": true,
+      "sha256": "49ad8b80aa2c2999bfd07092f1f5897bfd99d408af6b5726cac511dbac3c09b2",
+      "bytes": 375160
+    },
+    {
+      "file": "sin-conexion.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        148,
+        15,
+        1129,
+        1218
+      ],
+      "margin_px": [
+        148,
+        15,
+        125,
+        36
+      ],
+      "sha256": "54cf3d58fceddf31452d4986bcb8b0e3cd2737a50ad3c4fdd447c63da2d25713",
+      "bytes": 1325668,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/sin-conexion.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 10,
+      "loop": 1,
+      "duration_ms": 800,
+      "alpha": true,
+      "sha256": "8872ec103a884d47598abed3c94156cb2cb5a3bc6dea219fe6ab489d755b8e6c",
+      "bytes": 376186
+    },
+    {
+      "file": "explorando.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        192,
+        23,
+        1147,
+        1211
+      ],
+      "margin_px": [
+        192,
+        23,
+        107,
+        43
+      ],
+      "sha256": "9d64827dbd9b5adda4a073db771ce42585ddcdf930c88a1b2ade95e3cd6e920a",
+      "bytes": 1380928,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/explorando.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 17,
+      "loop": 0,
+      "duration_ms": 3000,
+      "alpha": true,
+      "sha256": "b9ba8b533a0f82bde0b65dacd87440e5244b42efc38b9f72a023afba2546ead7",
+      "bytes": 597142
+    },
+    {
+      "file": "carino.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        144,
+        11,
+        1117,
+        1225
+      ],
+      "margin_px": [
+        144,
+        11,
+        137,
+        29
+      ],
+      "sha256": "36e427f1ab9b1c9d33a0fc66a5c35f626370cd3008f0f4c79dab13b57b7ff710",
+      "bytes": 1324925,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/carino.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 23,
+      "loop": 1,
+      "duration_ms": 1400,
+      "alpha": true,
+      "sha256": "2b6436ee76cbab096e80753d430398cd75ffde053aae5019a371e68ac71f15fe",
+      "bytes": 882606
+    },
+    {
+      "file": "ayuda.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        186,
+        12,
+        1093,
+        1230
+      ],
+      "margin_px": [
+        186,
+        12,
+        161,
+        24
+      ],
+      "sha256": "cd87bff56fea720006f725e91c10a065eba30577fbd0aa74be32863e3b40c0a4",
+      "bytes": 1228150,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/ayuda.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 20,
+      "loop": 1,
+      "duration_ms": 1000,
+      "alpha": true,
+      "sha256": "d375824bc20ba92d4936a36e95f21fa1e1a248f4371b167aa9bea42e5e3b7842",
+      "bytes": 791756
+    },
+    {
+      "file": "cabeza.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        71,
+        148,
+        1241,
+        1153
+      ],
+      "margin_px": [
+        71,
+        148,
+        13,
+        101
+      ],
+      "sha256": "8be1caec1b4e28e01c7d453de2e0f3255e26325042f3b4aa8598d7945490ff9e",
+      "bytes": 1330073,
+      "native_resolution": true
+    },
+    {
+      "file": "pin.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        181,
+        34,
+        1074,
+        1217
+      ],
+      "margin_px": [
+        181,
+        34,
+        180,
+        37
+      ],
+      "sha256": "c2d3797fae242c9b7179f593dac268b96c04717d7052d85bb0494de289cd6a31",
+      "bytes": 1112626,
+      "native_resolution": true
+    },
+    {
+      "file": "animados/pin.webp",
+      "size": [
+        512,
+        512
+      ],
+      "frames": 11,
+      "loop": 1,
+      "duration_ms": 1000,
+      "alpha": true,
+      "sha256": "ee0f36c3345cbe9d5b1d8a999d6e13eb24d025d9a2b4556ca6ab08edb37ed757",
+      "bytes": 311958
+    },
+    {
+      "file": "cabeza-2d.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        16,
+        72,
+        1247,
+        1166
+      ],
+      "margin_px": [
+        16,
+        72,
+        7,
+        88
+      ],
+      "sha256": "7468c25cfb3d58d2265e21681c8cd779dfb54b8d6cd8e5b921e08c93f309fe00",
+      "bytes": 1293803,
+      "native_resolution": true
+    },
+    {
+      "file": "pin-2d.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        127,
+        16,
+        1144,
+        1221
+      ],
+      "margin_px": [
+        127,
+        16,
+        110,
+        33
+      ],
+      "sha256": "61d14d682cd0108063e86528b961169e8c5f8960ad4114ff8a3f5a94b4da8b1d",
+      "bytes": 1031939,
+      "native_resolution": true
+    },
+    {
+      "file": "guiando-2d.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        48,
+        32,
+        1205,
+        1234
+      ],
+      "margin_px": [
+        48,
+        32,
+        49,
+        20
+      ],
+      "sha256": "f32dd9966a1849d987d231e951592ab7244d6101fb8d27fbd934ff30e22f408f",
+      "bytes": 1483307,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/casco-dragon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        154,
+        31,
+        1141,
+        1219
+      ],
+      "margin_px": [
+        154,
+        31,
+        113,
+        35
+      ],
+      "sha256": "26780409d65528d0d0a7e9e766446a8805665d3276fee7a4a91575e0e9744c18",
+      "bytes": 1435431,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/amigo-dragon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        80,
+        11,
+        1230,
+        1199
+      ],
+      "margin_px": [
+        80,
+        11,
+        24,
+        55
+      ],
+      "sha256": "08cd3abfa24a1751210864b734ff99dffa34a4bb3029ad4058388f452c962a6e",
+      "bytes": 1463386,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/huevo.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        74,
+        25,
+        1181,
+        1194
+      ],
+      "margin_px": [
+        74,
+        25,
+        73,
+        60
+      ],
+      "sha256": "3305dec02ebf795e98432edac2e531bebcb62c72c8d4960c74c65d10c2f92fd7",
+      "bytes": 1574812,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/danza-leon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        162,
+        41,
+        1188,
+        1210
+      ],
+      "margin_px": [
+        162,
+        41,
+        66,
+        44
+      ],
+      "sha256": "6ae1c8c956742b81dc086d13b3e0cb3a256c4454d91c11d4c3afa14534740a52",
+      "bytes": 1564644,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/hincha.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        32,
+        25,
+        1209,
+        1218
+      ],
+      "margin_px": [
+        32,
+        25,
+        45,
+        36
+      ],
+      "sha256": "48d90b1c4086d463f2c4e088f81dc96b7bb75a681ec28235024f8a9ede0f9df7",
+      "bytes": 1521225,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/poncho.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        161,
+        17,
+        1097,
+        1235
+      ],
+      "margin_px": [
+        161,
+        17,
+        157,
+        19
+      ],
+      "sha256": "bb15e1e6a26421616c26831219e53bcb88a42d257b26baa04cd86943bc5e64e2",
+      "bytes": 1489367,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/superheroe.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        39,
+        8,
+        1236,
+        1224
+      ],
+      "margin_px": [
+        39,
+        8,
+        18,
+        30
+      ],
+      "sha256": "ba40445c8e5b006a1ce84dce5a6fe0366752f585ed9617b770b5567cabf2672f",
+      "bytes": 1364201,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/feliz.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        153,
+        19,
+        1113,
+        1220
+      ],
+      "margin_px": [
+        153,
+        19,
+        141,
+        34
+      ],
+      "sha256": "a88fa93ab40023c83be22cc0b6325109dda3062b4bf756ccb632619a6af5f6c2",
+      "bytes": 1263747,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/galapagos.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        37,
+        38,
+        1211,
+        1196
+      ],
+      "margin_px": [
+        37,
+        38,
+        43,
+        58
+      ],
+      "sha256": "f8bd5e105a667473ebbcdf7834a053e82cbe8e4c192f023b17066b5b2faf92d3",
+      "bytes": 1635335,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/lluvia.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        80,
+        6,
+        1142,
+        1244
+      ],
+      "margin_px": [
+        80,
+        6,
+        112,
+        10
+      ],
+      "sha256": "215a3c7cadd5e7ac243cb2cdc17a996dadddf829ccf0631be95f58be02884153",
+      "bytes": 1541766,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/volcan.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        117,
+        26,
+        1160,
+        1225
+      ],
+      "margin_px": [
+        117,
+        26,
+        94,
+        29
+      ],
+      "sha256": "439fdb5a06275c623c410542c08bdf10e570f78a054a904a04f042a88b2116a4",
+      "bytes": 1718197,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/durmiendo.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        39,
+        181,
+        1215,
+        1080
+      ],
+      "margin_px": [
+        39,
+        181,
+        39,
+        174
+      ],
+      "sha256": "2047e33b8452c8bc09df6af5f9e9aeb61045a87a9c8959b7addaf84c819d957a",
+      "bytes": 1274614,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/pinata.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        99,
+        46,
+        1220,
+        1203
+      ],
+      "margin_px": [
+        99,
+        46,
+        34,
+        51
+      ],
+      "sha256": "8f247d247c0bda0691b2d3dbfafc9847af9e223e9f4317bf60ba302e24a56ca8",
+      "bytes": 1428364,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/caballero.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        99,
+        26,
+        1178,
+        1201
+      ],
+      "margin_px": [
+        99,
+        26,
+        76,
+        53
+      ],
+      "sha256": "f6d1eb6e74f351c16b029f17a4635ab7922d3b5fdab29ae20bfca3e96556140f",
+      "bytes": 1678479,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/skate.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        183,
+        23,
+        1159,
+        1218
+      ],
+      "margin_px": [
+        183,
+        23,
+        95,
+        36
+      ],
+      "sha256": "9604ea0ce1f4ec96ea93f9e4f7c0c30c124d4b5285cb3454ae880fba1d1234ec",
+      "bytes": 1267220,
+      "native_resolution": true
+    },
+    {
+      "file": "extras/selfie.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        121,
+        76,
+        1219,
+        1189
+      ],
+      "margin_px": [
+        121,
+        76,
+        35,
+        65
+      ],
+      "sha256": "1d6d2cbe6b15ef73445bff71b4e55409c9356f094d32cdd9d918c7d4eceae674",
+      "bytes": 1336035,
+      "native_resolution": true
+    },
+    {
+      "file": "propuestas/biblioteca.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        113,
+        14,
+        1156,
+        1215
+      ],
+      "margin_px": [
+        113,
+        14,
+        98,
+        39
+      ],
+      "sha256": "7bc2855527a6f339f4e04c6dd7a63e3c25561413b520667a67b5f3aa4f7fb151",
+      "bytes": 1453002,
+      "native_resolution": true
+    },
+    {
+      "file": "propuestas/hidratacion.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bbox_alpha_gt_16": [
+        170,
+        23,
+        1091,
+        1193
+      ],
+      "margin_px": [
+        170,
+        23,
+        163,
+        61
+      ],
+      "sha256": "71e527d7892474f4bacc8434f2af6a91e74e365996e72ab681104d5ec50e66f0",
+      "bytes": 1241983,
+      "native_resolution": true
+    }
+  ],
+  "visual_review": {
+    "status": "pass",
+    "date": "2026-10-23",
+    "reviewer": "Codex · visual inspection of all generated assets and contact sheets",
+    "assets_reviewed": 34,
+    "identity": {
+      "master_priority": true,
+      "warm_offwhite_pig": true,
+      "patch_on_viewer_right": true,
+      "gray_snout_spot": true,
+      "no_body_spots": true,
+      "brown_eyes": true,
+      "no_fur_or_fuzz": true,
+      "default_plain_hood_with_horns_wings_fins_belly": true
+    },
+    "costumes": {
+      "core_matches_request": true,
+      "extras_sheet1": [
+        3,
+        4,
+        5,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "extras_sheet2": [
+        2,
+        3,
+        4,
+        6,
+        8,
+        9,
+        10,
+        11
+      ],
+      "other_creatures_have_own_faces": true,
+      "proposals_separate": true
+    },
+    "gallery": {
+      "browser": "Codex IAB",
+      "rendered": true,
+      "filters_verified": [
+        "Principal",
+        "2D pequeño"
+      ],
+      "backgrounds_verified": [
+        "Claro",
+        "Oscuro",
+        "Transparencia"
+      ],
+      "webp_toggle_and_display_verified": true,
+      "small_sticker_sizes_reviewed": [
+        24,
+        32,
+        48,
+        64
+      ],
+      "print_sheet_rendered": true,
+      "print_page_sections": 3
+    },
+    "repairs": [
+      {
+        "asset": "cabeza.png",
+        "reason": "First render clipped right ear; regenerated with full silhouette inside canvas."
+      }
+    ],
+    "limitations": [
+      "Blink frame is a separate render, not pixel-registered; automatic overlay is intentionally not implemented.",
+      "WebP uses interface transforms of a single illustration, not articulated character motion.",
+      "No fifth dragon-amigo material reference was supplied; explicit smooth vinyl requirements were followed.",
+      "Reduced-motion behavior verified in code; OS preference not changed during review.",
+      "Printable sheet is HTML with A4 page rules and manual cutting margins; no industrial cut paths."
+    ],
+    "technical_verification": "tools/verify.py passed: 34 PNGs, 11 WebPs, every frame alpha, dimensions, durations, loops, hashes, local links, 3 print sections."
+  },
+  "limitations": [
+    "Motion exports move the illustration as a unit; they are not articulated character animations.",
+    "2D stickers are raster PNGs with flat vector appearance, not editable SVGs.",
+    "No dragon-amigo.png was supplied by that name; material is constrained by the explicit smooth vinyl instruction."
+  ]
+}

@@ -1,0 +1,23 @@
+/* Gastón v2 · PNG + CSS interface motion. */
+.gaston{position:relative;display:inline-block;width:var(--gaston-size,180px);aspect-ratio:1;vertical-align:middle;transform-origin:50% 85%;pointer-events:none}
+.gaston>img{display:block;width:100%;height:100%;object-fit:contain}
+.gaston--saludo{animation:gaston-respirar 2.4s ease-in-out infinite}
+.gaston--asomado{animation:gaston-asomarse .8s ease-out both}
+.gaston--guia{animation:gaston-indicar 1.2s ease-in-out both}
+.gaston--logrado,.gaston--carino{animation:gaston-celebrar 1.4s ease-in-out both}
+.gaston--buscando{animation:gaston-pensar 3.2s ease-in-out infinite}
+.gaston--ubicacion{animation:gaston-respirar 2s ease-in-out infinite}
+.gaston--pausa{animation:gaston-aparecer .8s ease-out both}
+.gaston--explorando{animation:gaston-respirar 3s ease-in-out infinite}
+.gaston--ayuda{animation:gaston-escuchar 1s ease-out both}
+.gaston--pin{animation:gaston-pin 1s ease-out both}
+.gaston--quieto,.gaston-pausado .gaston{animation-play-state:paused!important}
+@keyframes gaston-respirar{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes gaston-asomarse{from{transform:translateY(12px)}to{transform:translateY(0)}}
+@keyframes gaston-indicar{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+@keyframes gaston-celebrar{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-9px) scale(1.025)}}
+@keyframes gaston-pensar{0%,100%{transform:rotate(0)}25%{transform:rotate(1.5deg)}75%{transform:rotate(-1.5deg)}}
+@keyframes gaston-aparecer{from{transform:scale(.98)}to{transform:scale(1)}}
+@keyframes gaston-escuchar{from{transform:rotate(-3deg)}to{transform:rotate(0)}}
+@keyframes gaston-pin{from{transform:translateY(-14px)}to{transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.gaston,.gaston *{animation:none!important}}

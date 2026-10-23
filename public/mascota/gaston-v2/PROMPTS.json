@@ -1,0 +1,467 @@
+{
+  "generator": "GPT Image · built-in image_gen",
+  "generated_calls": 35,
+  "one_asset_per_call": true,
+  "assets": [
+    {
+      "id": "saludando",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nASSET saludando: full body in default kigurumi, delighted open-eyed smile, waving the hoof at viewer left. Closely reproduce MASTER waving pose and face. Both feet visible. No other objects.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-11878a61-fea6-4023-8a01-362d212ccb7d.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "saludando-parpadeo",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nASSET saludando-parpadeo: Same full-body waving pose as saludando / MASTER, same open smiling mouth, both eyes CLOSED in a soft blink, unchanged face spots and costume. This is the matching blink frame. Last image is the exact target waving composition. Match its framing and silhouette.",
+      "references": [
+        "referencias/gaston-master.png",
+        "saludando.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-48e7c6f3-2e92-47b4-8fbc-f841f6986b72.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Waving composition target"
+      ]
+    },
+    {
+      "id": "asomado",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nASSET asomado: Default kigurumi PEEKING over an invisible horizontal interface edge. Head, shoulders and TWO hooves resting on same horizontal baseline at 78% canvas height. Lower body hidden below edge; do not draw a physical shelf or border. Friendly attentive smile.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-b7a52fca-567b-478f-8264-ef4cf692d915.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "guiando",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nASSET guiando: Driving a SMALL RED DRAGON CONVERTIBLE CAR, costume/composition idea sheet2 #1. Gastón wearing full default kigurumi, one hoof on steering wheel, one waving; car has golden horns, yellow bumper, wings, four wheels and its OWN DRAGON styling, absolutely NO PIG SNOUT, no pig eyes or charcoal eye patch on the CAR. Car should be clearly distinguishable from Gastón.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-f9eee08c-81dc-4ff9-a410-2f48920a2a14.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "logrado",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET logrado: Graduation costume idea sheet1 #7: red graduation GOWN with yellow/gold trim, red mortarboard cap with two golden HORNS, golden tassel, rolled diploma held in one hoof, other hoof celebratory. Full body, joyful eyes open. Same master pig face.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-1265ed78-c50e-4b8f-99da-ce241059c8e6.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "buscando",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET buscando: DETECTIVE costume idea sheet2 #5: red-brown checked deerstalker with golden horns, small red detective cape/jacket, magnifying glass in hoof beside the face (do not cover or distort eyes). Curious eyebrow, thinking smile, full body.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-9db56b46-281d-4d5c-bde0-13333cd857b4.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "ubicacion",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET ubicacion: RED MAP-PIN HOOD costume idea sheet1 #2. Full-body Gastón wearing an oversized plain red teardrop pin-shaped hood ending at upper thighs, face through circular opening, golden horns, ears exposed, short warm-white legs and dark hooves, both hands lifted. Only Gastón face in opening, pin itself no face.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-8a76bbfc-f1a2-44c4-8597-58d43f8f2be2.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "sin-conexion",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET sin-conexion: UNPLUGGED CABLE idea sheet2 #7. Gastón full body in default red dragon kigurumi, holding clearly separated red power plug and black matching socket with a visible gap, CABLE ENDS NOT CONNECTED, apologetic worried expression but gentle, eyebrows raised, no sparks, no text. No spots on body.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-91cb46e2-db06-4fd9-94b0-3c9a2eee5f96.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "explorando",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET explorando: SAFARI costume idea sheet1 #6: beige safari hat with golden horns, tan safari shirt, brown backpack with rolled red mat, holds unfolded simple campus map with paths and one red location marker (NO text). Full-body curious eager smile. No eye spots on map.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-8ea8b328-bf5f-4727-acb0-94ff3efb702e.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "carino",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET carino: Default dragon kigurumi, full body, eyes happily closed, hooves cuddled against cheeks, affectionate smile with two small red hearts floating nearby (hearts have no faces). Same master face patch and snout spot.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-dcceda0a-cc16-41cd-a931-48bbcee69714.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "ayuda",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET ayuda: Default dragon kigurumi, full body, attentive caring expression, head slightly tilted, one hoof extended palm up inviting a question, other hoof over yellow belly. No other props, no text.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-ed96bddc-3afb-41cc-b5f7-984560d11997.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "cabeza",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET cabeza: ONLY HEAD in red dragon hood, same master face, ears, two golden horns, no shoulders, no body. IMPORTANT FRAMING: head must occupy ONLY 75% canvas width; leave a large EMPTY TRANSPARENT BORDER on ALL four sides. Entire right and left ear and every horn must be completely visible with at least 100 pixels clear margin on a 1254px canvas. Do not crop.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-6e9b43f6-5758-4510-b9a1-363caf906f26.png",
+      "discarded_sources": [
+        "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-7a8727f6-2b31-44f0-aa66-e903fcc87a93.png"
+      ],
+      "revision_reason": "Regenerated to preserve full ear silhouette inside canvas",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "pin",
+      "group": "core",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET pin: A standalone RED MAP PIN with sharp bottom tip and golden horns. In its circular opening sits Gastón's HEAD wearing red plain dragon hood, ears visible, smiling. No body or legs outside the pin. Pin shell has NO face of its own. Whole marker fully in frame.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-d1d635f2-681f-4e5c-974b-b25868216419.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "cabeza-2d",
+      "group": "sticker",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET cabeza-2d: FLAT VECTOR-STYLE 2D STICKER of Gastón head only in red dragon hood and golden horns. Simple solid shapes, strong dark outlines, NO 3D shading or texture, white die-cut border. Optimized legibility at 24–48 CSS pixels. Keep viewer RIGHT charcoal eye patch, gray snout spot, warm-white face and brown eyes. Override 3D material: this asset is exclusively FLAT 2D, white die-cut outline and transparent exterior.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-d9654913-3467-4a44-95bd-073aa6420d72.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "pin-2d",
+      "group": "sticker",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET pin-2d: FLAT VECTOR-STYLE 2D STICKER of a red map pin with Gastón's smiling head inside, golden horns and exposed ears. Simple solid shapes, strong dark outlines, NO gradients/3D/texture, white die-cut border; very readable at 32–48px. The pin shell itself has no face. Override 3D material: this asset is exclusively FLAT 2D, white die-cut outline and transparent exterior.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-f074d819-f839-44a9-8232-1379c8cf745b.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "guiando-2d",
+      "group": "sticker",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET guiando-2d: FLAT VECTOR-STYLE 2D STICKER, Gastón in dragon kigurumi driving small red dragon convertible CAR inspired by sheet2 #1. Simple chunky silhouette, dark outlines, solid color fills, NO gradients/3D, white die-cut border. CAR has own non-pig dragon design, no pig snout or eye patch. Gastón face recognizable, simplified for 48–64px. Override 3D material: this asset is exclusively FLAT 2D, white die-cut outline and transparent exterior.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-6f751500-bf95-4212-b6f7-48f739255e5b.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "casco-dragon",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET casco-dragon: Costume sheet1 #3: oversized handmade RED AND GOLD CARDBOARD DRAGON HELMET around Gastón head, angular orange cardboard crest, golden horns; plain helmet (no pig face on helmet), off-white unspotted bare chubby body and short hooves, proud smile.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-5427cb60-8c1d-400a-92b7-2742838560dc.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "amigo-dragon",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET amigo-dragon: Idea sheet1 #4: Gastón wearing default kigurumi happily RIDING a separate small RED WINGED DRAGON with golden horns. Dragon is a real toy DRAGON with elongated reptile muzzle, its own amber eyes, NO PIG SNOUT, NO PATCH, NO map-pin-shaped pig head. Two distinct characters. Full scene compact.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-654bba3d-b276-4214-a65c-d1c8e01a35b6.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "huevo",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET huevo: Idea sheet1 #5: Gastón hatching out of large cracked red egg with golden shell decorations. Head and hooves over broken rim, plain red dragon hood with golden horns. Egg has NO face. Off-white skin and master patch. A few shell fragments, no ground.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-8088286d-92ee-484f-b60f-db84a23b323c.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "danza-leon",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET danza-leon: Costume sheet1 #8: Gastón peeking out from elaborate red-and-gold Chinese lion dance costume, sculpted smooth trim (NO furry fibers). Lion costume has its OWN LION eyes and muzzle above Gastón, NEVER pig features or patch on lion mask. Gastón pig face visible below. Full compact body.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-1ae9c0ac-afa0-409a-90b9-c426dd0faf1b.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "hincha",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET hincha: Costume sheet1 #9: campus sports fan Gastón wearing red hooded sweatshirt with golden horns, holding big red foam NUMBER ONE HAND (no lettering), joyful cheering pose, one foot lifted. No cheek stripes or new spots, master face only.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-753f0803-380c-4320-aac7-3a6de0076c85.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "poncho",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET poncho: Costume sheet1 #10: Gastón wearing red and golden geometric Andean PONCHO over off-white unspotted body, hood rim with golden horns, waving warmly. Smooth vinyl, crisp geometric pattern, stylized short smooth tassels (no wool or fuzz).",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-77996ca9-b8f4-41ea-a152-fcb127c61e56.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "superheroe",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET superheroe: Costume sheet1 #11: heroic Gastón with red superhero eye mask and red flowing cape, round gold clasp, golden horns, small bat wings, red dragon tail, unspotted off-white body. Mask designed to leave his natural charcoal patch visible viewer right. Proud gentle flying-step pose.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-0bc85456-0017-4b29-8f88-3b12a63a9b89.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "feliz",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET feliz: Pose sheet1 #12: delighted Gastón with eyes joyfully closed, tiny hooves at cheeks, wearing FULL default dragon kigurumi, big happy smile. No extra body spots, no extra creatures, no hearts.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-1.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-56609ee3-de84-4eca-a29e-d6b92be8fa91.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "galapagos",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET galapagos: Idea sheet2 #2: Gastón wearing red snorkel goggles pushed up forehead (both eyes visible), snorkel and red dragon swimming ring, compact blue water splash. A separate friendly GREEN SEA TURTLE next to ring with its OWN turtle face, reptile beak, green eyes, NO PIG SNOUT or gray patch. Ring has simple dragon head with reptile muzzle, NOT pig face.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-298cef21-7f85-4a68-9e2c-9d6d1b86c577.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "lluvia",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET lluvia: Costume sheet2 #3: Gastón in shiny smooth red raincoat and matching red dragon-themed umbrella, gold horns, yellow rain boots, one foot up in shallow blue splash. Umbrella entirely plain, no face, no eyes or teeth. Friendly resilient expression.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-4f4b8026-8053-4faa-8c23-9916c231102b.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "volcan",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET volcan: Costume sheet2 #4: Gastón mountain trekker with red winter beanie and golden horns, red jacket, brown backpack and orange rolled mat, two trekking poles, standing on compact dark volcanic rock with little snow cap. Same off-white vinyl skin, no body spots, no text.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-c6d04cb3-36f1-42ab-a601-8da7f454539e.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "durmiendo",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET durmiendo: Idea sheet2 #6: Gastón peacefully sleeping curled into red dragon sleeping bag, plain hood with golden horns, orange fins, yellow belly motif. Eyes gently closed, cheek resting on dark hoof, face patch on viewer RIGHT, snout spot. NO Z letters or text.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-86dd44e7-c4c9-4d79-8da9-f86582b69afc.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "pinata",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET pinata: Idea sheet2 #8: Gastón in default kigurumi hugging small red-gold-purple DRAGON PIÑATA, with its OWN elongated paper DRAGON muzzle and own eyes, NEVER pig snout or charcoal patch. Piñata smooth layered paper fringe, Gastón vinyl, a few colored confetti pieces.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-45bd0dc5-69a1-43b4-89d4-0c5ab1e0ca56.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "caballero",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET caballero: Costume sheet2 #9: Gastón in handmade tan CARDBOARD KNIGHT armor, red plume, golden horns, cardboard toy sword and shield with a simple red DRAGON SILHOUETTE (no face or lettering). Master face warmly smiling, full body.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-6af77416-6536-4848-9de9-5a3595d25f8c.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "skate",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET skate: Idea sheet2 #10: Gastón wearing default full kigurumi on small red skateboard with gold flame motif, four small dark wheels, balancing playfully arms out. Safe low dynamic pose, no blur, no trail or dust ground, all wings and tail in frame.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-4c71b3df-e85a-4880-a881-4678912edaa4.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "selfie",
+      "group": "extra",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET selfie: Idea sheet2 #11: Gastón in full default kigurumi taking selfie with red phone on short black selfie stick, small red cross-body campus bag, free hoof greeting; happy open eyes (both brown), same face patch. Phone has NO face or text.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png",
+        "referencias/variantes-2.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-00f9c64e-f278-4626-8f2e-6062f64b3d07.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority",
+        "Costume/pose inventory only"
+      ]
+    },
+    {
+      "id": "biblioteca",
+      "group": "proposal",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET biblioteca: NEW PROPOSAL: Gastón in default kigurumi sitting cross-legged reading a small open cream-and-red book, curious calm face, golden horns, wings visible. Book has blank pages and NO face or lettering. A small red bookmark. Full body.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-f489ffe9-02a0-4f52-a949-9a64b8611882.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    },
+    {
+      "id": "hidratacion",
+      "group": "proposal",
+      "prompt": "Use case: stylized-concept. Production transparent PNG mascot asset for USFQ Explora. Exactly ONE asset, not a sheet, no text, no watermark. Native output 1536x1536 or larger, at least 1254 pixels on BOTH axes, RGBA with genuinely transparent background. Center with safe transparent margin; no floor, no backdrop, no cast ground shadow.\nINPUT ROLE hierarchy: image 1 is MASTER IDENTITY, overrides ALL others. Other supplied images are ONLY for the explicitly named costume/pose idea, never anatomy/material. Gastón is the SAME chubby baby pig as master: warm off-white skin, charcoal patch ONLY around HIS LEFT EYE (viewer RIGHT), one small gray spot on top of pink snout, NO BODY SPOTS. Pink inner ears, huge brown eyes, expressive brown brows, short dark cloven hooves. Smooth seamless MATTE-SATIN VINYL, NO fur, NO fuzz, NO plush fibers, NO grain; clean rounded toy sculpture. Preserve master proportions and recognizable face exactly. Default RED DRAGON KIGURUMI: plain red hood WITHOUT ANY face, eyes or teeth, two golden horns, orange back fins, small RED BAT WINGS, yellow segmented belly panel, red tail. No neckerchief. Any OTHER creature, prop, vehicle, egg, pinata etc has its OWN NON-PIG face or NO face, NEVER Gastón's pig snout, eye patch or spots. Soft studio light, polished appealing 3D collectible render.\nMaterial clarification: eye patch and snout spot are FLUSH PAINTED PIGMENT on continuous SMOOTH VINYL skin, absolutely NOT fur or velour. Costume also clean smooth stylized toy finish, no fuzzy textile.\nASSET hidratacion: NEW PROPOSAL: Gastón in default kigurumi, friendly relaxed smile, holding a small reusable red water bottle with a yellow lid and no face or lettering, free hoof inviting a gentle rest. Full body. No sweat droplets, no text.\nFraming: all parts completely visible; keep generous transparent space around entire silhouette.",
+      "references": [
+        "referencias/gaston-master.png"
+      ],
+      "source": "/Users/rosvjames/.codex/generated_images/01a167a2-2707-72e2-8427-d25c39a2e44f/exec-58b8c0fc-dfdc-4e7c-96a6-55f959129e40.png",
+      "attachment_roles": [
+        "MASTER identity, highest priority"
+      ]
+    }
+  ]
+}
