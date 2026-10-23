@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { BufferGeometry, Float32BufferAttribute, MeshStandardMaterial } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import { HALL_ENTRANCE as hall } from '../lib/hall'
+import { HALL_EINSTEIN_GAP } from '../lib/campus'
 import { HALL_PASSAGE as passage, HALL_TUNNEL as tunnel, EINSTEIN_ENTRANCE as entrance } from '../lib/hallPassage'
 
 type Point=[number,number,number]
@@ -27,7 +28,8 @@ export function HallEinsteinPassage({materials}:{materials:CampusMaterials}) {
     g.setAttribute('uv',new Float32BufferAttribute(points.flatMap(([x,,z])=>[x/2.4,z/2.4]),2));g.computeVertexNormals();return g
   },[])
   useEffect(()=>()=>{glass.dispose();iron.dispose();handle.dispose();foliage.dispose();lamp.dispose();ramp.dispose()},[glass,iron,handle,foliage,lamp,ramp])
-  const width=passage.right-passage.left,length=-passage.back
+  // Floor, steps and landing span the whole gap, wall to wall, since the general ground stops at it.
+  const width=HALL_EINSTEIN_GAP,length=-passage.back
   const left=passage.left,right=passage.right,center=passage.center
   return <group position={[hall.center[0],0,-hall.center[1]]} rotation={[0,hall.angle,0]}>
     <Block at={[center,.42,-length/2]} size={[width,.26,length]} material={materials.paving}/>

@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
-import { CanvasTexture, SRGBColorSpace } from 'three'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { CanvasTexture, SRGBColorSpace, type Sprite } from 'three'
+import { useCollidingLabel } from './LabelCollision'
 
 type Variant = 'plain' | 'tag' | 'pill'
 
 const FONT_SIZE = 44
-const FONT = `600 ${FONT_SIZE}px 'Barlow Semi Condensed', system-ui, sans-serif`
+const FONT = `600 ${FONT_SIZE}px 'Rubik', system-ui, sans-serif`
 const STYLES: Record<Variant, { color: string; background?: string; halo?: string }> = {
   plain: { color: '#3a3330', halo: '#ffffff' },
   tag: { color: '#1a1a1a', background: 'rgba(255, 255, 255, 0.92)' },
@@ -44,8 +45,13 @@ function drawLabel(text: string, variant: Variant) {
   return { texture, aspect: canvas.width / canvas.height }
 }
 
-/** Text that always faces the camera, keeps the same size on screen and is never hidden by buildings. */
-export function MapLabel({ text, position, variant = 'plain', depthTest = false }: { text: string; position: [number, number, number]; variant?: Variant; depthTest?: boolean }) {
+/**
+ * Text that always faces the camera, keeps the same size on screen and is never hidden by buildings.
+ * With a priority, it joins the surrounding LabelCollision and hides whenever a more important label needs its spot.
+ */
+export function MapLabel({ text, position, variant = 'plain', depthTest = false, priority }: { text: string; position: [number, number, number]; variant?: Variant; depthTest?: boolean; priority?: number }) {
+  const sprite = useRef<Sprite>(null)
+  useCollidingLabel(sprite, priority)
   // Canvas text falls back to a system font until the web font has loaded, so labels are redrawn then.
   const [fontReady, setFontReady] = useState(() => document.fonts.check(FONT))
   useEffect(() => {
@@ -64,7 +70,7 @@ export function MapLabel({ text, position, variant = 'plain', depthTest = false 
   // With sizeAttenuation off, the scale is a fraction of the view rather than meters.
   const height = variant === 'plain' ? 0.021 : 0.025
   return (
-    <sprite position={position} scale={[height * aspect, height, 1]} renderOrder={10} raycast={() => null}>
+    <sprite ref={sprite} position={position} scale={[height * aspect, height, 1]} renderOrder={10} raycast={() => null}>
       <spriteMaterial map={texture} sizeAttenuation={false} depthTest={depthTest} transparent />
     </sprite>
   )

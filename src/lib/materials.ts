@@ -47,11 +47,19 @@ function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
 
 export function createCampusMaterials() {
   const textures: CanvasTexture[] = []
+  const surfaces = new Map<Surface, { map: CanvasTexture; bumpMap: CanvasTexture }>()
   function material(kind: Surface, color: string, roughness = 0.9, bumpScale = 0.035, metalness = 0) {
-    const map = surfaceTexture(kind), bumpMap = surfaceTexture(kind, true)
-    textures.push(map, bumpMap)
+    let surface = surfaces.get(kind)
+    if (!surface) {
+      surface = { map: surfaceTexture(kind), bumpMap: surfaceTexture(kind, true) }
+      surfaces.set(kind, surface); textures.push(surface.map, surface.bumpMap)
+    }
+    const { map, bumpMap } = surface
     return new MeshStandardMaterial({ color, map, bumpMap, bumpScale, roughness, metalness })
   }
+  const grass = material('grass', '#718554', 1, 0.025)
+  const paving = material('paving', '#c1b8a2', 0.95, 0.025)
+  grass.userData.groundSurface = paving.userData.groundSurface = true
   const materials = {
     pagodaWood: material('wood', '#ac7841', 0.83, 0.024),
     pagodaRoof: material('tile', '#504b43', 0.95, 0.055),
@@ -68,7 +76,7 @@ export function createCampusMaterials() {
     epicuroStone: material('stucco', '#b6b09c', 0.96, 0.025),
     academicOrange: material('stucco', '#db7842', 0.95, 0.025),
     coliseoOrange: material('stucco', '#c85e35', .95, .025),
-    coliseoLane: material('paving', '#73766e', .98, .025),
+    coliseoLane: material('paving', '#c1b8a2', .95, .025),
     hallRed: material('stucco', '#c3654f', 0.95, 0.025),
     entranceStone: material('stone', '#b8b6a8', 0.95, 0.025),
     redStone: material('stone', '#aa705a', 0.95, 0.025),
@@ -78,10 +86,10 @@ export function createCampusMaterials() {
     concreteRoof: material('stone', '#d6d0bd', 0.96, 0.018),
     roofGlass: new MeshStandardMaterial({ color: '#8aafab', roughness: 0.28, metalness: 0.35, transparent: true, opacity: 0.88 }),
     metalRoof: material('metal', '#708c7e', 0.65, 0.045, 0.25),
-    grass: material('grass', '#718554', 1, 0.025),
-    garden: material('grass', '#647d45', 1, 0.025),
-    paving: material('paving', '#c1b8a2', 0.95, 0.04),
-    lakePaving: material('paving', '#b79578', 0.95, 0.025),
+    grass,
+    garden: grass,
+    paving,
+    lakePaving: paving,
     road: material('stucco', '#aaa9a0', 1, 0.025),
     sand: material('sand', '#cec0a0', 1, 0.09),
     tennis: material('stucco', '#286fa8', 0.95, 0.008),
@@ -103,7 +111,7 @@ export function createCampusMaterials() {
   const environment = new CubeTexture(reflectionFaces)
   environment.colorSpace = SRGBColorSpace
   environment.needsUpdate = true
-  return { ...materials, environment, dispose: () => { Object.values(materials).forEach((m) => m.dispose()); textures.forEach((t) => t.dispose()); environment.dispose() } }
+  return { ...materials, environment, dispose: () => { new Set(Object.values(materials)).forEach((m) => m.dispose()); textures.forEach((t) => t.dispose()); environment.dispose() } }
 }
 
 export type CampusMaterials = ReturnType<typeof createCampusMaterials>

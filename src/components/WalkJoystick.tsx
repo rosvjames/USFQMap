@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { joystickMovement, type WalkInput } from '../lib/walkInput'
 
-const RADIUS=30
+const RADIUS=36
 /** Own one pointer, leaving a second finger free to drag the scene and turn the camera. */
 export function WalkJoystick({input}:{input:WalkInput}) {
   const base=useRef<HTMLDivElement>(null)
@@ -35,6 +35,5 @@ export function WalkJoystick({input}:{input:WalkInput}) {
       onPointerCancel={event=>{if(event.pointerId===pointer.current)reset()}}
       onLostPointerCapture={event=>{if(event.pointerId===pointer.current)reset()}}
     ><span className="joystick-knob" aria-hidden="true"/></div>
-    <span className="joystick-caption">Caminar</span>
   </div>
 }

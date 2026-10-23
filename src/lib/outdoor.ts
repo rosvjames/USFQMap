@@ -1,13 +1,14 @@
 import type { GraphEdge, GraphNode, Vec2 } from '../types'
 import { CAMPUS_BUILDINGS, CAMPUS_PATHS, findCampusBuilding } from './campus'
 import { ELEVATED_WALKWAYS, segmentProjection } from './terrain'
-import { MAXWELL_ENTRANCE, maxwellToCampus } from './maxwell'
 import { MIGUEL_ENTRANCE, miguelToCampus } from './miguel'
 import { HAYEK_ENTRANCE, hayekToCampus } from './hayek'
 import { HALL_ENTRANCE, hallToCampus } from './hall'
 import { HALL_EINSTEIN_PATH, EINSTEIN_HALL_DOOR } from './hallPassage'
 import { NEWTON_ACCESS_PATH, NEWTON_ACCESS_JOIN_END, NEWTON_DOOR_APPROACH } from './newton'
 import { GALILEO_ACCESS_PATH, GALILEO_DOOR_APPROACH, GALILEO_LAGOON } from './galileo'
+import { COLISEO, coliseoToCampus } from './coliseo'
+import { DA_VINCI_DOOR, EPICURO_DOOR, HALL_CROSSING, HALL_CROSSING_INDOOR, MAXWELL_DOOR, NORTH_COURT_PATHS } from './northCourts'
 import { pointInPolygon } from './geo'
 import { shortestPath } from './pathfinding'
 
@@ -33,6 +34,8 @@ export interface OutdoorRoute {
   unmapped: number
   usesBridge: boolean
   usesHallPassage: boolean
+  /** Walks through the Hall Principal lobby to the courts behind it. */
+  crossesHall: boolean
 }
 
 function buildWalkways() {
@@ -97,6 +100,15 @@ function buildWalkways() {
   })
   newtonIds.slice(1).forEach((id,i)=>connectedEdges.push({from:newtonIds[i],to:id}))
   connectedEdges.push({from:newtonIds[1],to:NEWTON_ACCESS_JOIN_END.map(v=>v.toFixed(2)).join(',')})
+  // The courts north of Einstein: the Hall crossing starts on the Einstein passage node above.
+  for (const path of NORTH_COURT_PATHS) {
+    const pathIds=path.map(([x,y])=>{
+      const id=`${x.toFixed(2)},${y.toFixed(2)}`
+      if(!connectedNodes.some(n=>n.id===id))connectedNodes.push({id,kind:'corridor',floor:1,x,y})
+      return id
+    })
+    pathIds.slice(1).forEach((id,i)=>connectedEdges.push({from:pathIds[i],to:id}))
+  }
   return {nodes:connectedNodes,edges:connectedEdges}
 }
 
@@ -131,8 +143,12 @@ export function endpointForBuilding(buildingId: string): Endpoint | null {
   if (buildingId === 'newton') return endpointForPosition(NEWTON_DOOR_APPROACH)
   if (buildingId === 'galileo') return endpointForPosition(GALILEO_DOOR_APPROACH)
   if (buildingId === 'miguel-de-santiago') return endpointForPosition(miguelToCampus([MIGUEL_ENTRANCE.x, MIGUEL_ENTRANCE.stairFront]))
-  if (buildingId === 'maxwell') return endpointForPosition(maxwellToCampus([0, MAXWELL_ENTRANCE.stairFront]))
+  if (buildingId === 'maxwell') return endpointForPosition(MAXWELL_DOOR)
+  if (buildingId === 'da-vinci') return endpointForPosition(DA_VINCI_DOOR)
+  if (buildingId === 'epicuro') return endpointForPosition(EPICURO_DOOR)
   if (buildingId === 'hayek') return endpointForPosition(hayekToCampus(HAYEK_ENTRANCE.door))
+  // In front of the glazed door, on the lane that runs along the facade.
+  if (buildingId === 'coliseo') return endpointForPosition(coliseoToCampus([COLISEO.doorX, 1.6]))
   let best: Endpoint | null = null
   let bestGap = Infinity
   for (const node of WALKWAYS.nodes) {
@@ -161,6 +177,8 @@ export function findOutdoorRoute(from: Endpoint, to: Endpoint): OutdoorRoute | n
   })))
   const passageNodes=new Set(HALL_EINSTEIN_PATH.map(p=>p.map(v=>v.toFixed(2)).join(',')))
   const mappedHallPassage=path.some((p,i)=>i>0&&passageNodes.has(p.map(v=>v.toFixed(2)).join(','))&&passageNodes.has(path[i-1].map(v=>v.toFixed(2)).join(',')))
+  const lobby=HALL_CROSSING.slice(HALL_CROSSING_INDOOR,HALL_CROSSING_INDOOR+2).map(p=>p.map(v=>v.toFixed(2)).join(','))
+  const crossesHall=path.some((p,i)=>i>0&&[p,path[i-1]].map(q=>q.map(v=>v.toFixed(2)).join(',')).every(id=>lobby.includes(id)))
   const lakeEntranceNodes=new Set([...GALILEO_ACCESS_PATH.slice(1),...NEWTON_ACCESS_PATH.slice(1)].map(p=>p.map(v=>v.toFixed(2)).join(',')))
   const mappedLakeApproach=path.some((p,i)=>i>0&&lakeEntranceNodes.has(p.map(v=>v.toFixed(2)).join(','))&&lakeEntranceNodes.has(path[i-1].map(v=>v.toFixed(2)).join(',')))
   let links: [Vec2, Vec2][] = [
@@ -174,7 +192,7 @@ export function findOutdoorRoute(from: Endpoint, to: Endpoint): OutdoorRoute | n
   const shortLakeLink = mappedLakeApproach && direct < SHORT_LINK && Array.from({length:11},(_,i):Vec2=>[
     from.point[0]+(to.point[0]-from.point[0])*i/10,from.point[1]+(to.point[1]-from.point[1])*i/10,
   ]).every(p=>!pointInPolygon(p,GALILEO_LAGOON.ring)&&!CAMPUS_BUILDINGS.some(b=>pointInPolygon(p,b.ring)))
-  if ((!mappedBridge && !mappedHallPassage && (!mappedLakeApproach || shortLakeLink) && (direct < total / 2 || (mappedLakeApproach && shortLakeLink))) || path.length < 2) {
+  if ((!mappedBridge && !mappedHallPassage && !crossesHall && (!mappedLakeApproach || shortLakeLink) && (direct < total / 2 || (mappedLakeApproach && shortLakeLink))) || path.length < 2) {
     links = [[from.point, to.point]]
     total = direct
     path.length = 0
@@ -184,6 +202,7 @@ export function findOutdoorRoute(from: Endpoint, to: Endpoint): OutdoorRoute | n
   return {
     usesBridge: mappedBridge && path.length > 1,
     usesHallPassage: mappedHallPassage && path.length > 1,
+    crossesHall: crossesHall && path.length > 1,
     path,
     links,
     distance: total,

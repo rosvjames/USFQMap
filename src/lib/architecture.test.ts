@@ -105,4 +105,20 @@ describe('architectural surfaces', () => {
     expect(Array.from(surface.getAttribute('normal').array).every(Number.isFinite)).toBe(true)
     surface.dispose()
   })
+
+  it('keeps the same tile alignment on crossing and reversed paths', () => {
+    const paths = [
+      createWalkwayGeometry([[0, 0], [10, 0]], 2.4, .55),
+      createWalkwayGeometry([[5, -5], [5, 5]], 2.4, .55),
+      createWalkwayGeometry([[10, 0], [0, 0]], 2.4, .55),
+    ]
+    for (const path of paths) {
+      const p = path.getAttribute('position'), uv = path.getAttribute('uv')
+      for (let i = 0; i < p.count; i++) {
+        expect(uv.getX(i)).toBeCloseTo(p.getX(i) / 2.4)
+        expect(uv.getY(i)).toBeCloseTo(-p.getZ(i) / 2.4)
+      }
+      path.dispose()
+    }
+  })
 })

@@ -3,8 +3,9 @@ import { BufferGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMa
 import { CAMPUS_AREAS, CAMPUS_BUILDINGS, findCampusBuilding } from '../lib/campus'
 import { createPavedShapes, createRoofGeometry, createTerrainShapes, createWalkwayGeometry } from '../lib/architecture'
 import { campusBaseHeightAt, createGradedSurfaceGeometry } from '../lib/campusSlope'
-import { COLISEO as h, COLISEO_LANE, COLISEO_GARDEN_STAIRS, COLISEO_PLATFORM, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT, SPORTS_ANNEX, coliseoToCampus } from '../lib/coliseo'
+import { COLISEO as h, COLISEO_ROAD_OUTLINES, COLISEO_GARDEN_STAIRS, COLISEO_PLATFORM, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT, SPORTS_ANNEX, coliseoToCampus } from '../lib/coliseo'
 import { PAGODA_POND } from '../lib/pagoda'
+import { SPORT_ZONES, SPORT_STAIRS, stairOutline } from '../lib/terrain'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
 
@@ -84,13 +85,8 @@ export function ColiseoBuilding({ materials, onSelect }: { materials: CampusMate
 /** Lower lane beside the Pagoda, with a higher lawn and a short retaining edge. */
 export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) {
   const geometry = useMemo(() => {
-    const strips = COLISEO_LANE.slice(1).map((b, i): Vec2[] => {
-      const a = COLISEO_LANE[i], dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
-      const nx = -dy / length * h.roadWidth / 2, ny = dx / length * h.roadWidth / 2
-      return [[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]]
-    })
-    const obstacles = [...CAMPUS_BUILDINGS.map(b => b.ring), ...CAMPUS_AREAS.filter(a => a.kind === 'water' || a.kind === 'pitch').map(a => a.ring), PAGODA_POND, COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON]
-    const flat = new ShapeGeometry(createPavedShapes(strips, [...obstacles,COLISEO_LOWER_FORECOURT])), road = createGradedSurfaceGeometry(flat)
+    const obstacles = [...CAMPUS_BUILDINGS.map(b => b.ring), ...CAMPUS_AREAS.filter(a => (a.kind === 'water' || a.kind === 'pitch') && !SPORT_ZONES.some(z => z.area.osmId === a.osmId)).map(a => a.ring), ...SPORT_ZONES.map(z => z.area.ring), ...SPORT_STAIRS.map(stairOutline), PAGODA_POND, COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON]
+    const flat = new ShapeGeometry(createPavedShapes(COLISEO_ROAD_OUTLINES, [...obstacles,COLISEO_LOWER_FORECOURT])), road = createGradedSurfaceGeometry(flat)
     flat.dispose()
     const uv = road.getAttribute('uv')
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 2.4, uv.getY(i) / 2.4)

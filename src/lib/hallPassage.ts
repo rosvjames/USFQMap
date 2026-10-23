@@ -12,6 +12,8 @@ export const HALL_TUNNEL = {mouth:HALL_PASSAGE.back,back:-32,left:HALL_PASSAGE.l
 // Rendering and routing share this position so arrivals stay beside the doorway.
 export const EINSTEIN_ENTRANCE = {wall:hallSide+HALL_EINSTEIN_GAP,z:HALL_TUNNEL.mouth+2.2,width:2.7,height:3.05,ground:HALL_ENTRANCE.ground}
 export const HALL_TUNNEL_CUTOUT:Vec2[]=([[HALL_TUNNEL.left,HALL_TUNNEL.mouth+.08],[HALL_TUNNEL.right,HALL_TUNNEL.mouth+.08],[HALL_TUNNEL.right,HALL_TUNNEL.back],[HALL_TUNNEL.left,HALL_TUNNEL.back]] as Vec2[]).map(hallToCampus)
+// The passage draws its own floor, steps and landing across the whole gap; the general ground stops here.
+export const HALL_PASSAGE_OUTLINE:Vec2[]=([[hallSide,2.8],[hallSide+HALL_EINSTEIN_GAP,2.8],[hallSide+HALL_EINSTEIN_GAP,HALL_PASSAGE.back],[hallSide,HALL_PASSAGE.back]] as Vec2[]).map(hallToCampus)
 export function hallTunnelHeightAt(point:Vec2):number|undefined {
   const [x,z]=campusToHall(point),t=HALL_TUNNEL
   if(x<t.left-1e-6||x>t.right+1e-6||z>t.mouth+1e-6||z<t.back-1e-6)return

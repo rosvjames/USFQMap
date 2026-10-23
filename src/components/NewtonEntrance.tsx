@@ -1,9 +1,10 @@
+import { VISUAL_PATH_WIDTHS } from '../data/siteAppearance'
 import { useEffect,useMemo } from 'react'
 import { MeshStandardMaterial } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
 import { CAMPUS_BUILDINGS,CAMPUS_WALKWAYS } from '../lib/campus'
-import { createPavedShapes,createRoofGeometry,createWalkwayGeometry } from '../lib/architecture'
+import { createPavedShapes,createRoofGeometry,createWalkwayGeometry,walkwayOutlines } from '../lib/architecture'
 import { NEWTON_ENTRANCE as h,NEWTON_LAWNS,NEWTON_ACCESS_PATH,newtonHeightAt } from '../lib/newton'
 const noRaycast=()=>null
 type Point=[number,number,number]
@@ -14,10 +15,7 @@ function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMate
 export function NewtonEntrance({materials}:{materials:CampusMaterials}) {
   const finish=useMemo(()=>({glass:new MeshStandardMaterial({color:'#324d4d',roughness:.24,metalness:.35}),iron:new MeshStandardMaterial({color:'#35443c',roughness:.65,metalness:.3})}),[])
   const lawns=useMemo(()=>{
-    const paths=CAMPUS_WALKWAYS.flatMap(w=>w.line.slice(1).map((b,i):Vec2[]=>{
-      const a=w.line[i],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1,nx=-dy/length*(w.width/2+.12),ny=dx/length*(w.width/2+.12)
-      return [[a[0]+nx,a[1]+ny],[b[0]+nx,b[1]+ny],[b[0]-nx,b[1]-ny],[a[0]-nx,a[1]-ny]]
-    }))
+    const paths=CAMPUS_WALKWAYS.filter(w=>!w.bridge).flatMap(w=>walkwayOutlines(w.line,(w.mappedWidth ?? VISUAL_PATH_WIDTHS[w.osmId] ?? w.width)+.24))
     return createPavedShapes(NEWTON_LAWNS,[...CAMPUS_BUILDINGS.map(b=>b.ring),...paths]).map(shape=>{
       const points=shape.extractPoints(1),g=createRoofGeometry(points.shape.map(p=>[p.x,p.y] as Vec2),0,0,points.holes.map(r=>r.map(p=>[p.x,p.y] as Vec2)))
       const p=g.getAttribute('position');for(let i=0;i<p.count;i++)p.setY(i,newtonHeightAt([p.getX(i),-p.getZ(i)])??h.ground)

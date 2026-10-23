@@ -1,4 +1,4 @@
-# USFQ · Explora
+# MiCampus USFQ
 
 Mapa 3D del campus de Cumbayá para una casa abierta. Permite buscar edificios y códigos de aula, consultar las fuentes, trazar rutas exteriores aproximadas y navegar por el campus mediante el mapa y el GPS.
 
@@ -15,11 +15,14 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 
 ## Controles
 
-- Mapa: arrastrar para desplazar, rueda/pellizco para acercar y botón derecho/dos dedos para girar. El botón 2D/3D cambia la perspectiva.
-- «Explorar a pie» abre el recorrido exterior desde la pantalla inicial o desde el icono de persona; la ficha de cada edificio permite iniciar cerca de ese sector. WASD desplaza, las flechas arriba/abajo avanzan y retroceden y las flechas izquierda/derecha giran. Arrastrar sobre la escena permite mirar; en móvil hay un joystick analógico pequeño para caminar y se puede arrastrar con otro dedo sobre la escena para mirar. «Volver al mapa» o Esc termina el recorrido.
-- Buscar M302, G111, DW010, H100F, un edificio o un servicio como Registro.
-- «Fuentes y cobertura» muestra las referencias y los límites de los datos.
-- «Ver canchas y terrazas» acerca la cámara al sector deportivo. El interruptor «Nombres de edificios», arriba a la derecha, muestra u oculta sus etiquetas, incluida la del edificio seleccionado. Los nombres están activados inicialmente.
+- Mapa: arrastrar para desplazar, rueda/pellizco para acercar y botón derecho/dos dedos para girar. Los botones de la derecha muestran u ocultan los nombres de edificios (activados al inicio), orientan al norte, cambian entre 2D y 3D y centran en el GPS.
+- El panel inferior reúne la búsqueda (M302, G111, DW010, H100F, un edificio o un servicio como Registro), los accesos rápidos y «Descubre el campus»: explorar a pie, la Pagoda y las canchas. Deslizarlo hacia abajo lo pliega; el ícono «i» abre las fuentes y los límites de los datos.
+- La ficha de un destino muestra el tiempo a pie, el punto de partida («Desde», arriba) y las vistas de detalles modelados («Mira antes de ir»). Se cierra deslizándola hacia abajo o con la flecha de volver. «¡Vamos!» inicia la navegación paso a paso: tocar el banner avanza al siguiente paso y la barra inferior permite retroceder o terminar.
+- «Explorar a pie» abre el recorrido exterior en primera persona. WASD desplaza, las flechas arriba/abajo avanzan y retroceden y las flechas izquierda/derecha giran. Arrastrar sobre la escena permite mirar; en móvil hay un joystick para caminar y se puede arrastrar con otro dedo para mirar. La X o Esc termina el recorrido.
+
+## Interfaz
+
+La interfaz de MiCampus USFQ toma como referencia la web actual de la universidad: rojo #E11B22, superficies blancas, controles agrupados, Zalando Sans Expanded para títulos breves y Lato para texto. Las fuentes se sirven localmente y conservan sus licencias en `public/fonts/`. Gastón, el cerdito con disfraz de dragón, usa colores sólidos y contorno de tinta; su kit versionado está en `public/mascota/gaston-v2/`, con originales, variantes de interfaz, movimiento reducido y galería de revisión. Solo se cargan los recursos necesarios para cada estado. Las vistas «Mira antes de ir» de cada edificio están en `src/lib/buildingViews.ts`.
 
 ## Datos y precisión
 
@@ -86,7 +89,7 @@ Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, ruta
 
 La navegación táctil usa un dedo para desplazar, la separación de dos dedos para acercar/alejar y el ángulo entre ellos para orientar la cámara. El movimiento de ambos dedos también desplaza el mapa. Los cambios se acumulan y aplican una vez por fotograma; añadir o retirar un dedo reinicia la referencia sin saltos. Los gestos interrumpen el vuelo automático, conservan la inclinación y no seleccionan edificios al terminar un arrastre. Un toque sigue seleccionando edificios. Los movimientos automáticos cuentan el tiempo de dibujo activo, de modo que una pausa de la pestaña no descarte órdenes de zoom o cambios de vista. En PC se conservan el arrastre con botón izquierdo, la rueda y el giro con botón derecho.
 
-La tarjeta «Campus Cumbayá» puede recogerse en una pestaña lateral y restaurarse; su estado se conserva al consultar un edificio. El mapa adapta su resolución a la densidad de la pantalla, hasta dos píxeles por píxel de interfaz, y mantiene el suavizado de bordes. En móvil utiliza sombras de 1024 × 1024. Las sombras se calculan cuando cambia el contenido, no al desplazar la cámara. La decoración inmóvil se agrupa por material, el entorno urbano se dibuja como un único conjunto y escribir en la búsqueda no vuelve a renderizar la escena. Las pruebas de gestos usan una cámara de perspectiva real y eventos de puntero para comprobar zoom, giro, límites, cancelación, limpieza de controles y selección. La revisión visual utiliza tamaños de teléfono y escritorio; no sustituye una medición de fluidez en un teléfono físico.
+El mapa adapta su resolución a la densidad de la pantalla, hasta dos píxeles por píxel de interfaz, y mantiene el suavizado de bordes. En móvil utiliza sombras de 1024 × 1024. Las sombras se calculan cuando cambia el contenido, no al desplazar la cámara. La decoración inmóvil se agrupa por material, el entorno urbano se dibuja como un único conjunto y escribir en la búsqueda no vuelve a renderizar la escena. Las pruebas de gestos usan una cámara de perspectiva real y eventos de puntero para comprobar zoom, giro, límites, cancelación, limpieza de controles y selección. La revisión visual utiliza tamaños de teléfono y escritorio; no sustituye una medición de fluidez en un teléfono físico.
 
 La Pagoda se remodeló a partir de las tres fotografías compartidas por el estudiante: pabellón bajo de madera con un único techo de tejas oscuras y aleros curvos, columnas, ventanas de celosía, galería con balaustres y puente arqueado de acceso. Incluye gradas de piedra, muros rojizos con remates verdes, pequeño estanque con piedras y hojas acuáticas, y una palmera en el lado de la laguna. El pabellón y su orientación siguen la huella de OSM; alturas, ornamentos, estanque y vegetación son estimaciones visuales. Las fotos no se redistribuyen. «Ver la Pagoda» abre su ficha en el mapa; no activa un recorrido de primera persona.
 
@@ -150,6 +153,16 @@ La segunda serie de fotografías del estudiante guía las cintas naranjas, redes
 Frente al Coliseo hay una escalinata ancha que une el camino inferior con el césped elevado del Obelisco. La casita de esa zona corresponde al volumen catalogado como «Baños · zona deportiva»; tiene paredes rojizas y cubierta baja. Su huella se desplaza visualmente 4.4 m hacia el oeste y 6 m hacia el norte para despejar el paso y separarla del Obelisco. El ajuste se aplica en `campus.ts` para compartir la posición entre mallas, recortes y obstáculos, sin editar el archivo OSM original. Las dimensiones y desplazamientos son aproximaciones interpretadas de las fotos.
 
 El mural usa la fotografía aportada por el estudiante, guardada intacta en `public/textures/coliseo-annex-mural-reference.jpg`; las coordenadas UV seleccionan el panel de la imagen. Las vistas de la ficha del Coliseo permiten acercarse al mural, las gradas y el jardín con vóley.
+
+### Interior de Galileo, Einstein, Darwin y Newton
+
+Los cuatro edificios comparten un mismo juego de planos de evacuación (Departamento de Operaciones, pisos 1–3). Las fotos se guardan solo en local, en `referencias/planos-evacuacion/`, y `scripts/trazar-planos-evacuacion.py` genera a partir de ellas `src/data/academicComplexWalls.ts`. El proceso rectifica cada foto a una hoja común usando la leyenda y el cajetín, alinea los pisos 2 y 3 sobre el 1 por sus muros, columnas y gradas, y georreferencia el conjunto con el jardín en estrella de la salida de Newton hacia la laguna y la esquina de Galileo sobre imagen satelital. La calibración está en `scripts/planos-evacuacion.json`.
+
+Solo se trazan los muros rectos dibujados con línea doble. Las gradas en arco, las curvas y los tabiques de línea simple no aparecen, y las posiciones tienen un error aproximado de ±1 m. Según la aclaración del estudiante, Newton incluye el ala de las dos salidas que OSM etiqueta como Casa Blanca. Las aulas todavía no están identificadas, así que el interior no forma parte de la navegación. El corte sin techo con selector de piso está oculto (`ACADEMIC_COMPLEX.visible`): el trazado desde fotos se desvía demasiado de la planta real. Se reactivará cuando se tengan los planos en CAD del Departamento de Operaciones. Por la misma razón también se oculta el prototipo del piso 1 del Coliseo (`COLISEO_INTERIOR_VISIBLE`), trazado sobre la foto de su plano de evacuación.
+
+### Paso por el Hall hacia Da Vinci, Epicuro y Maxwell
+
+OSM no tiene senderos al norte de Einstein, así que hasta ahora las rutas a Da Vinci, Epicuro y Maxwell terminaban con una línea recta que cruzaba edificios. Según el estudiante, a esa zona se llega atravesando el Hall Principal y saliendo por su patio trasero, y entre Einstein y Da Vinci hay un paso abierto hasta el patio de Maxwell. `src/lib/northCourts.ts` añade esos recorridos al grafo: el cruce del Hall hasta la plaza de Da Vinci, un ramal al frente de Epicuro y otro, por el paso, a la puerta de Maxwell. Los puntos intermedios se ubicaron a ojo en el espacio libre entre huellas, y un test comprueba que solo el tramo dentro del Hall pasa bajo techo. La ruta del Coliseo termina ahora frente a su puerta acristalada. La puerta de Epicuro a nivel de calle sigue sin confirmar: la ruta llega a la explanada bajo su fachada fotografiada.
 
 ### Exploración a pie
 

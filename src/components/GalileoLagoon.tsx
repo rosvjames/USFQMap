@@ -1,9 +1,10 @@
+import { VISUAL_PATH_WIDTHS } from '../data/siteAppearance'
 import { useEffect,useMemo } from 'react'
 import { DoubleSide,MeshStandardMaterial } from 'three'
 import type { Vec2 } from '../types'
 import type { CampusMaterials } from '../lib/materials'
 import { CAMPUS_BUILDINGS,CAMPUS_WALKWAYS } from '../lib/campus'
-import { createPavedShapes,createRoofGeometry,createWalkwayGeometry } from '../lib/architecture'
+import { createPavedShapes,createRoofGeometry,createWalkwayGeometry,walkwayOutlines } from '../lib/architecture'
 import { GALILEO_ENTRANCE as h,GALILEO_LAWNS,GALILEO_LAGOON,LAGOON_GARDEN,LAGOON_PALMS,GALILEO_ACCESS_PATH,galileoHeightAt,galileoToCampus,clearLagoonPlant } from '../lib/galileo'
 import { foliageTexture,palmFrond } from './LandscapeDetails'
 
@@ -12,11 +13,7 @@ const noRaycast=()=>null
 function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMaterial}) {
   return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size}/></mesh>
 }
-const pathCutouts=CAMPUS_WALKWAYS.flatMap(w=>w.line.slice(1).map((b,i):Vec2[]=>{
-  const a=w.line[i],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1
-  const nx=-dy/length*(w.width/2+.12),ny=dx/length*(w.width/2+.12)
-  return [[a[0]+nx,a[1]+ny],[b[0]+nx,b[1]+ny],[b[0]-nx,b[1]-ny],[a[0]-nx,a[1]-ny]]
-}))
+const pathCutouts=CAMPUS_WALKWAYS.filter(w=>!w.bridge).flatMap(w=>walkwayOutlines(w.line,(w.mappedWidth ?? VISUAL_PATH_WIDTHS[w.osmId] ?? w.width)+.24))
 /** Raised Galileo portal and planted lake margin interpreted from the supplied photograph. */
 export function GalileoLagoon({materials}:{materials:CampusMaterials}) {
   const foliage=useMemo(foliageTexture,[])
