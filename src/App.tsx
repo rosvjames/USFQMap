@@ -199,7 +199,7 @@ export default function App() {
       />
 
       {!walking && <>
-      {!destination && <h1 className="brand-pill"><span className="brand-mark" aria-hidden="true">U</span>USFQ <span>Explora</span></h1>}
+      {!destination && <h1 className="brand-pill"><img className="brand-mark" src="/mascota/gaston/pin-2d.webp" width={96} height={114} alt="" />USFQ <span>Explora</span></h1>}
 
       {destination && !navigatingNow && (
         <div className="route-top">
@@ -269,6 +269,7 @@ export default function App() {
           sub={sub}
           walk={walk}
           notice={notice}
+          noticeMascot={originId === GPS && !gps.position}
           onGo={steps.length > 0 ? () => { setNavStep(0); setNavigating(true) } : undefined}
           views={viewsFor(building?.id)}
           onView={(view) => 'animal' in view ? mapCamera.current?.flyToAnimal(view.animal) : mapCamera.current?.flyTo(view.focus())}

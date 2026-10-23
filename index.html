@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#fff5f2" />
     <meta name="description" content="Explora el campus de la USFQ en un mapa 3D ilustrado. Busca edificios y aulas, consulta fuentes y sigue la ruta a pie con GPS." />
-    <link rel="preload" as="image" href="/mascota/saludo.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/mascota/gaston/saludando.webp" fetchpriority="high" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/paytone-one-latin-400-normal.woff2" crossorigin />
-    <link rel="icon" type="image/png" href="/mascota/asomado.png" />
-    <link rel="apple-touch-icon" href="/mascota/asomado.png" />
+    <link rel="icon" type="image/png" href="/mascota/gaston/favicon.png" />
+    <link rel="apple-touch-icon" href="/mascota/gaston/apple-touch-icon.png" />
     <title>USFQ Explora · Campus en 3D</title>
     <!-- The splash lives here, not in React, so it shows while the app downloads and while the 3D campus is built. -->
     <style>
@@ -29,7 +29,7 @@
       .wordmark span { color: #c8102e; }
       .splash-bar { width: 120px; height: 6px; overflow: hidden; border-radius: 999px; background: #f5d6dc; }
       .splash-bar span { display: block; width: 40%; height: 100%; border-radius: 999px; background: #c8102e; animation: splash-bar 1.3s ease-in-out infinite; }
-      .splash-mascot { position: absolute; left: 50%; bottom: -9%; width: min(540px, 138vw); height: auto; animation: splash-float 2.6s ease-in-out infinite; }
+      .splash-mascot { position: absolute; left: 50%; bottom: -7%; width: min(360px, 82vw); height: auto; transform-origin: 50% 100%; animation: splash-float 2.6s ease-in-out infinite; }
       .splash .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
       @keyframes splash-bar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
       @keyframes splash-float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
@@ -44,7 +44,7 @@
         <span class="splash-bar" aria-hidden="true"><span></span></span>
         <span class="visually-hidden">Cargando el campus…</span>
       </div>
-      <img class="splash-mascot" src="/mascota/saludo.webp" width="457" height="445" alt="" />
+      <img class="splash-mascot" src="/mascota/gaston/saludando.webp" width="640" height="853" alt="" />
     </div>
     <script>
       // Title and mascot appear together, once both the image and the title font are in; never later than 3 s.

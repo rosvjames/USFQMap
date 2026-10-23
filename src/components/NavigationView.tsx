@@ -31,8 +31,8 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
       <p className="nav-step">{instruction}</p>
       {detail && <p className="nav-detail">{detail}</p>}
       {last
-        ? <img className="nav-mascot arrived" src="/mascota/logrado.png" width={172} height={172} alt="" />
-        : <img className="nav-mascot" src="/mascota/guiando.png" width={184} height={173} alt="" />}
+        ? <img className="nav-mascot arrived" src="/mascota/gaston/logrado.webp" width={280} height={325} alt="" />
+        : <img key={step} className="nav-mascot" src="/mascota/gaston/guiando.webp" width={280} height={292} alt="" />}
       {!last && <button className="nav-next" onClick={() => onStep(step + 1)} aria-label="Siguiente paso" />}
     </section>
 

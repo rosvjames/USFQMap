@@ -30,7 +30,7 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
 
   return (
     <div className="sheet-dock home">
-      <img className="peek" src="/mascota/asomado.png" width={182} height={170} alt="" />
+      <img className="peek" src="/mascota/gaston/asomado.webp" width={360} height={316} alt="" />
       <a className="osm-credit-map" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OSM</a>
       <section ref={sheet} className="sheet" aria-label="Buscar en el campus">
         <div className="sheet-handle" {...handle}>
@@ -65,7 +65,12 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
             ))}
           </ul>
         )}
-        {query && results.length === 0 && <p className="empty-results" role="status">No encontramos ese lugar. Prueba con un edificio o un código como M302.</p>}
+        {query && results.length === 0 && (
+          <div className="empty-results">
+            <img src="/mascota/gaston/buscando.webp" width={200} height={243} alt="" />
+            <p role="status">No encontramos ese lugar. Prueba con un edificio o un código como M302.</p>
+          </div>
+        )}
 
         {showDiscover && <>
           <div className="chips">

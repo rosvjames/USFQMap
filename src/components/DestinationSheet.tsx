@@ -9,6 +9,8 @@ interface DestinationSheetProps {
   sub?: string
   walk?: { minutes: number; meters: number }
   notice?: string
+  /** Gastón waiting next to the notice, while the GPS looks for the visitor. */
+  noticeMascot?: boolean
   onGo?: () => void
   views: BuildingView[]
   onView: (view: BuildingView) => void
@@ -18,7 +20,7 @@ interface DestinationSheetProps {
 }
 
 /** What and where the destination is, how long the walk takes and what to look at before leaving. Swipe down to close. */
-export function DestinationSheet({ kicker, title, sub, walk, notice, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
+export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMascot, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
   const { sheet, handle } = useSwipeDown<HTMLElement>(onClose)
   return (
     <div className="sheet-dock">
@@ -35,7 +37,12 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, onGo, views
             {walk && <p className="eta"><strong>{walk.minutes} min</strong><span>{walk.meters} m a pie</span></p>}
           </div>
         </div>
-        {notice && <p className="sheet-note" role="status">{notice}</p>}
+        {notice && (
+          <div className="sheet-note">
+            {noticeMascot && <img src="/mascota/gaston/ubicacion.webp" width={120} height={150} alt="" />}
+            <p role="status">{notice}</p>
+          </div>
+        )}
         {onGo && <button className="primary-button" onClick={onGo}>¡Vamos! <ArrowIcon /></button>}
         {(views.length > 0 || onWalk) && (
           <div className="views">
