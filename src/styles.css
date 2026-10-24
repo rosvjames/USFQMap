@@ -736,21 +736,40 @@ button {
 .home .sheet,
 .destination-dock .sheet { transform: none; }
 
-/* Gastón stands behind the top right of the panel, cut at the waist where the content starts. */
-.destination-mascot {
-  position: absolute;
-  top: -42px;
-  right: 6px;
-  z-index: 2;
-  width: 172px;
-  height: auto;
-  pointer-events: none;
-  animation: peek-in .6s ease-out both;
+/* The head is tall enough for Gastón, whose base sits on its bottom edge, right above the button. */
+.destination-sheet .sheet-handle {
+  position: relative;
+  min-height: 156px;
 }
 
 .destination-head {
-  min-height: 104px;
   padding: 0 150px 0 0;
+}
+
+.destination-mascot {
+  position: absolute;
+  right: -10px;
+  bottom: 0;
+  width: 168px;
+  pointer-events: none;
+}
+
+.destination-mascot::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  right: -8px;
+  bottom: 0;
+  height: 62%;
+  background: url('/ui/destino-fondo.svg') bottom / 100% 100% no-repeat;
+}
+
+.destination-mascot img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: peek-in .6s ease-out both;
 }
 
 .kicker {
@@ -772,17 +791,12 @@ button {
   overflow-wrap: break-word;
 }
 
-.eta {
-  margin: 6px 0 0;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.eta strong {
-  font-family: var(--display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--red);
+/* The walk time rides in the button, between its label and the arrow. */
+.go-eta {
+  margin-left: auto;
+  font-size: 15px;
+  font-weight: 400;
+  opacity: .92;
 }
 
 .sheet-note {
@@ -1270,7 +1284,8 @@ button {
   .walk-card img { width: 110px; }
   .destination-head { padding-right: 120px; }
   .destination-head h1 { font-size: 28px; }
-  .destination-mascot { width: 140px; top: -30px; }
+  .destination-sheet .sheet-handle { min-height: 136px; }
+  .destination-mascot { width: 144px; }
   .nav-banner { padding-right: 92px; padding-left: 14px; }
   .nav-mascot { width: 104px; }
   .nav-progress { gap: 6px; font-size: 11px; }

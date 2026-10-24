@@ -25,7 +25,6 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
   const { sheet, handle } = useSwipeDown<HTMLDivElement>(onClose)
   return (
     <div ref={sheet} className="sheet-dock destination-dock">
-      <img className="destination-mascot" src="/ui/gaston-destino.webp" width={340} height={289} alt="" />
       <a className="osm-credit-map" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OSM</a>
       <section className="sheet destination-sheet" aria-label={`Destino: ${title}`}>
         <div className="sheet-handle" {...handle}>
@@ -34,11 +33,12 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
             <p className="kicker">{kicker}</p>
             <h1>{title}</h1>
             {sub && <p className="sub">{sub}</p>}
-            {walk && <p className="eta"><strong>{walk.minutes} min</strong> · {walk.meters} m a pie</p>}
           </div>
+          {/* Gastón stands on soft clouds whose flat base rests just above the button, hiding his waist cut. */}
+          <div className="destination-mascot" aria-hidden="true"><img src="/ui/gaston-destino.webp" width={600} height={563} alt="" /></div>
         </div>
         {notice && <div className="sheet-note">{noticeMascot && <Mascot pose="ubicacion" />}<p role="status">{notice}</p></div>}
-        {onGo && <button className="primary-button" onClick={onGo}>Iniciar ruta <ArrowIcon /></button>}
+        {onGo && <button className="primary-button" onClick={onGo}>Iniciar ruta{walk && <span className="go-eta">{walk.minutes} min · {walk.meters} m</span>}<ArrowIcon /></button>}
         {(views.length > 0 || onWalk) && (
           <div className="views">
             <h2>Explora este lugar</h2>
