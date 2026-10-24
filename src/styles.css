@@ -1251,17 +1251,11 @@ button {
   }
 }
 
-/* Gastón: short gestures that play once; scripts/mascota-web.py frames every pose in the same 512 px square. */
+/* Gastón: short gestures that play once on the 512 px poses. */
 .gaston { transform-origin: 50% 92%; pointer-events: none; object-fit: contain; }
-.gaston--asomado { animation: gaston-asomarse 700ms ease-out; }
-.gaston--guia { animation: gaston-indicar 950ms ease-in-out; }
-.gaston--logrado { animation: gaston-celebrar 1100ms ease-out; }
 .gaston--buscando { animation: gaston-pensar 1300ms ease-in-out; }
 .gaston--ubicacion { animation: gaston-escuchar 1000ms ease-in-out; }
 .gaston-pausado .gaston { animation-play-state: paused; }
-@keyframes gaston-asomarse { from { opacity: 0; transform: translateY(6px); } }
-@keyframes gaston-indicar { 45% { transform: translateX(4px); } }
-@keyframes gaston-celebrar { 38% { transform: translateY(-6px) scale(1.02); } 70% { transform: scale(.99); } }
 @keyframes gaston-pensar { 45% { transform: rotate(-1.8deg); } }
 @keyframes gaston-escuchar { 45% { transform: rotate(-1.5deg); } }
 

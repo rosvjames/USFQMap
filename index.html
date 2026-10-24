@@ -28,7 +28,8 @@
       .wordmark span { padding-left: 4cqw; border-left: .6cqw solid #e11b22; font-size: 4.6cqw; letter-spacing: .01em; }
       .splash-caption { margin: 0; font: 400 4.2cqw/1.4 'Lato', system-ui, sans-serif; color: #686462; }
       .splash-mascot { position: absolute; left: 50.5%; bottom: 19.5%; height: 52%; width: auto; transform: translateX(-50%); transform-origin: 50% 100%; animation: splash-hello 2.4s ease-in-out .3s infinite; }
-      .splash-bush { position: absolute; bottom: 0; width: 34%; height: auto; }
+      /* The bushes stand close to the camera: smaller than drawn and slightly out of focus, like in the mockup. */
+      .splash-bush { position: absolute; bottom: -1%; width: 27%; height: auto; filter: blur(1.5px) saturate(.75); opacity: .9; }
       .splash-bush.left { left: 0; }
       .splash-bush.right { right: 0; }
       .splash-status { position: absolute; bottom: 7.5%; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 3.4cqw; }
