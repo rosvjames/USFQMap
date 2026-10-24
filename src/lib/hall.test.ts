@@ -1,3 +1,4 @@
+import { CAMPUS_ELEVATION } from './elevation'
 import { describe, expect, it } from 'vitest'
 import { HALL_ENTRANCE, hallToCampus } from './hall'
 import { pointInPolygon } from './geo'
@@ -12,9 +13,9 @@ describe('photo-referenced Hall entrance', () => {
   })
 
   it('represents the raised deck and stair heights in the map terrain', () => {
-    expect(terrainHeightAt(hallToCampus([2, 1.2]))).toBeCloseTo(HALL_ENTRANCE.level)
-    expect(terrainHeightAt(hallToCampus([2, HALL_ENTRANCE.stairFront + 0.1]))).toBeCloseTo(PATH_LEVEL)
+    expect(terrainHeightAt(hallToCampus([2, 1.2]))).toBeCloseTo((HALL_ENTRANCE.level) + CAMPUS_ELEVATION)
+    expect(terrainHeightAt(hallToCampus([2, HALL_ENTRANCE.stairFront + 0.1]))).toBeCloseTo((PATH_LEVEL) + CAMPUS_ELEVATION)
     const middle = (HALL_ENTRANCE.platformFront + HALL_ENTRANCE.stairFront) / 2
-    expect(terrainHeightAt(hallToCampus([2, middle]))).toBeCloseTo((HALL_ENTRANCE.level + PATH_LEVEL) / 2)
+    expect(terrainHeightAt(hallToCampus([2, middle]))).toBeCloseTo(((HALL_ENTRANCE.level + PATH_LEVEL) / 2) + CAMPUS_ELEVATION)
   })
 })

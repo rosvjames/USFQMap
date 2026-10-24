@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BoxGeometry, Group, InstancedMesh, Mesh, MeshStandardMaterial } from 'three'
+import { BoxGeometry, Group, InstancedMesh, Mesh, MeshStandardMaterial, PlaneGeometry } from 'three'
 import { batchStaticMeshes } from './staticBatch'
 
 describe('static scene batching', () => {
@@ -43,5 +43,23 @@ describe('static scene batching', () => {
     expect(result.batches).toHaveLength(0)
     expect(instance.visible).toBe(true); expect(glass.visible).toBe(true)
     result.dispose()
+  })
+  it('aligns ground textures in metres across translated and rotated courtyards', () => {
+    const root = new Group(), material = new MeshStandardMaterial()
+    material.userData.groundSurface = true
+    root.position.set(12, 0, -5)
+    for (const angle of [0, .7]) {
+      const floor = new Mesh(new PlaneGeometry(10, 10), material)
+      floor.rotation.set(-Math.PI / 2, 0, angle); floor.position.x = angle * 20
+      root.add(floor)
+    }
+    const result = batchStaticMeshes(root), g = result.batches[0].geometry
+    const p = g.getAttribute('position'), uv = g.getAttribute('uv')
+    for (let i = 0; i < p.count; i++) {
+      expect(uv.getX(i)).toBeCloseTo((p.getX(i) + 12) / 2.4)
+      expect(uv.getY(i)).toBeCloseTo(-(p.getZ(i) - 5) / 2.4)
+    }
+    result.dispose()
+    root.children.forEach(mesh => (mesh as Mesh).geometry.dispose()); material.dispose()
   })
 })

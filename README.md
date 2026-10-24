@@ -22,7 +22,7 @@ Para abrirlo desde un celular en la misma red: `npm run dev -- --host 0.0.0.0` y
 
 ## Interfaz
 
-La interfaz sigue un estilo inspirado en Waze: paneles inferiores, botones con volumen, Paytone One para títulos y cifras y Rubik para el texto. La mascota, un pin-dragón diseñado por un amigo del equipo, aparece en la pantalla de carga, asomada sobre el panel inicial y guiando cada paso de la navegación. Las imágenes de `public/mascota/` son recortes provisionales de su lámina de concepto y se reemplazarán por sus PNG en alta resolución. Las vistas «Mira antes de ir» de cada edificio están en `src/lib/buildingViews.ts`.
+La interfaz parte del estilo de MiCampus que diseñó Julian, con referencia en la web de la universidad: rojo #E11B22, superficies blancas, controles agrupados, Zalando Sans Expanded para títulos breves y Lato para texto. Las fuentes se sirven localmente y conservan sus licencias en `public/fonts/`. Gastón, el cerdito estudiante USFQ, aparece en la pantalla de carga, asomado sobre el panel inicial, en el destino y guiando la navegación. Sus imágenes y las de la interfaz están en `public/ui/` y `public/mascota/gaston/`: se generaron con GPT Image a partir de la lámina aprobada y `scripts/ui-v3-assets.py` las exporta desde los originales, que se guardan fuera del repositorio. Las miniaturas de lugares son vistas del propio campus 3D. Las vistas «Mira antes de ir» de cada edificio están en `src/lib/buildingViews.ts`.
 
 ## Datos y precisión
 

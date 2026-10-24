@@ -1,6 +1,9 @@
+import { CAMPUS_ELEVATION } from './elevation'
+import { CAMPUS_BRIDGE_ACCESS } from './campus'
 import { describe, expect, it } from 'vitest'
 import { Path, Shape, ShapeGeometry, Vector2 } from 'three'
-import { CAMPUS_SLOPE, campusBaseHeightAt, campusSlopeOffsetAt, createGradedSurfaceGeometry } from './campusSlope'
+import { CAMPUS_SLOPE, campusBaseHeightAt, campusSlopeOffsetAt, createGradedSurfaceGeometry, buildingFoundationBase } from './campusSlope'
+import { findCampusBuilding } from './campus'
 import { ELEVATED_WALKWAYS, SPORT_ZONES, bridgeVertexHeight, terrainHeightAt } from './terrain'
 import { PAGODA, PAGODA_POND, PAGODA_STAIRS, PAGODA_STAIR_LEVEL, PAGODA_STAIR_FOOT, pagodaToCampus, pagodaStairWidthAt, createPagodaStairWall } from './pagoda'
 import { pointInPolygon } from './geo'
@@ -10,6 +13,15 @@ import { COLISEO_LANE, coliseoToCampus } from './coliseo'
 const at = (t: number): Vec2 => [CAMPUS_SLOPE.start[0] + (CAMPUS_SLOPE.end[0] - CAMPUS_SLOPE.start[0]) * t, CAMPUS_SLOPE.start[1] + (CAMPUS_SLOPE.end[1] - CAMPUS_SLOPE.start[1]) * t]
 
 describe('Pagoda to campus-side bridge grade', () => {
+  it('extends the sloping-edge buildings below the ground instead of leaving gaps under their walls', () => {
+    for (const id of ['herbario', 'guardiania-sur', 'com-este', 'com-oeste']) {
+      const ring = findCampusBuilding(id)!.ring, base = buildingFoundationBase(ring)
+      for (let i = 0; i < ring.length; i++) for (let t = 0; t <= 1; t += .1) {
+        const a = ring[i], b = ring[(i + 1) % ring.length]
+        expect(base).toBeLessThan(campusBaseHeightAt([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]) - .55)
+      }
+    }
+  })
   it('keeps the lawn grade continuous from the Pagoda approach to the mapped ramp foot', () => {
     expect(campusBaseHeightAt(PAGODA_STAIR_FOOT)).toBeCloseTo(PAGODA_STAIR_LEVEL)
     expect(campusBaseHeightAt(CAMPUS_SLOPE.end)).toBeCloseTo(.55 - CAMPUS_SLOPE.drop)
@@ -40,11 +52,11 @@ describe('Pagoda to campus-side bridge grade', () => {
       expect(lawn - lane).toBeGreaterThan(.5)
     }
   })
-  it('joins the campus ramp ground endpoint without changing any deck or far ramp level', () => {
+  it('joins the campus to the deck while both street ramps descend to the lower datum', () => {
     for (const way of ELEVATED_WALKWAYS) way.line.forEach((point, i) => {
       const last = i === way.line.length - 1
       const ramp = ['way/1032704764', 'way/1032704766'].includes(way.osmId)
-      const expected = last && ramp ? way.osmId === CAMPUS_SLOPE.campusRampId ? campusBaseHeightAt(point) : .55 : 6
+      const expected = way.osmId === CAMPUS_BRIDGE_ACCESS.osmId ? campusBaseHeightAt(point) + CAMPUS_ELEVATION : last && ramp ? .55 : 6
       expect(bridgeVertexHeight(way, i)).toBeCloseTo(expected)
       expect(terrainHeightAt(point)).toBeCloseTo(expected)
     })
@@ -54,7 +66,7 @@ describe('Pagoda to campus-side bridge grade', () => {
     for (const zone of SPORT_ZONES) {
       const ring = zone.area.ring
       const center: Vec2 = [ring.reduce((sum, p) => sum + p[0], 0) / ring.length, ring.reduce((sum, p) => sum + p[1], 0) / ring.length]
-      expect(terrainHeightAt(center)).toBeCloseTo(zone.height)
+      expect(terrainHeightAt(center)).toBeCloseTo(zone.height + CAMPUS_ELEVATION)
     }
   })
   it('keeps stairs dry, widens treads, and descends to the shared approach level', () => {
@@ -64,10 +76,10 @@ describe('Pagoda to campus-side bridge grade', () => {
       for (const side of [-.48, 0, .48]) {
         const point = pagodaToCampus([x, side * pagodaStairWidthAt(t)])
         expect(pointInPolygon(point, PAGODA_POND)).toBe(false)
-        expect(terrainHeightAt(point)).toBeCloseTo(PAGODA.floor + (PAGODA_STAIR_LEVEL - PAGODA.floor) * t)
+        expect(terrainHeightAt(point)).toBeCloseTo(PAGODA.floor + (PAGODA_STAIR_LEVEL - PAGODA.floor) * t + CAMPUS_ELEVATION)
       }
     }
-    expect(terrainHeightAt(PAGODA_STAIR_FOOT)).toBeCloseTo(campusBaseHeightAt(PAGODA_STAIR_FOOT))
+    expect(terrainHeightAt(PAGODA_STAIR_FOOT)).toBeCloseTo(campusBaseHeightAt(PAGODA_STAIR_FOOT) + CAMPUS_ELEVATION)
     expect(pagodaStairWidthAt(1)).toBeGreaterThan(pagodaStairWidthAt(0))
     for (const side of [-1, 1]) {
       const geometry = createPagodaStairWall(side, true), p = geometry.getAttribute('position')
@@ -98,6 +110,19 @@ describe('Pagoda to campus-side bridge grade', () => {
       const centroid: Vec2 = [(p.getX(i) + p.getX(i + 1) + p.getX(i + 2)) / 3, (p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3]
       expect(pointInPolygon(centroid, outline)).toBe(true)
       expect(pointInPolygon(centroid, hole)).toBe(false)
+    }
+    flat.dispose(); graded.dispose()
+  })
+
+  it('samples a landmark floor even outside the bounds of the campus-wide slope', () => {
+    const shape = new Shape([[80, 80], [84, 80], [84, 84], [80, 84]].map(p => new Vector2(...p)))
+    const flat = new ShapeGeometry(shape)
+    const graded = createGradedSurfaceGeometry(flat, 'shape', 1, ([x]) => (x - 80) * .15)
+    const p = graded.getAttribute('position')
+    expect(p.count).toBeGreaterThan(flat.getAttribute('position').count)
+    for (let i = 0; i < p.count; i++) {
+      if (p.getX(i) === 80) expect(p.getZ(i)).toBeCloseTo(0)
+      if (p.getX(i) === 84) expect(p.getZ(i)).toBeCloseTo(.6)
     }
     flat.dispose(); graded.dispose()
   })

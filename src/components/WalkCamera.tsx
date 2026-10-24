@@ -2,7 +2,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useRef, useState } from 'react'
 import { Vector3, type PerspectiveCamera } from 'three'
 import { findCampusBuilding } from '../lib/campus'
-import { moveWalker, walkingStart } from '../lib/walking'
+import { moveWalkerOnSurface, walkingStart } from '../lib/walking'
 import { terrainHeightAt } from '../lib/terrain'
 import { HALL_ENTRANCE } from '../lib/hall'
 
@@ -18,6 +18,7 @@ export function WalkCamera({ buildingId, input, onExit }: { buildingId?: string;
   const keys = useRef(new Set<string>())
   const [start] = useState(() => walkingStart(buildingId))
   const position = useRef(start)
+  const groundHeight = useRef(terrainHeightAt(start))
   const heading = useRef(0)
   const pitch = useRef(-0.05)
 
@@ -96,12 +97,15 @@ export function WalkCamera({ buildingId, input, onExit }: { buildingId?: string;
     const side = (active.has('right') ? 1 : 0) - (active.has('left') ? 1 : 0) + input.current.movement[0]
     const speed = 4 * dt / Math.max(1, Math.hypot(forward, side))
     const angle = heading.current
-    if (forward || side) position.current = moveWalker(position.current, [
-      (Math.sin(angle) * forward + Math.cos(angle) * side) * speed,
-      (Math.cos(angle) * forward - Math.sin(angle) * side) * speed,
-    ])
+    if (forward || side) {
+      const walker = moveWalkerOnSurface(position.current, [
+        (Math.sin(angle) * forward + Math.cos(angle) * side) * speed,
+        (Math.cos(angle) * forward - Math.sin(angle) * side) * speed,
+      ], groundHeight.current)
+      position.current = walker.point; groundHeight.current = walker.height
+    }
     const [x, y] = position.current
-    const eye = terrainHeightAt(position.current) + 1.65
+    const eye = groundHeight.current + 1.65
     camera.position.set(x, eye, -y)
     camera.lookAt(new Vector3(x + Math.sin(angle), eye + Math.tan(pitch.current), -y - Math.cos(angle)))
     // This mode uses continuous frames; the overview retains demand rendering.

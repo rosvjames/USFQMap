@@ -9,11 +9,11 @@ const width = Math.hypot(b[0] - a[0], b[1] - a[1])
 const ux = (b[0] - a[0]) / width, uy = (b[1] - a[1]) / width
 const center: Vec2 = [(a[0] + c[0]) / 2, (a[1] + c[1]) / 2]
 const entryX = -width / 2 - 7.5
-// The campus ramp's ground endpoint, not the elevated crossing or Hayek facade.
+// The campus reaches the deck corner; the side ramp continues down to the street separately.
 const campusRamp = CAMPUS_WALKWAYS.find(way => way.osmId === 'way/1032704764')!
 export const CAMPUS_SLOPE = {
   start: [center[0] + ux * entryX, center[1] + uy * entryX] as Vec2,
-  end: campusRamp.line.at(-1)!,
+  end: campusRamp.line[0],
   upperLevel: .55,
   // A visual estimate of the downhill fall supplied in the reference description;
   // these are relative model heights, not a surveyed topographic measurement.
@@ -47,11 +47,21 @@ export function campusSlopeOffsetAt(point: Vec2): number {
   return campusBaseHeightAt(point) - CAMPUS_SLOPE.upperLevel
 }
 
+/** A level roof keeps its original elevation while walls reach below every edge of the grade. */
+export function buildingFoundationBase(ring: Vec2[]): number {
+  let base = 0
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i], b = ring[(i + 1) % ring.length], count = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 2))
+    for (let j = 0; j <= count; j++) base = Math.min(base, campusSlopeOffsetAt([a[0] + (b[0] - a[0]) * j / count, a[1] + (b[1] - a[1]) * j / count]))
+  }
+  return base - .15
+}
+
 /** Subdivide existing triangles before grading, preserving their pond/building holes.
  * Shape frame: x/y are map coordinates and z is mesh depth before -PI/2 rotation.
  * Scene frame: x/z are world coordinates and y is height. The input is left intact.
  */
-export function createGradedSurfaceGeometry(input: BufferGeometry, frame: 'shape' | 'scene' = 'shape', maxEdge = 3): BufferGeometry {
+export function createGradedSurfaceGeometry(input: BufferGeometry, frame: 'shape' | 'scene' = 'shape', maxEdge = 3, offsetAt = campusSlopeOffsetAt): BufferGeometry {
   const position = input.getAttribute('position'), sourceUv = input.getAttribute('uv'), index = input.index
   const vertices: number[] = [], uvs: number[] = []
   type Vertex = { p: [number, number, number]; uv: Vec2 }
@@ -59,7 +69,7 @@ export function createGradedSurfaceGeometry(input: BufferGeometry, frame: 'shape
   const map = (v: Vertex): Vec2 => frame === 'shape' ? [v.p[0], v.p[1]] : [v.p[0], -v.p[2]]
   const mid = (a: Vertex, b: Vertex): Vertex => ({ p: a.p.map((n, i) => (n + b.p[i]) / 2) as Vertex['p'], uv: [(a.uv[0] + b.uv[0]) / 2, (a.uv[1] + b.uv[1]) / 2] })
   const emit = (v: Vertex) => {
-    const p = [...v.p], offset = campusSlopeOffsetAt(map(v))
+    const p = [...v.p], offset = offsetAt(map(v))
     p[frame === 'shape' ? 2 : 1] += offset
     vertices.push(...p); uvs.push(...v.uv)
   }
@@ -73,7 +83,7 @@ export function createGradedSurfaceGeometry(input: BufferGeometry, frame: 'shape
     const points = [a, b, c].map(map)
     const outside = Math.max(...points.map(p => p[0])) < bounds.minX || Math.min(...points.map(p => p[0])) > bounds.maxX || Math.max(...points.map(p => p[1])) < bounds.minY || Math.min(...points.map(p => p[1])) > bounds.maxY
     const longest = Math.max(...points.map((p, i) => Math.hypot(p[0] - points[(i + 1) % 3][0], p[1] - points[(i + 1) % 3][1])))
-    if (outside || longest <= maxEdge || depth === 0) { emit(a); emit(b); emit(c); return }
+    if ((outside && offsetAt === campusSlopeOffsetAt) || longest <= maxEdge || depth === 0) { emit(a); emit(b); emit(c); return }
     const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a)
     triangle(a, ab, ca, depth - 1); triangle(ab, b, bc, depth - 1)
     triangle(ca, bc, c, depth - 1); triangle(ab, bc, ca, depth - 1)

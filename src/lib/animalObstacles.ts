@@ -26,7 +26,7 @@ const rings = [
   MIGUEL_ROCKET_BASE,
   rectangle(...MIGUEL_GARDEN_BIN.at, MIGUEL_GARDEN_BIN.width, MIGUEL_GARDEN_BIN.depth, miguelGardenToCampus),
   ...MIGUEL_GARDEN_TABLES.map(([x,z])=>rectangle(x,z,3.4,3.4,miguelGardenToCampus)),
-  ...[[-24, SPORTS_ANNEX.left-.35], [SPORTS_ANNEX.right+.35, COLISEO.stairX - COLISEO.stairWidth / 2 - .4], [COLISEO.stairX + COLISEO.stairWidth / 2 + .4, 20]].map(([a, b]) => rectangle((a + b) / 2, COLISEO.platformFront, b - a, .3, coliseoToCampus)),
+  ...[[-24, SPORTS_ANNEX.left-.35], [SPORTS_ANNEX.right+.35, COLISEO.stairX - COLISEO.stairWidth / 2 - .4], [COLISEO.stairX + COLISEO.stairWidth / 2 + .4, COLISEO.southEdge]].map(([a, b]) => rectangle((a + b) / 2, COLISEO.platformFront, b - a, .3, coliseoToCampus)),
   rectangle(wall.x, wall.z, wall.width, wall.depth, miguelToCampus),
   rectangle(-16.3, 11.08, 2.8, .8, miguelToCampus),
   ...MIGUEL_FORECOURT_RAILS.map(([a,b]) => rectangle((a+b)/2, MIGUEL_RAIL_Z, b-a, .12, miguelToCampus)),

@@ -1,3 +1,4 @@
+import { CAMPUS_ELEVATION } from './elevation'
 import { describe,expect,it } from 'vitest'
 import { CAMPUS_BUILDINGS,findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
@@ -14,7 +15,7 @@ describe('Epicuro tower and street-side descent',()=>{
   })
   it('descends on the right from the street landing without cutting through Epicuro or Da Vinci',()=>{
     expect(EPICURO_STAIR_FOOT).toBeGreaterThan(f.towerX+f.towerWidth/2-.6)
-    let previous=s.level
+    let previous=s.level+CAMPUS_ELEVATION
     for(let i=0;i<=20;i++) {
       const x=s.top-(s.top-EPICURO_STAIR_FOOT)*i/20
       const p=epicuroToCampus([x,s.z])
@@ -22,6 +23,6 @@ describe('Epicuro tower and street-side descent',()=>{
       previous=terrainHeightAt(p)
       for(const z of [s.z-s.width/2,s.z+s.width/2])expect(CAMPUS_BUILDINGS.some(b=>pointInPolygon(epicuroToCampus([x,z]),b.ring))).toBe(false)
     }
-    expect(previous).toBeCloseTo(s.ground)
+    expect(previous).toBeCloseTo(s.ground+CAMPUS_ELEVATION)
   })
 })

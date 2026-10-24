@@ -3,9 +3,11 @@ import { BufferGeometry, ExtrudeGeometry, Float32BufferAttribute, MeshStandardMa
 import { CAMPUS_AREAS, CAMPUS_BUILDINGS, findCampusBuilding } from '../lib/campus'
 import { createPavedShapes, createRoofGeometry, createTerrainShapes, createWalkwayGeometry } from '../lib/architecture'
 import { campusBaseHeightAt, createGradedSurfaceGeometry } from '../lib/campusSlope'
-import { COLISEO as h, COLISEO_LANE, COLISEO_GARDEN_STAIRS, COLISEO_PLATFORM, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT, SPORTS_ANNEX, coliseoToCampus } from '../lib/coliseo'
+import { COLISEO as h, COLISEO_ROAD_OUTLINES, COLISEO_GARDEN_STAIRS, COLISEO_PLATFORM, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT, SPORTS_ANNEX, coliseoToCampus } from '../lib/coliseo'
 import { PAGODA_POND } from '../lib/pagoda'
+import { SPORT_ZONES, SPORT_STAIRS, stairOutline } from '../lib/terrain'
 import type { CampusMaterials } from '../lib/materials'
+import { pointInPolygon } from '../lib/geo'
 import type { Vec2 } from '../types'
 
 type Point = [number, number, number]
@@ -84,13 +86,8 @@ export function ColiseoBuilding({ materials, onSelect }: { materials: CampusMate
 /** Lower lane beside the Pagoda, with a higher lawn and a short retaining edge. */
 export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) {
   const geometry = useMemo(() => {
-    const strips = COLISEO_LANE.slice(1).map((b, i): Vec2[] => {
-      const a = COLISEO_LANE[i], dx = b[0] - a[0], dy = b[1] - a[1], length = Math.hypot(dx, dy)
-      const nx = -dy / length * h.roadWidth / 2, ny = dx / length * h.roadWidth / 2
-      return [[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]]
-    })
-    const obstacles = [...CAMPUS_BUILDINGS.map(b => b.ring), ...CAMPUS_AREAS.filter(a => a.kind === 'water' || a.kind === 'pitch').map(a => a.ring), PAGODA_POND, COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON]
-    const flat = new ShapeGeometry(createPavedShapes(strips, [...obstacles,COLISEO_LOWER_FORECOURT])), road = createGradedSurfaceGeometry(flat)
+    const obstacles = [...CAMPUS_BUILDINGS.map(b => b.ring), ...CAMPUS_AREAS.filter(a => (a.kind === 'water' || a.kind === 'pitch') && !SPORT_ZONES.some(z => z.area.osmId === a.osmId)).map(a => a.ring), ...SPORT_ZONES.map(z => z.area.ring), ...SPORT_STAIRS.map(stairOutline), PAGODA_POND, COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON]
+    const flat = new ShapeGeometry(createPavedShapes(COLISEO_ROAD_OUTLINES, [...obstacles,COLISEO_LOWER_FORECOURT])), road = createGradedSurfaceGeometry(flat)
     flat.dispose()
     const uv = road.getAttribute('uv')
     for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 2.4, uv.getY(i) / 2.4)
@@ -106,15 +103,18 @@ export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) 
       lawn.computeVertexNormals(); return lawn
     })
     const vertices: number[] = []
-    const edges: Vec2[] = [[-24,h.platformFront],[20,h.platformFront],[20,23],[-24,23],[-24,h.platformFront]]
+    const edges: Vec2[] = [[-24,h.platformFront],[h.southEdge,h.platformFront],[h.southEdge,23],[-24,23],[-24,h.platformFront]]
     for (let edge = 1; edge < edges.length; edge++) {
       const a = edges[edge-1], b = edges[edge], count = Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.5)
       for (let i = 0; i < count; i++) {
         const local = (t: number): Vec2 => [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]
         const mid = local((i+.5)/count)
-        if (edge === 1 && (Math.abs(mid[0]-h.stairX) < h.stairWidth/2+.1 || mid[0] > SPORTS_ANNEX.left-.35 && mid[0] < SPORTS_ANNEX.right+.35)) continue
+        // The annex stands on the lawn, so the wall continues in front of it; only the steps break it.
+        if (edge === 1 && Math.abs(mid[0]-h.stairX) < h.stairWidth/2+.1) continue
+        // Where the lawn meets a sunken pitch, the pitch's own wall is the edge.
+        if (SPORT_ZONES.some(z => pointInPolygon(coliseoToCampus(mid), z.area.ring))) continue
         const p = coliseoToCampus(local(i/count)), q = coliseoToCampus(local((i+1)/count))
-        const low = edge === 1 ? campusBaseHeightAt(coliseoToCampus([mid[0],h.stairBottom]))-.2 : Math.min(campusBaseHeightAt(p),campusBaseHeightAt(q))-.35
+        const low = edge === 1 ? campusBaseHeightAt(coliseoToCampus([mid[0],3.6]))-.2 : Math.min(campusBaseHeightAt(p),campusBaseHeightAt(q))-.35
         const v = [p[0],low,-p[1],q[0],low,-q[1],q[0],h.platformLevel,-q[1],p[0],low,-p[1],q[0],h.platformLevel,-q[1],p[0],h.platformLevel,-p[1]]
         vertices.push(...v)
         // Retaining faces remain visible from both the lane and garden.
@@ -124,7 +124,7 @@ export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) 
     const wall = new BufferGeometry()
     wall.setAttribute('position', new Float32BufferAttribute(vertices, 3)); wall.computeVertexNormals()
     const curb = createWalkwayGeometry(Array.from({ length: 81 }, (_, i) => coliseoToCampus([-h.width / 2 + h.width * i / 80, 2.5])), .12, p => campusBaseHeightAt(p) + .085)
-    const apron = createWalkwayGeometry(Array.from({length:33},(_,i)=>coliseoToCampus([SPORTS_ANNEX.left-.35+(SPORTS_ANNEX.right-SPORTS_ANNEX.left+.7)*i/32,(3.6+SPORTS_ANNEX.front+.05)/2])), SPORTS_ANNEX.front+.05-3.6,
+    const apron = createWalkwayGeometry(Array.from({length:33},(_,i)=>coliseoToCampus([SPORTS_ANNEX.left-.35+(SPORTS_ANNEX.right-SPORTS_ANNEX.left+.7)*i/32,(3.6+h.platformFront)/2])), h.platformFront-3.6,
       p => { const dx=p[0]-h.center[0],dy=p[1]-h.center[1],x=dx*Math.cos(h.angle)+dy*Math.sin(h.angle); return campusBaseHeightAt(coliseoToCampus([x,3.6]))+.025 })
     const forecourts = createPavedShapes([COLISEO_LOWER_FORECOURT],obstacles).map(shape=> {
       const p=shape.extractPoints(1), mesh=createRoofGeometry(p.shape.map(v=>[v.x,v.y] as Vec2),0,0,p.holes.map(r=>r.map(v=>[v.x,v.y] as Vec2)))
@@ -138,8 +138,6 @@ export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) 
     return { road, wall, curb, lawns, apron, forecourts }
   }, [])
   useEffect(() => () => { geometry.forecourts.forEach(g=>g.dispose()); geometry.apron.dispose(); geometry.road.dispose(); geometry.wall.dispose(); geometry.curb.dispose(); geometry.lawns.forEach(g => g.dispose()) }, [geometry])
-  const low = campusBaseHeightAt(coliseoToCampus([h.stairX, h.stairBottom])) + .02
-  const high = h.platformLevel
   return <group>
     <mesh geometry={geometry.road} position={[0, .57, 0]} rotation={[-Math.PI / 2, 0, 0]} material={materials.coliseoLane} receiveShadow raycast={noRaycast} />
     {geometry.forecourts.map((g,i)=><mesh key={`forecourt-${i}`} geometry={g} material={materials.coliseoLane} receiveShadow raycast={noRaycast} />)}
@@ -147,13 +145,5 @@ export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) 
     <mesh geometry={geometry.wall} material={materials.entranceStone} receiveShadow castShadow raycast={noRaycast} />
     {geometry.lawns.map((lawn, i) => <mesh key={i} geometry={lawn} material={materials.grass} receiveShadow raycast={noRaycast} />)}
     <mesh geometry={geometry.curb} receiveShadow raycast={noRaycast}><meshStandardMaterial color="#d4b54e" roughness={.9} /></mesh>
-    <group position={[h.center[0], 0, -h.center[1]]} rotation={[0, h.angle, 0]}>
-      {Array.from({ length: 8 }, (_, i) => {
-        const top = low + (high - low) * (i + 1) / 8
-        const tread = (h.stairTop-h.stairBottom)/8
-        return <Block key={i} at={[h.stairX, (top + low - .25) / 2, h.stairBottom + (i + .5) * tread]} size={[h.stairWidth, top - low + .25, tread+.015]} material={materials.entranceStone} />
-      })}
-
-    </group>
   </group>
 }

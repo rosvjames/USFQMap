@@ -1,6 +1,9 @@
 import { useEffect, useMemo } from 'react'
 import { Quaternion, Shape, Vector3 } from 'three'
 import { ELEVATED_WALKWAYS, bridgeVertexHeight } from '../lib/terrain'
+import { CAMPUS_BOUNDARY, CAMPUS_BRIDGE_ACCESS, CAMPUS_STREET_CUTOUTS } from '../lib/campus'
+import { CAMPUS_ELEVATION } from '../lib/elevation'
+import { pointInPolygon } from '../lib/geo'
 import { campusBaseHeightAt } from '../lib/campusSlope'
 import { bridgeBoundaryRails, bridgeJunctions, createBridgeDeckGeometry } from '../lib/bridges'
 
@@ -18,7 +21,7 @@ function Beam({ a, b, width, depth, color }: { a: Point; b: Point; width: number
 
 export function CampusBridges() {
   const decks = useMemo(()=>ELEVATED_WALKWAYS.map(createBridgeDeckGeometry),[])
-  const rails = useMemo(()=>bridgeBoundaryRails(ELEVATED_WALKWAYS),[])
+  const rails = useMemo(()=>bridgeBoundaryRails(ELEVATED_WALKWAYS, [CAMPUS_BRIDGE_ACCESS]),[])
   const junctions = useMemo(()=>bridgeJunctions(ELEVATED_WALKWAYS),[])
   const arrow = useMemo(()=>{
     const shape=new Shape(); shape.moveTo(-0.08,-0.18);shape.lineTo(0.08,-0.18);shape.lineTo(0.08,0.04)
@@ -52,7 +55,7 @@ export function CampusBridges() {
           <Beam a={point(0,0,0.02)} b={point(1,0,0.02)} width={0.045} depth={0.015} color="#d2ac36"/>
           {Array.from({length:Math.floor(length/4)},(_,j)=>([-1,1] as const).map(side=><mesh key={`${j}/${side}`} position={point((j+0.5)/Math.floor(length/4),side*0.55,0.025)} rotation={[-Math.PI/2,0,Math.atan2(-dx,dy)+(side===1?Math.PI:0)]} raycast={()=>null}><shapeGeometry args={[arrow]}/><meshStandardMaterial color="#ecece4" roughness={1}/></mesh>))}
           {length > 25 && [0.15, 0.85].map((t) => {
-            const p = point(t), ground=campusBaseHeightAt([p[0],-p[2]])-.1, height = Math.max(0, p[1] - ground - 0.35)
+            const p = point(t), ground=pointInPolygon([p[0],-p[2]],CAMPUS_BOUNDARY)&&!CAMPUS_STREET_CUTOUTS.some(r=>pointInPolygon([p[0],-p[2]],r))?campusBaseHeightAt([p[0],-p[2]])+CAMPUS_ELEVATION-.1:.45, height = Math.max(0, p[1] - ground - 0.35)
             const center:Point=[p[0],ground+height/2,p[2]]
             return <mesh key={t} position={center} castShadow receiveShadow><cylinderGeometry args={[0.45, 0.6, height, 10]} /><meshStandardMaterial color="#a7a498" roughness={0.95} /></mesh>
           })}

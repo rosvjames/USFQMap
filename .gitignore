@@ -11,3 +11,6 @@ referencias/*
 !referencias/INVESTIGACION.md
 !referencias/plantilla-levantamiento.csv
 .claude
+
+# Capturas y kits generados durante las revisiones
+output/

@@ -1,3 +1,4 @@
+import { CAMPUS_ELEVATION } from './elevation'
 import { describe, expect, it } from 'vitest'
 import polygonClipping from 'polygon-clipping'
 import { CAMPUS_BUILDINGS, findCampusBuilding } from './campus'
@@ -19,7 +20,7 @@ describe('Miguel de Santiago photo model',()=>{
     const endpoint=endpointForBuilding('miguel-de-santiago')!
     expect(endpoint.point).toEqual(miguelToCampus([MIGUEL_ENTRANCE.x,MIGUEL_ENTRANCE.stairFront]))
     expect(CAMPUS_BUILDINGS.some(b=>pointInPolygon(endpoint.point,b.ring))).toBe(false)
-    expect(terrainHeightAt(endpoint.point)).toBeCloseTo(.55)
+    expect(terrainHeightAt(endpoint.point)).toBeCloseTo((.55) + CAMPUS_ELEVATION)
     const other=endpointForBuilding('hayek')!
     const outward=findOutdoorRoute(endpoint,other)!,inward=findOutdoorRoute(other,endpoint)!
     expect(outward.usesBridge).toBe(true);expect(inward.usesBridge).toBe(true)
