@@ -15,8 +15,13 @@
   --night-soft: #625d5d;
   --gold: #c89b48;
   --user: #2a6fdb;
+  --chip: #f4f2ef;
+  --blush: #fdeeec;
+  --r-lg: 20px;
+  --r-md: 14px;
+  --r-sm: 10px;
   --shadow: 0 4px 20px rgb(35 31 32 / 10%);
-  --sheet-shadow: 0 4px 28px rgb(35 31 32 / 12%);
+  --sheet-shadow: 0 6px 30px rgb(35 31 32 / 14%);
   --gutter: 16px;
   --top: max(16px, env(safe-area-inset-top));
   --display: 'Zalando Sans Expanded', system-ui, sans-serif;
@@ -93,7 +98,7 @@ button {
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   box-shadow: var(--shadow);
 }
 
@@ -130,14 +135,19 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  min-height: 40px;
-  padding: 8px 12px;
+  min-height: 44px;
+  padding: 8px 14px;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.25;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 5px;
+  background: var(--chip);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+}
+
+.chip svg {
+  flex: none;
+  color: var(--red);
 }
 
 .chip[aria-pressed='true'] {
@@ -150,15 +160,15 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 50px;
-  padding: 12px 18px;
+  min-height: 54px;
+  padding: 14px 20px;
   color: #fff;
-  font-family: var(--display);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   background: var(--red);
   border: 0;
-  border-radius: 5px;
+  border-radius: var(--r-md);
+  box-shadow: 0 6px 16px rgb(225 27 34 / 22%);
 }
 
 .secondary-button {
@@ -172,7 +182,7 @@ button {
   font-weight: 700;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: var(--r-sm);
 }
 
 .secondary-button.icon-only {
@@ -182,7 +192,8 @@ button {
 
 .primary-button:active,
 .secondary-button:active,
-.tile:active {
+.walk-card:active,
+.place-card:active {
   filter: brightness(.95);
 }
 
@@ -205,18 +216,17 @@ button {
     background-color: #1f5cc0;
   }
 
-  .primary-button:hover,
-  .tile-walk:hover {
+  .primary-button:hover {
     background-color: #b00e28;
   }
 
-  .tile-pagoda:hover {
-  background-color: var(--soft);
-}
+  .walk-card:hover {
+    background-color: #fce3e0;
+  }
 
-  .tile-sports:hover {
-  background-color: var(--soft);
-}
+  .place-card:hover {
+    border-color: #d3cfca;
+  }
 
   .secondary-button:hover {
     background-color: var(--line);
@@ -237,24 +247,25 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 44px;
+  height: 50px;
   margin: 0;
-  padding: 0 15px;
+  padding: 0 18px;
   font-family: var(--display);
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: -.035em;
-  color: #fff;
-  background: var(--ink);
-  border-radius: 4px;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
   box-shadow: var(--shadow);
 }
 
-.brand-pill > span:last-child {
+.brand-pill > span:last-child,
+.nav-brand > span {
   padding-left: 12px;
-  color: #fff;
   border-left: 2px solid var(--red);
-  font-size: 12px;
+  font-size: 13px;
   letter-spacing: .015em;
 }
 
@@ -267,14 +278,16 @@ button {
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 3px;
+  padding: 4px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--r-md);
   box-shadow: var(--shadow);
 }
 
-.map-controls .round-button { border: 0; border-radius: 4px; box-shadow: none; }
+.map-controls .round-button { border: 0; border-radius: var(--r-sm); box-shadow: none; }
+.map-controls .round-button.locate, .map-controls .round-button.locate.active { color: #fff; background: var(--red); }
+.map-controls .round-button + .round-button.locate { border-top: 0; margin-top: 3px; }
 .map-controls .round-button + .round-button { border-top: 1px solid var(--line); }
 .map-controls .round-button[aria-pressed='true'] { color: var(--red); background: #fdf0ef; }
 .map-controls .round-button[aria-pressed='false'] { color: var(--muted); }
@@ -307,12 +320,17 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 44px;
-  padding: 0 13px;
+  height: 48px;
+  padding: 0 14px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--r-md);
   box-shadow: var(--shadow);
+}
+
+.route-top .round-button {
+  width: 48px;
+  height: 48px;
 }
 
 .origin-dot {
@@ -402,7 +420,7 @@ button {
   background: var(--surface);
   border: 1px solid var(--line);
   border-left: 3px solid var(--gold);
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   box-shadow: var(--shadow);
 }
 
@@ -418,41 +436,33 @@ button {
   z-index: 15;
 }
 
-/* Move the panel, mascot and credit together while dragging. */
-.home {
-  transform: translateY(var(--drag, 0px));
-  transition: transform .2s ease;
-}
-
-.home.dragging { transition: none; }
-.home .sheet { transform: none; }
-
-/* The window reaches a little past the panel edge so the paws can rest on the card;
-   folding slides Gastón below it, out of sight. */
+/* Gastón leans on the top edge of the panel: the image is cut straight below his hands and that cut sits on the edge.
+   Folding or searching slides him down behind the panel, out of the window. */
 .peek-window {
-  --peek: 158px;
+  --peek: 150px;
   position: absolute;
-  right: 10px;
-  bottom: calc(100% - 12px);
+  right: 58px;
+  bottom: calc(100% - 2px);
   z-index: 1;
   width: var(--peek);
-  height: calc(var(--peek) + 12px);
+  height: calc(var(--peek) * .8);
   overflow: hidden;
   pointer-events: none;
 }
 
 .peek {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  width: var(--peek);
-  height: var(--peek);
-  /* The belly (88% down the source image) meets the edge; the paws overlap the card. */
-  translate: 0 13%;
-  transition: translate .2s ease;
+  width: 100%;
+  height: auto;
+  transition: translate .25s ease;
+  animation: peek-in .6s ease-out both;
 }
 
-.home.is-folded .peek, .home.is-searching .peek { translate: 0 calc(12px + 100%); }
+@keyframes peek-in { from { translate: 0 100%; } }
+
+.home.is-folded .peek, .home.is-searching .peek { translate: 0 100%; }
 
 .osm-credit-map {
   position: absolute;
@@ -471,12 +481,12 @@ button {
   flex-direction: column;
   gap: 12px;
   max-height: min(72dvh, calc(100dvh - var(--keyboard, 0px) - 112px));
-  padding: 0 20px 20px;
+  padding: 0 18px 20px;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   box-shadow: var(--sheet-shadow);
   transform: translateY(var(--drag, 0px));
   transition: transform .2s ease;
@@ -522,11 +532,11 @@ button {
   flex: none;
   align-items: center;
   gap: 10px;
-  min-height: 48px;
-  padding: 0 13px;
+  min-height: 52px;
+  padding: 0 15px;
   background: var(--surface);
-  border: 1px solid #cececa;
-  border-radius: 6px;
+  border: 1px solid #dedbd6;
+  border-radius: var(--r-md);
 }
 
 .search-field:focus-within {
@@ -600,7 +610,7 @@ button {
 .empty-results img { width: 100px; height: 100px; object-fit: contain; flex: none; }
 .empty-results strong { display: block; font-size: 16px; color: var(--ink); }
 .empty-results p { margin: 5px 0 0; line-height: 1.45; }
-.quick-destinations .chip { min-height: 36px; padding: 7px 11px; background: var(--soft); border-color: transparent; font-size: 13px; }
+
 
 .sheet-heading {
   display: flex;
@@ -611,13 +621,13 @@ button {
 .sheet h2 {
   margin: 0;
   font-family: var(--display);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: -.025em;
 }
 
-.sheet .home-intro h2 { font-size: 21px; line-height: 1.25; margin: 6px 0 2px; letter-spacing: -.045em; }
+.sheet .home-intro h2 { font-size: 26px; line-height: 1.2; margin: 6px 0 2px; letter-spacing: -.045em; }
 
 .info-button {
   display: grid;
@@ -632,63 +642,115 @@ button {
   border-radius: 5px;
 }
 
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px 14px;
-}
-
-.tile {
+/* The walk card keeps its text on the left; the path drawing sits behind the arrow and fades into the card. */
+.walk-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 9px;
-  min-height: 58px;
-  padding: 10px 0;
-  font-size: 14px;
-  line-height: 1.3;
-  font-weight: 700;
+  gap: 12px;
+  min-height: 76px;
+  padding: 14px 16px;
+  overflow: hidden;
+  color: var(--red);
   text-align: left;
-  color: var(--ink);
+  background: var(--blush);
+  border: 1px solid #f5d3cf;
+  border-radius: var(--r-md);
+}
+
+.walk-card > svg { position: relative; flex: none; }
+.walk-card > span { position: relative; flex: 1; min-width: 0; }
+.walk-card strong { display: block; font-size: 18px; line-height: 1.2; }
+.walk-card > span { padding-right: 84px; }
+.walk-card small { display: block; margin-top: 3px; font-size: 13px; color: #7d5b57; }
+
+.walk-card img {
+  position: absolute;
+  right: 30px;
+  bottom: 0;
+  width: 128px;
+  height: auto;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 35%);
+  mask-image: linear-gradient(to right, transparent, #000 35%);
+}
+
+.places {
+  display: flex;
+  gap: 10px;
+  margin: 0 -18px;
+  padding: 0 18px 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 18px;
+  scrollbar-width: none;
+  list-style: none;
+}
+
+.places li { flex: none; scroll-snap-align: start; }
+
+.place-card {
+  display: flex;
+  flex-direction: column;
+  width: 152px;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
   background: var(--surface);
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
 }
 
-.tile-walk {
-  grid-column: 1 / -1;
-  min-height: 64px;
-  padding: 12px;
-  margin-bottom: 4px;
-  color: #a7191e;
-  background: #fdf1f0;
-  border: 1px solid #f1d1ce;
-  border-radius: 6px;
+.place-card img {
+  display: block;
+  width: 100%;
+  height: 86px;
+  object-fit: cover;
+  background: var(--soft);
 }
 
-.tile-pagoda {
-  color: var(--ink);
+.place-card span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
-.tile-sports {
-  color: var(--ink);
-}
-
-.tile span { flex: 1; min-width: 0; }
-.tile svg { flex: none; }
-.tile > svg:last-child { width: 16px; height: 16px; }
-.tile strong { display: block; font-size: 15px; }
-.tile small { display: block; margin-top: 3px; font-size: 13px; font-weight: 400; color: #805b55; }
-@media (hover: hover) { .tile-walk:hover { background: #fce5e2; } }
+.place-card svg { flex: none; color: var(--red); }
 
 /* Destination sheet */
 
+/* The whole dock moves when the sheet is dragged, so Gastón and the map credit follow the panel. */
+.home,
+.destination-dock {
+  transform: translateY(var(--drag, 0px));
+  transition: transform .2s ease;
+}
+
+.home.dragging,
+.destination-dock.dragging { transition: none; }
+.home .sheet,
+.destination-dock .sheet { transform: none; }
+
+/* Gastón stands behind the top right of the panel, cut at the waist where the content starts. */
+.destination-mascot {
+  position: absolute;
+  top: -42px;
+  right: 6px;
+  z-index: 2;
+  width: 172px;
+  height: auto;
+  pointer-events: none;
+  animation: peek-in .6s ease-out both;
+}
+
 .destination-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 0;
+  min-height: 104px;
+  padding: 0 150px 0 0;
 }
 
 .kicker {
@@ -700,14 +762,10 @@ button {
   color: var(--muted);
 }
 
-.destination-head > div {
-  min-width: 0;
-}
-
 .destination-head h1 {
   margin: 7px 0 0;
   font-family: var(--display);
-  font-size: 26px;
+  font-size: 34px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -.04em;
@@ -715,26 +773,16 @@ button {
 }
 
 .eta {
-  flex: none;
-  margin: 0;
-  text-align: right;
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--muted);
 }
 
 .eta strong {
-  display: block;
   font-family: var(--display);
-  font-size: 26px;
+  font-size: 17px;
   font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
   color: var(--red);
-}
-
-.eta span {
-  display: block;
-  margin-top: 5px;
-  font-size: 12px;
-  color: var(--muted);
 }
 
 .sheet-note {
@@ -745,9 +793,8 @@ button {
   padding: 11px 13px;
   font-size: 14px;
   color: var(--ink);
-  background: var(--soft);
-  border-left: 2px solid #bdbab5;
-  border-radius: 3px;
+  background: var(--chip);
+  border-radius: var(--r-sm);
 }
 
 .sheet-note img {
@@ -761,8 +808,18 @@ button {
   margin: 0;
 }
 
+.views {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
 .views h2 {
   margin-bottom: 10px;
+}
+
+.views .chip {
+  background: var(--surface);
+  border-color: var(--line);
 }
 
 .sheet-section h2 {
@@ -821,95 +878,123 @@ button {
 
 /* Turn-by-turn navigation */
 
+/* The navigation card carries the brand on top, the current step on the left and Gastón, in his scenery, on the right. */
 .nav-banner {
   position: absolute;
   top: var(--top);
   left: var(--gutter);
   right: var(--gutter);
   z-index: 20;
-  min-height: 126px;
-  padding: 16px 118px 16px 18px;
-  color: #fff;
-  background: var(--night);
-  border-top: 3px solid var(--red);
-  border-radius: 7px;
-  box-shadow: var(--shadow);
+  min-height: 168px;
+  padding: 14px 108px 14px 16px;
+  overflow: hidden;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sheet-shadow);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.035em;
+}
+
+.nav-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.nav-text {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  flex: 1;
 }
 
 .nav-progress {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: #dedbd7;
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .nav-turn {
   flex: none;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 46px;
+  height: 46px;
   color: #fff;
   background: var(--red);
-  border-radius: 4px;
+  border-radius: 12px;
 }
 
 .nav-dots {
   display: flex;
-  gap: 3px;
+  gap: 4px;
 }
 
 .nav-dots i {
-  width: 6px;
-  height: 6px;
-  background: var(--night-soft);
+  width: 7px;
+  height: 7px;
+  background: #dcd9d5;
   border-radius: 999px;
 }
 
 .nav-dots i.done {
-  background: #fff;
+  background: #f3b0b3;
+}
+
+.nav-dots i.current {
+  background: var(--red);
 }
 
 .nav-step {
-  margin: 14px 0 0;
-  font-size: 18px;
+  margin: 6px 0 0;
+  font-size: 17px;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .nav-detail {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   font-size: 14px;
   line-height: 1.45;
-  color: #d1ccc8;
+  color: var(--muted);
 }
 
 .nav-mascot {
   position: absolute;
-  right: 2px;
-  bottom: 6px;
-  width: 116px;
+  right: 0;
+  bottom: 0;
+  width: 124px;
   height: auto;
   pointer-events: none;
-}
-
-.nav-mascot.arrived {
-  transform: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 25%);
+  mask-image: linear-gradient(to right, transparent, #000 25%);
+  animation: peek-in .5s ease-out both;
 }
 
 .nav-next {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   min-height: 44px;
-  margin-top: 6px;
-  padding: 8px 0 0;
-  color: #fff;
-  font-size: 13px;
+  margin-top: 2px;
+  padding: 6px 0 0;
+  color: var(--red);
+  font-size: 15px;
   font-weight: 700;
   background: none;
   border: 0;
@@ -928,10 +1013,10 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px;
+  padding: 18px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--r-lg);
   box-shadow: var(--sheet-shadow);
 }
 
@@ -963,11 +1048,11 @@ button {
 
 .progress {
   display: block;
-  height: 3px;
+  height: 5px;
   margin-top: 12px;
   overflow: hidden;
   background: var(--line);
-  border-radius: 0;
+  border-radius: 3px;
 }
 
 .progress span {
@@ -1130,7 +1215,6 @@ button {
   .sheet {
     max-height: calc(100dvh - 140px);
     padding-bottom: 20px;
-    border-radius: 10px;
     box-shadow: var(--shadow);
   }
 
@@ -1160,7 +1244,6 @@ button {
     bottom: 20px;
     width: 440px;
     padding-bottom: 20px;
-    border-radius: 10px;
   }
 
   .nav-locate {
@@ -1189,13 +1272,13 @@ button {
 @media (max-width: 379px) {
   .sheet { padding-right: 16px; padding-left: 16px; }
   .chips { margin-right: -16px; margin-left: -16px; padding-right: 16px; padding-left: 16px; }
-  .sheet .home-intro h2 { font-size: 19px; }
-  .tile { gap: 6px; font-size: 13px; }
-  .tile > svg:first-child { width: 18px; }
-  .destination-head h1 { font-size: 22px; }
-  .eta strong { font-size: 22px; }
-  .nav-banner { padding-right: 86px; padding-left: 14px; }
-  .nav-mascot { width: 72px; right: 5px; }
+  .sheet .home-intro h2 { font-size: 22px; }
+  .walk-card img { width: 110px; }
+  .destination-head { padding-right: 120px; }
+  .destination-head h1 { font-size: 28px; }
+  .destination-mascot { width: 140px; top: -30px; }
+  .nav-banner { padding-right: 92px; padding-left: 14px; }
+  .nav-mascot { width: 104px; }
   .nav-progress { gap: 6px; font-size: 11px; }
   .nav-dots { display: none; }
   .nav-bar { padding: 13px; gap: 7px; }
@@ -1205,7 +1288,7 @@ button {
 }
 
 @media (max-width: 759px) and (max-height: 760px) {
-  .peek-window { --peek: 96px; right: 76px; }
+  .peek-window { --peek: 120px; right: 58px; }
 }
 
 @media (pointer: coarse) {

@@ -267,7 +267,6 @@ export default function App() {
           onChoose={choose}
           onSelectBuilding={selectBuilding}
           onWalk={startWalk}
-          onPagoda={() => selectBuilding('pagoda')}
           onSports={() => mapCamera.current?.flyTo({ center: [-25, -97], span: 140, aboveThePanel: true })}
           onSources={() => setSourcesOpen(true)}
         />

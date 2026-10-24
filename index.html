@@ -3,52 +3,75 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#231f20" />
+    <meta name="theme-color" content="#faf9f6" />
     <meta name="description" content="Explora el campus de la USFQ en un mapa 3D ilustrado. Busca edificios y aulas, consulta fuentes y sigue la ruta a pie con GPS." />
-    <link rel="preload" as="image" href="/mascota/gaston/saludando.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/ui/carga-gaston.webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/ui/carga-fondo.webp" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/zalando-sans-expanded-latin.woff2" crossorigin />
     <link rel="icon" type="image/png" href="/mascota/gaston/favicon.png" />
     <link rel="apple-touch-icon" href="/mascota/gaston/apple-touch-icon.png" />
     <title>USFQ Explora · Campus en 3D</title>
-    <!-- Visible before React and the campus scene finish loading. -->
+    <!-- Visible before React and the campus scene finish loading. Every layer is placed on the 1080 × 1920 scene, so they stay aligned at any screen size. -->
     <style>
       @font-face { font-family: 'Zalando Sans Expanded'; font-style: normal; font-weight: 500 700; font-display: swap; src: url('/fonts/zalando-sans-expanded-latin.woff2') format('woff2'); }
       @font-face { font-family: 'Lato'; font-style: normal; font-weight: 400; font-display: swap; src: url('/fonts/lato-latin-400.woff2') format('woff2'); }
       html, body { margin: 0; background: #faf9f6; }
-      .splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; overflow: hidden; background: #faf9f6; transition: opacity .45s ease, visibility .45s; }
+      .splash { position: fixed; inset: 0; z-index: 100; overflow: hidden; background: #faf9f6; transition: opacity .45s ease, visibility .45s; }
       .splash.leaving { opacity: 0; visibility: hidden; pointer-events: none; }
-      .splash-brand, .splash-mascot { opacity: 0; transition: opacity .2s ease; }
-      .splash.shown .splash-brand, .splash.shown .splash-mascot { opacity: 1; }
-      .splash-brand { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-      .wordmark { display: flex; align-items: center; gap: 14px; margin: 0; font: 700 28px/1.2 'Zalando Sans Expanded', system-ui, sans-serif; letter-spacing: -.04em; color: #231f20; }
-      .wordmark span { padding-left: 14px; border-left: 2px solid #e11b22; font-size: 15px; letter-spacing: .01em; }
-      .splash-caption { margin: 0; font: 400 14px/1.5 'Lato', system-ui, sans-serif; color: #686462; }
-      .splash-bar { width: 150px; height: 3px; overflow: hidden; background: #e4e1dc; }
-      .splash-bar span { display: block; width: 40%; height: 100%; background: #e11b22; animation: splash-bar 1.3s ease-in-out infinite; }
-      .splash-mascot { width: clamp(200px, 38vh, 300px); height: auto; object-fit: contain; animation: splash-wave 1.6s ease-in-out; transform-origin: 50% 92%; }
-      @keyframes splash-wave { 30% { transform: rotate(-1.5deg); } 65% { transform: rotate(1deg); } }
+      .splash-scene { container-type: inline-size; position: absolute; bottom: 0; left: 50%; width: min(100vw, 56.25dvh); aspect-ratio: 1080 / 1920; transform: translateX(-50%); background: url('/ui/carga-fondo.webp') center / cover; opacity: 0; transition: opacity .25s ease; }
+      .splash.shown .splash-scene { opacity: 1; }
+      /* Blends the top of the picture into the page color, whatever the screen leaves above it. */
+      .splash-scene::before { content: ''; position: absolute; inset: 0 0 auto; height: 32%; background: linear-gradient(#faf9f6 40%, rgb(250 249 246 / 0%)); }
+      @media (min-aspect-ratio: 9 / 16) { .splash-scene { -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); } }
+      .splash-brand { position: absolute; top: 13.5%; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 4.5cqw; }
+      .wordmark { display: flex; align-items: center; gap: 4cqw; margin: 0; font: 700 9cqw/1.1 'Zalando Sans Expanded', system-ui, sans-serif; letter-spacing: -.04em; color: #231f20; }
+      .wordmark span { padding-left: 4cqw; border-left: .6cqw solid #e11b22; font-size: 4.6cqw; letter-spacing: .01em; }
+      .splash-caption { margin: 0; font: 400 4.2cqw/1.4 'Lato', system-ui, sans-serif; color: #686462; }
+      .splash-mascot { position: absolute; left: 50.5%; bottom: 19.5%; height: 52%; width: auto; transform: translateX(-50%); transform-origin: 50% 100%; animation: splash-hello 2.4s ease-in-out .3s infinite; }
+      .splash-bush { position: absolute; bottom: 0; width: 34%; height: auto; }
+      .splash-bush.left { left: 0; }
+      .splash-bush.right { right: 0; }
+      .splash-status { position: absolute; bottom: 7.5%; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 3.4cqw; }
+      .splash-status p { margin: 0; font: 400 4.1cqw/1.3 'Lato', system-ui, sans-serif; color: #4a4645; }
+      .splash-bar { width: 47%; height: 2.6cqw; overflow: hidden; background: #e7e3df; border-radius: 99px; }
+      .splash-bar span { display: block; width: 100%; height: 100%; background: #e11b22; border-radius: 99px; transform: scaleX(.08); transform-origin: left; animation: splash-progress 9s cubic-bezier(.15, .7, .3, 1) .2s forwards; }
+      .splash.leaving .splash-bar span { animation: none; transform: scaleX(1); transition: transform .3s ease; }
+      @keyframes splash-progress { to { transform: scaleX(.92); } }
+      @keyframes splash-hello { 0%, 100% { transform: translateX(-50%) rotate(0); } 40% { transform: translateX(-50%) rotate(-1.2deg) translateY(-1%); } 70% { transform: translateX(-50%) rotate(.6deg); } }
       .splash .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-      @keyframes splash-bar { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
-      @media (prefers-reduced-motion: reduce) { .splash-mascot, .splash-bar span { animation: none; } .splash, .splash-brand, .splash-mascot { transition: none; } }
+      @media (prefers-reduced-motion: reduce) { .splash-mascot, .splash-bar span { animation: none; } .splash-bar span { transform: scaleX(.5); } .splash, .splash-scene { transition: none; } }
     </style>
   </head>
   <body>
     <div id="root"></div>
     <div id="splash" class="splash" role="status" aria-live="polite">
-      <div class="splash-brand">
-        <p class="wordmark">Explora <span>USFQ</span></p>
-        <p class="splash-caption">Campus Cumbayá</p>
+      <div class="splash-scene">
+        <div class="splash-brand">
+          <p class="wordmark">Explora <span>USFQ</span></p>
+          <p class="splash-caption">Campus Cumbayá</p>
+        </div>
+        <img class="splash-mascot" src="/ui/carga-gaston.webp" width="769" height="1200" alt="" />
+        <img class="splash-bush left" src="/ui/carga-arbustos-izq.webp" alt="" />
+        <img class="splash-bush right" src="/ui/carga-arbustos-der.webp" alt="" />
+        <div class="splash-status">
+          <p aria-hidden="true">Preparando tu campus…</p>
+          <span class="splash-bar" aria-hidden="true"><span></span></span>
+        </div>
       </div>
-      <img class="splash-mascot" src="/mascota/gaston/saludando.webp" width="512" height="512" alt="" />
-      <span class="splash-bar" aria-hidden="true"><span></span></span>
       <span class="visually-hidden">Cargando el campus…</span>
     </div>
     <script>
+      // The scene appears at once, when Gastón, the background and the title font are in; never later than 3 s.
       (function () {
         var splash = document.getElementById('splash')
         var show = function () { splash.classList.add('shown') }
-        var mascot = splash.querySelector('img')
-        Promise.all([mascot.decode().catch(function () {}), document.fonts.load("700 28px 'Zalando Sans Expanded'").catch(function () {})]).then(show)
+        var background = new Image()
+        background.src = '/ui/carga-fondo.webp'
+        Promise.all([
+          splash.querySelector('.splash-mascot').decode().catch(function () {}),
+          background.decode().catch(function () {}),
+          document.fonts.load("700 28px 'Zalando Sans Expanded'").catch(function () {}),
+        ]).then(show)
         setTimeout(show, 3000)
       })()
     </script>

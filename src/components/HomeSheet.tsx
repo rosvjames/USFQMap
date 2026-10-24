@@ -1,15 +1,23 @@
 import { useState } from 'react'
 import type { SearchResult } from '../lib/search'
 import { useSwipeDown } from '../lib/useSheetGestures'
-import { ArrowIcon, FieldIcon, InfoIcon, PagodaIcon, SearchIcon, WalkerIcon } from './icons'
+import { ArrowIcon, BookIcon, CapIcon, ColumnsIcon, FieldIcon, InfoIcon, PagodaIcon, SearchIcon, StadiumIcon, WalkerIcon } from './icons'
 import { Mascot } from './Mascot'
 
 // Places visitors ask for most, offered before they type anything.
 const SHORTCUTS = [
-  { label: 'Biblioteca', buildingId: 'ciceron' },
-  { label: 'Hall Principal', buildingId: 'hall-principal' },
-  { label: 'Coliseo', buildingId: 'coliseo' },
-  { label: 'Hayek', buildingId: 'hayek' },
+  { label: 'Biblioteca', buildingId: 'ciceron', Icon: BookIcon },
+  { label: 'Hall Principal', buildingId: 'hall-principal', Icon: ColumnsIcon },
+  { label: 'Coliseo', buildingId: 'coliseo', Icon: StadiumIcon },
+  { label: 'Hayek', buildingId: 'hayek', Icon: CapIcon },
+]
+
+// Places worth a visit, each pictured with a view of the 3D campus; 'sports' frames the courts instead of one building.
+const PLACES = [
+  { label: 'La Pagoda', target: 'pagoda', image: 'pagoda', Icon: PagodaIcon },
+  { label: 'Coliseo Alexandros', target: 'coliseo', image: 'coliseo', Icon: StadiumIcon },
+  { label: 'Hall Principal', target: 'hall-principal', image: 'hall-principal', Icon: ColumnsIcon },
+  { label: 'Canchas y terrazas', target: 'sports', image: 'canchas', Icon: FieldIcon },
 ]
 
 interface HomeSheetProps {
@@ -19,19 +27,18 @@ interface HomeSheetProps {
   onChoose: (result: SearchResult) => void
   onSelectBuilding: (buildingId: string) => void
   onWalk: () => void
-  onPagoda: () => void
   onSports: () => void
   onSources: () => void
 }
 
-export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding, onWalk, onPagoda, onSports, onSources }: HomeSheetProps) {
+export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding, onWalk, onSports, onSources }: HomeSheetProps) {
   const [folded, setFolded] = useState(false)
   const { sheet, handle, wasDragged } = useSwipeDown<HTMLDivElement>(() => setFolded(true))
   const showDiscover = !query && !folded
 
   return (
     <div ref={sheet} className={`sheet-dock home${folded ? ' is-folded' : ''}${query ? ' is-searching' : ''}`}>
-      <div className="peek-window" aria-hidden="true"><Mascot className="peek" pose="asomado" /></div>
+      <div className="peek-window" aria-hidden="true"><img className="peek" src="/ui/gaston-asomado.webp" width={340} height={269} alt="" /></div>
       <a className="osm-credit-map" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OSM</a>
       <section className="sheet" aria-label="Buscar en el campus">
         <div className="sheet-handle" {...handle}>
@@ -71,17 +78,28 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
 
         {showDiscover && <>
           <div className="chips quick-destinations" role="group" aria-label="Destinos frecuentes">
-            {SHORTCUTS.map((shortcut) => <button key={shortcut.buildingId} className="chip" onClick={() => onSelectBuilding(shortcut.buildingId)}>{shortcut.label}</button>)}
+            {SHORTCUTS.map(({ label, buildingId, Icon }) => <button key={buildingId} className="chip" onClick={() => onSelectBuilding(buildingId)}><Icon size={20} />{label}</button>)}
           </div>
+          <button className="walk-card" onClick={onWalk}>
+            <WalkerIcon size={28} />
+            <span><strong>Explorar a pie</strong><small>Recorre el campus en primera persona</small></span>
+            <img src="/ui/explorar-a-pie.svg" width={300} height={100} alt="" />
+            <ArrowIcon size={22} />
+          </button>
           <div className="sheet-heading">
             <h2>Conoce el campus</h2>
             <button className="info-button" onClick={onSources} aria-label="Fuentes, cobertura y créditos"><InfoIcon /></button>
           </div>
-          <div className="tiles">
-            <button className="tile tile-walk" onClick={onWalk}><WalkerIcon size={22} /><span><strong>Explorar a pie</strong><small>Recorre el campus en primera persona</small></span><ArrowIcon size={20} /></button>
-            <button className="tile tile-pagoda" onClick={onPagoda}><PagodaIcon size={22} /><span>La Pagoda</span><ArrowIcon size={18} /></button>
-            <button className="tile tile-sports" onClick={onSports}><FieldIcon size={22} /><span>Canchas y terrazas</span><ArrowIcon size={18} /></button>
-          </div>
+          <ul className="places">
+            {PLACES.map(({ label, target, image, Icon }) => (
+              <li key={target}>
+                <button className="place-card" onClick={() => target === 'sports' ? onSports() : onSelectBuilding(target)}>
+                  <img src={`/ui/lugares/${image}.webp`} width={640} height={320} alt="" loading="lazy" />
+                  <span><Icon size={18} />{label}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </>}
       </section>
     </div>

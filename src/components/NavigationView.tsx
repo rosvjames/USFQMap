@@ -1,5 +1,4 @@
-import { BackIcon, TurnIcon } from './icons'
-import { Mascot } from './Mascot'
+import { ArrowIcon, BackIcon, TurnIcon } from './icons'
 
 interface NavigationViewProps {
   steps: string[]
@@ -24,15 +23,20 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
   const [instruction, detail] = splitStep(steps[step])
   return <>
     <section className="nav-banner" aria-label="Indicación actual" aria-live="polite">
-      <p className="nav-progress">
-        <span className="nav-turn"><TurnIcon size={22} /></span>
-        Paso {step + 1} de {steps.length}
-        <span className="nav-dots" aria-hidden="true">{steps.map((_, i) => <i key={i} className={i <= step ? 'done' : ''} />)}</span>
-      </p>
-      <p className="nav-step">{instruction}</p>
-      {detail && <p className="nav-detail">{detail}</p>}
-      <Mascot key={step} className={`nav-mascot${last ? ' arrived' : ''}`} pose={last ? 'logrado' : 'guiando'} />
-      {!last && <button className="nav-next" onClick={() => onStep(step + 1)}>Siguiente paso <span aria-hidden="true">→</span></button>}
+      <p className="nav-brand" aria-hidden="true">Explora <span>USFQ</span></p>
+      <div className="nav-body">
+        <span className="nav-turn"><TurnIcon size={24} /></span>
+        <div className="nav-text">
+          <p className="nav-progress">
+            Paso {step + 1} de {steps.length}
+            <span className="nav-dots" aria-hidden="true">{steps.map((_, i) => <i key={i} className={i === step ? 'current' : i < step ? 'done' : ''} />)}</span>
+          </p>
+          <p className="nav-step">{instruction}</p>
+          {detail && <p className="nav-detail">{detail}</p>}
+          {!last && <button className="nav-next" onClick={() => onStep(step + 1)}>Siguiente paso <ArrowIcon size={18} /></button>}
+        </div>
+      </div>
+      <img key={step} className={`nav-mascot${last ? ' arrived' : ''}`} src={last ? '/ui/gaston-llegada.webp' : '/ui/gaston-guia.webp'} width={480} height={480} alt="" />
     </section>
 
     <section className="nav-bar" aria-label="Resumen del recorrido">

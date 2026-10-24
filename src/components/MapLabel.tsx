@@ -5,11 +5,13 @@ import { useCollidingLabel } from './LabelCollision'
 type Variant = 'plain' | 'tag' | 'pill'
 
 const FONT_SIZE = 44
-const FONT = `600 ${FONT_SIZE}px 'Rubik', system-ui, sans-serif`
-const STYLES: Record<Variant, { color: string; background?: string; halo?: string }> = {
-  plain: { color: '#3a3330', halo: '#ffffff' },
+const FONT = `700 ${FONT_SIZE}px 'Lato', system-ui, sans-serif`
+const TAIL = 12
+// Building names are white balloons pointing down at their building; the selected one turns red.
+const STYLES: Record<Variant, { color: string; background?: string; halo?: string; tail?: boolean }> = {
+  plain: { color: '#231f20', background: 'rgba(255, 255, 255, 0.96)', tail: true },
   tag: { color: '#1a1a1a', background: 'rgba(255, 255, 255, 0.92)' },
-  pill: { color: '#ffffff', background: '#c8102e' },
+  pill: { color: '#ffffff', background: '#e11b22', tail: true },
 }
 
 function drawLabel(text: string, variant: Variant) {
@@ -18,27 +20,41 @@ function drawLabel(text: string, variant: Variant) {
   const context = canvas.getContext('2d')!
   context.font = FONT
   const paddingX = style.background ? 22 : 10
-  canvas.width = Math.ceil(context.measureText(text).width) + paddingX * 2
-  canvas.height = FONT_SIZE + 28
+  const shadow = style.tail ? 6 : 0
+  const boxHeight = FONT_SIZE + 28
+  canvas.width = Math.ceil(context.measureText(text).width) + paddingX * 2 + shadow * 2
+  canvas.height = boxHeight + (style.tail ? TAIL : 0) + shadow * 2
 
   // Resizing the canvas resets its state, so the font is set again.
   context.font = FONT
   context.textAlign = 'center'
   context.textBaseline = 'middle'
   if (style.background) {
+    const width = canvas.width - shadow * 2
+    context.save()
+    context.translate(shadow, shadow)
+    context.shadowColor = 'rgba(35, 31, 32, 0.22)'
+    context.shadowBlur = shadow
+    context.shadowOffsetY = shadow / 3
     context.fillStyle = style.background
     context.beginPath()
-    context.roundRect(0, 0, canvas.width, canvas.height, variant === 'pill' ? canvas.height / 2 : 14)
+    context.roundRect(0, 0, width, boxHeight, style.tail ? 18 : 14)
+    if (style.tail) {
+      context.moveTo(width / 2 - TAIL, boxHeight - 1)
+      context.lineTo(width / 2, boxHeight + TAIL)
+      context.lineTo(width / 2 + TAIL, boxHeight - 1)
+    }
     context.fill()
+    context.restore()
   }
   if (style.halo) {
     context.lineWidth = 9
     context.lineJoin = 'round'
     context.strokeStyle = style.halo
-    context.strokeText(text, canvas.width / 2, canvas.height / 2 + 2)
+    context.strokeText(text, canvas.width / 2, shadow + boxHeight / 2 + 2)
   }
   context.fillStyle = style.color
-  context.fillText(text, canvas.width / 2, canvas.height / 2 + 2)
+  context.fillText(text, canvas.width / 2, shadow + boxHeight / 2 + 2)
 
   const texture = new CanvasTexture(canvas)
   texture.colorSpace = SRGBColorSpace
@@ -68,7 +84,7 @@ export function MapLabel({ text, position, variant = 'plain', depthTest = false,
   useEffect(() => () => texture.dispose(), [texture])
 
   // With sizeAttenuation off, the scale is a fraction of the view rather than meters.
-  const height = variant === 'plain' ? 0.021 : 0.025
+  const height = variant === 'tag' ? 0.025 : 0.031
   return (
     <sprite ref={sprite} position={position} scale={[height * aspect, height, 1]} renderOrder={10} raycast={() => null}>
       <spriteMaterial map={texture} sizeAttenuation={false} depthTest={depthTest} transparent />
