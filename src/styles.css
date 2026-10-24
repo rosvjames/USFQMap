@@ -742,7 +742,7 @@ button {
   min-height: 133px;
 }
 
-.eta strong {
+.eta {
   font-weight: 700;
   color: var(--red);
 }

@@ -38,7 +38,7 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
           <div className="destination-head">
             <p className="kicker">{kicker}</p>
             <h1>{title}</h1>
-            {(sub || walk) && <p className="sub">{sub}{sub && walk && ' · '}{walk && <span className="eta"><strong>{walk.minutes} min</strong> a pie</span>}</p>}
+            {(sub || walk) && <p className="sub">{sub}{sub && walk && ' · '}{walk && <strong className="eta">{walk.minutes} min</strong>}</p>}
           </div>
         </div>
         {notice && <div className="sheet-note">{noticeMascot && <Mascot pose="ubicacion" />}<p role="status">{notice}</p></div>}
