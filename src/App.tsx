@@ -277,7 +277,6 @@ export default function App() {
           kicker={kicker}
           title={titleText}
           sub={sub}
-          walk={walk}
           notice={notice}
           noticeMascot={originId === GPS && !gps.position}
           onGo={steps.length > 0 ? () => { setNavStep(0); setNavigating(true) } : undefined}

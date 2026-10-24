@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { BuildingView } from '../lib/buildingViews'
 import { useSwipeDown } from '../lib/useSheetGestures'
 import { ArrowIcon, BusIcon, EyeIcon, WalkerIcon } from './icons'
@@ -8,7 +8,6 @@ interface DestinationSheetProps {
   kicker: string
   title: string
   sub?: string
-  walk?: { minutes: number; meters: number }
   notice?: string
   /** Gastón waiting next to the notice, while the GPS looks for the visitor. */
   noticeMascot?: boolean
@@ -21,12 +20,18 @@ interface DestinationSheetProps {
 }
 
 /** What and where the destination is, how long the walk takes and what to look at before leaving. Swipe down to close. */
-export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMascot, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
+export function DestinationSheet({ kicker, title, sub, notice, noticeMascot, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
   const { sheet, handle } = useSwipeDown<HTMLDivElement>(onClose)
+  // Gastón stands over the head of the panel; once the content scrolls under him he steps away.
+  const [scrolled, setScrolled] = useState(false)
   return (
-    <div ref={sheet} className="sheet-dock destination-dock">
+    <div ref={sheet} className={`sheet-dock destination-dock${scrolled ? ' is-scrolled' : ''}`}>
+      <div className="destination-mascot" aria-hidden="true">
+        <img className="destination-clouds" src="/ui/destino-nubes.webp" width={640} height={240} alt="" />
+        <img className="destination-gaston" src="/ui/gaston-destino.webp" width={600} height={563} alt="" />
+      </div>
       <a className="osm-credit-map" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OSM</a>
-      <section className="sheet destination-sheet" aria-label={`Destino: ${title}`}>
+      <section className="sheet destination-sheet" aria-label={`Destino: ${title}`} onScroll={(event) => setScrolled(event.currentTarget.scrollTop > 8)}>
         <div className="sheet-handle" {...handle}>
           <span className="grabber" aria-hidden="true" />
           <div className="destination-head">
@@ -34,11 +39,9 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
             <h1>{title}</h1>
             {sub && <p className="sub">{sub}</p>}
           </div>
-          {/* Gastón stands on soft clouds whose flat base rests just above the button, hiding his waist cut. */}
-          <div className="destination-mascot" aria-hidden="true"><img src="/ui/gaston-destino.webp" width={600} height={563} alt="" /></div>
         </div>
         {notice && <div className="sheet-note">{noticeMascot && <Mascot pose="ubicacion" />}<p role="status">{notice}</p></div>}
-        {onGo && <button className="primary-button" onClick={onGo}>Iniciar ruta{walk && <span className="go-eta">{walk.minutes} min · {walk.meters} m</span>}<ArrowIcon /></button>}
+        {onGo && <button className="primary-button" onClick={onGo}>Iniciar ruta <ArrowIcon /></button>}
         {(views.length > 0 || onWalk) && (
           <div className="views">
             <h2>Explora este lugar</h2>
