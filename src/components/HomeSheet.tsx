@@ -1,16 +1,8 @@
 import { useState } from 'react'
 import type { SearchResult } from '../lib/search'
 import { useSwipeDown } from '../lib/useSheetGestures'
-import { ArrowIcon, BookIcon, CapIcon, ColumnsIcon, FieldIcon, InfoIcon, PagodaIcon, SearchIcon, StadiumIcon, WalkerIcon } from './icons'
+import { ArrowIcon, ColumnsIcon, FieldIcon, InfoIcon, PagodaIcon, SearchIcon, StadiumIcon, WalkerIcon } from './icons'
 import { Mascot } from './Mascot'
-
-// Places visitors ask for most, offered before they type anything.
-const SHORTCUTS = [
-  { label: 'Biblioteca', buildingId: 'ciceron', Icon: BookIcon },
-  { label: 'Hall Principal', buildingId: 'hall-principal', Icon: ColumnsIcon },
-  { label: 'Coliseo', buildingId: 'coliseo', Icon: StadiumIcon },
-  { label: 'Hayek', buildingId: 'hayek', Icon: CapIcon },
-]
 
 // Places worth a visit, each pictured with a view of the 3D campus; 'sports' frames the courts instead of one building.
 const PLACES = [
@@ -77,12 +69,9 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
         {query && results.length === 0 && <div className="empty-results" role="status"><Mascot pose="buscando" /><div><strong>No encontramos ese lugar</strong><p>Prueba con otro nombre o un código como M302.</p></div></div>}
 
         {showDiscover && <>
-          <div className="chips quick-destinations" role="group" aria-label="Destinos frecuentes">
-            {SHORTCUTS.map(({ label, buildingId, Icon }) => <button key={buildingId} className="chip" onClick={() => onSelectBuilding(buildingId)}><Icon size={20} />{label}</button>)}
-          </div>
           <button className="walk-card" onClick={onWalk}>
             <WalkerIcon size={28} />
-            <span><strong>Explorar a pie</strong><small>Recorre el campus en primera persona</small></span>
+            <span><strong>Explorar a pie</strong><small>Recorre el campus en 3D</small></span>
             <img src="/ui/explorar-a-pie.svg" width={300} height={100} alt="" />
             <ArrowIcon size={22} />
           </button>
