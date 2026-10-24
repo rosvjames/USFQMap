@@ -36,7 +36,8 @@ def source(root, name):
     return rgba
 
 
-def export(root, relative, im, *, opaque=False, quality=86, expected=None):
+def export(root, relative, im, *, opaque=False, quality=86, expected=None,
+           transparent_corners=(0, 1, 2, 3)):
     path = root / relative
     path.parent.mkdir(parents=True, exist_ok=True)
     if opaque:
@@ -57,7 +58,7 @@ def export(root, relative, im, *, opaque=False, quality=86, expected=None):
             assert alpha.getextrema() == (255, 255), f'{relative}: debe ser opaco'
         else:
             assert 'A' in check.getbands(), f'{relative}: falta canal alpha'
-            assert corners == [0]*4, f'{relative}: esquinas no transparentes {corners}'
+            assert all(corners[i] == 0 for i in transparent_corners), f'{relative}: esquinas no transparentes {corners}'
             assert alpha.getextrema()[1] > 16, f'{relative}: vacío'
         RESULTS.append({'archivo': relative, 'tamano': list(check.size),
                         'opaco': opaque, 'alpha_esquinas': corners,
@@ -93,6 +94,23 @@ def mascot_square(im):
     # y=471 es la fila inferior visible; 472 es el límite exclusivo.
     out.alpha_composite(content, ((512-content.width)//2, 472-content.height))
     return out
+
+
+def export_destino_nubes(root):
+    # Corte rectangular del original 1536x1024: elimina el espacio superior
+    # y termina dentro de la base plana, antes de su línea clara de antialias.
+    # No cambia colores ni extrae alpha; conserva el fade generado a izquierda.
+    clouds = source(root, 'destino-nubes')
+    assert clouds.size == (1536, 1024), 'Revisar coordenadas de corte del nuevo original'
+    clouds = clouds.crop((0, 396, 1536, 972)).resize((640, 240), LANCZOS)
+    relative = 'public/ui/destino-nubes.webp'
+    export(root, relative, clouds, expected=(640, 240), transparent_corners=(0, 1))
+    # Excepción al margen de 8px: nubes ancladas a derecha y abajo.
+    with Image.open(root / relative) as result:
+        alpha = result.getchannel('A')
+        assert alpha.getpixel((0, 0)) == 0
+        assert alpha.getpixel((639, 239)) > 240, 'Falta contacto abajo/derecha'
+        assert visible_box(result.convert('RGBA'))[2:] == (640, 240)
 
 
 # SVG escrito a mano. Solo path/circle; sin filtros, imágenes ni texto.
@@ -203,6 +221,7 @@ def main():
     cuts = json.loads((root/'referencias/ui-v3/originales/cortes.json').read_text())
     for name in ('gaston-asomado', 'gaston-destino'):
         export(root, f'public/ui/{name}.webp', trimmed(source(root, name), width=600, bottom_margin=0, cut_y=cuts[name]))
+    export_destino_nubes(root)
     for name in ('gaston-guia', 'gaston-llegada'):
         export(root, f'public/ui/{name}.webp', source(root, name).resize((480, 480), LANCZOS), expected=(480, 480))
     for name in ('buscando', 'ubicacion'):
