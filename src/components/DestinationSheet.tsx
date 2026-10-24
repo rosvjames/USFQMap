@@ -8,6 +8,7 @@ interface DestinationSheetProps {
   kicker: string
   title: string
   sub?: string
+  walk?: { minutes: number; meters: number }
   notice?: string
   /** Gastón waiting next to the notice, while the GPS looks for the visitor. */
   noticeMascot?: boolean
@@ -20,7 +21,7 @@ interface DestinationSheetProps {
 }
 
 /** What and where the destination is, how long the walk takes and what to look at before leaving. Swipe down to close. */
-export function DestinationSheet({ kicker, title, sub, notice, noticeMascot, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
+export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMascot, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
   const { sheet, handle } = useSwipeDown<HTMLDivElement>(onClose)
   // Gastón stands over the head of the panel; once the content scrolls under him he steps away.
   const [scrolled, setScrolled] = useState(false)
@@ -37,7 +38,7 @@ export function DestinationSheet({ kicker, title, sub, notice, noticeMascot, onG
           <div className="destination-head">
             <p className="kicker">{kicker}</p>
             <h1>{title}</h1>
-            {sub && <p className="sub">{sub}</p>}
+            {(sub || walk) && <p className="sub">{sub}{sub && walk && ' · '}{walk && <span className="eta"><strong>{walk.minutes} min</strong> a pie</span>}</p>}
           </div>
         </div>
         {notice && <div className="sheet-note">{noticeMascot && <Mascot pose="ubicacion" />}<p role="status">{notice}</p></div>}

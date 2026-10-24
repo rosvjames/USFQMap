@@ -181,7 +181,7 @@ export default function App() {
   const titleText = roomCode ?? heading ?? ''
   const kicker = roomCode ? `Aula · ${building?.name}` : landmark ? building?.name ?? '' : 'Edificio'
   const sub = roomCode
-    ? [floorLabel, reference?.historical && 'código histórico', destination?.kind === 'building' && destination.inferred && 'código por confirmar'].filter(Boolean).join(' · ')
+    ? [floorLabel, destination?.kind === 'building' && destination.inferred && 'código por confirmar'].filter(Boolean).join(' · ')
     : landmark ? floorLabel : MAP_NUMBERS[building?.id ?? ''] ? `N.º ${MAP_NUMBERS[building!.id]} del mapa oficial` : undefined
   const walk = outdoorRoute ? { minutes: outdoorRoute.minutes, meters: Math.round(outdoorRoute.distance / 10) * 10 } : undefined
   const notice = originId === GPS && !gps.position ? gps.error ?? 'Buscando tu ubicación…' : plan?.placeholder ? 'Plano de ejemplo: las aulas y pasillos aún no son los reales.' : undefined
@@ -277,6 +277,7 @@ export default function App() {
           kicker={kicker}
           title={titleText}
           sub={sub}
+          walk={walk}
           notice={notice}
           noticeMascot={originId === GPS && !gps.position}
           onGo={steps.length > 0 ? () => { setNavStep(0); setNavigating(true) } : undefined}

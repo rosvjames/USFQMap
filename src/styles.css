@@ -742,6 +742,11 @@ button {
   min-height: 133px;
 }
 
+.eta strong {
+  font-weight: 700;
+  color: var(--red);
+}
+
 .destination-head {
   padding: 0 150px 0 0;
 }
