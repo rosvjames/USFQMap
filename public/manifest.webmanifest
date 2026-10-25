@@ -1,0 +1,19 @@
+{
+  "name": "USFQ Explora · Campus en 3D",
+  "short_name": "USFQ Explora",
+  "start_url": "/",
+  "background_color": "#faf9f6",
+  "theme_color": "#faf9f6",
+  "icons": [
+    {
+      "src": "/icono/icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icono/icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

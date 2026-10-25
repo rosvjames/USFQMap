@@ -233,15 +233,7 @@ def main():
         assert abs((box[0]+box[2])/2-256) <= 1
     head = source(root, 'cabeza')
     export(root, 'public/mascota/gaston/cabeza.webp', trimmed(head, width=512))
-    content = head.crop(visible_box(head))
-    icon = Image.new('RGBA', (32, 32))
-    small = ImageOps.contain(content, (30, 30), LANCZOS)
-    icon.alpha_composite(small, ((32-small.width)//2, (32-small.height)//2))
-    export(root, 'public/mascota/gaston/favicon.png', icon, expected=(32, 32))
-    apple = Image.new('RGBA', (180, 180), WARM)
-    small = ImageOps.contain(content, (153, 153), LANCZOS)
-    apple.alpha_composite(small, ((180-small.width)//2, (180-small.height)//2))
-    export(root, 'public/mascota/gaston/apple-touch-icon.png', apple, opaque=True, expected=(180, 180))
+    # Los íconos de la app salen del logo: scripts/icono.py.
     (root/'public/ui/explorar-a-pie.svg').write_text(SVG, encoding='utf-8')
     review(root)
     report = {'archivos_raster': RESULTS, 'svg': 'public/ui/explorar-a-pie.svg',
