@@ -17,6 +17,7 @@ import { WalkCamera } from './WalkCamera'
 import type { WalkInput } from '../lib/walkInput'
 import type { CampusAnimalId } from '../lib/campusAnimals'
 import { MapLabel } from './MapLabel'
+import { BendDot, DestinationMarker, OriginMarker, routeBends } from './RouteMarkers'
 import { LabelCollision } from './LabelCollision'
 import { FacadeDetails } from './FacadeDetails'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
@@ -88,7 +89,7 @@ const COLOR = {
   edge: '#b9917c',
   trunk: '#8a6a4f',
   leaves: '#6fa565',
-  red: '#c8102e',
+  red: '#e11b22',
   redDark: '#96091f',
   user: '#1a73e8',
 }
@@ -245,7 +246,8 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       {plan && <IndoorPlan plan={plan} route={props.route} activeFloor={props.activeFloor} />}
       </group>
       {props.outdoorRoute && !props.walking && <OutdoorRouteLine route={props.outdoorRoute} />}
-      {props.userPosition && !props.walking && <UserMarker position={props.userPosition} />}
+      {/* With a walk from the GPS, the red origin marker already says where the visitor is. */}
+      {props.userPosition && !props.walking && !(props.outdoorRoute && props.originId === 'gps') && <UserMarker position={props.userPosition} />}
 
       {props.walking ? <WalkCamera buildingId={selectedBuildingId} input={props.walkInput} onExit={props.onExitWalk}/> : <MapCamera
         ref={props.cameraRef}
@@ -443,29 +445,10 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       {building.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe', 'coliseo', 'banos-deportes'].includes(info?.id ?? '') && <IllustratedRoof building={building} height={height} materials={materials} />}
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
       {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
-      {selected && <DestinationPin position={toScene(...building.center, height + roofExtra)} scale={info?.id === 'pagoda' ? 0.5 : info?.id === 'gobe' ? .3 : 1} />}
-      {props.labelled && building.name && (
-        <MapLabel text={building.name} position={toScene(...building.center, height + roofExtra + (selected ? 21 : 4))} variant={selected ? 'pill' : 'plain'} depthTest={false} priority={labelPriority(building, selected)} />
+      {selected && <DestinationMarker position={toScene(...building.center, height + roofExtra)} buildingId={info?.id} name={building.name} />}
+      {props.labelled && building.name && !selected && (
+        <MapLabel text={building.name} position={toScene(...building.center, height + roofExtra + 4)} depthTest={false} priority={labelPriority(building, false)} />
       )}
-    </group>
-  )
-}
-
-function DestinationPin({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  return (
-    <group position={position} scale={scale}>
-      <mesh position={[0, 5, 0]} rotation={[Math.PI, 0, 0]}>
-        <coneGeometry args={[2.6, 8, 20]} />
-        <meshStandardMaterial color={COLOR.red} />
-      </mesh>
-      <mesh position={[0, 10.5, 0]}>
-        <sphereGeometry args={[4, 24, 24]} />
-        <meshStandardMaterial color={COLOR.red} />
-      </mesh>
-      <mesh position={[0, 10.5, 0]}>
-        <sphereGeometry args={[1.6, 16, 16]} />
-        <meshBasicMaterial color="#ffffff" depthTest={false} />
-      </mesh>
     </group>
   )
 }
@@ -494,13 +477,15 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
   const at = (p: Vec2) => toScene(...p, terrainHeightAt(p) + lift)
   const start = route.links[0][0]
   const path = route.path.map(at)
+  const bends = useMemo(() => routeBends(route.path), [route.path])
   return (
     <group>
       {path.length > 1 && (
         <>
-          {/* White casing under the red line, as on road maps, so it reads over any background. */}
-          <Line points={path} color="#ffffff" lineWidth={9} depthTest={false} renderOrder={5} />
-          <Line points={path} color={COLOR.red} lineWidth={5} depthTest={false} renderOrder={6} />
+          {/* A soft red glow, then a white casing under the red line, as on road maps, so it reads over any background. */}
+          <Line points={path} color={COLOR.red} lineWidth={20} transparent opacity={0.14} depthTest={false} renderOrder={4} />
+          <Line points={path} color="#ffffff" lineWidth={11} depthTest={false} renderOrder={5} />
+          <Line points={path} color={COLOR.red} lineWidth={6} depthTest={false} renderOrder={6} />
         </>
       )}
       {route.links.map(([a, b], i) => (
@@ -517,10 +502,9 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
           renderOrder={6}
         />
       ))}
-      <mesh position={at(start)} rotation={[-Math.PI / 2, 0, 0]} renderOrder={7}>
-        <circleGeometry args={[route.usesHallPassage ? 0.5 : 2.4, 24]} />
-        <meshBasicMaterial color="#1a1a1a" depthTest={false} />
-      </mesh>
+      {bends.map((i) => <BendDot key={i} position={path[i]} />)}
+      {path.length > 1 && <BendDot key="end" position={path[path.length - 1]} />}
+      <OriginMarker position={at(start)} toward={path[Math.min(1, path.length - 1)] ?? at(start)} />
     </group>
   )
 }

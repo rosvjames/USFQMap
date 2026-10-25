@@ -803,6 +803,11 @@ button {
   overflow-wrap: break-word;
 }
 
+/* Names longer than a room code shrink so a word like «Pagoda» fits beside Gastón. */
+.destination-head h1.long {
+  font-size: 25px;
+}
+
 
 
 .sheet-note {
@@ -1264,6 +1269,75 @@ button {
   }
 }
 
+/* Route markers drawn over the 3D map (see RouteMarkers.tsx). */
+.route-origin {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--red);
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 5px rgb(225 27 34 / 22%), 0 3px 8px rgb(35 31 32 / 30%);
+}
+
+.route-origin::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  background: rgb(225 27 34 / 18%);
+  border-radius: 50%;
+  animation: route-pulse 1.8s ease-out infinite;
+}
+
+@keyframes route-pulse {
+  from { transform: scale(.5); opacity: 1; }
+  to { transform: scale(1.15); opacity: 0; }
+}
+
+.route-bend {
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: var(--red);
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgb(35 31 32 / 30%);
+}
+
+.route-pin {
+  display: block;
+  filter: drop-shadow(0 3px 4px rgb(35 31 32 / 30%));
+}
+
+/* Anchored at the tip of the pin: the pin is centered on the point, the name sits beside it. */
+.route-destination {
+  position: absolute;
+  bottom: 0;
+  left: -22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.route-destination.name-left {
+  left: auto;
+  right: -22px;
+  flex-direction: row-reverse;
+}
+
+.route-destination-name {
+  margin-top: 8px;
+  padding: 5px 10px;
+  font: 700 14px/1.2 var(--text);
+  color: var(--ink);
+  white-space: nowrap;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(35 31 32 / 22%);
+}
+
 /* Gastón: short gestures that play once on the 512 px poses. */
 .gaston { transform-origin: 50% 92%; pointer-events: none; object-fit: contain; }
 .gaston--buscando { animation: gaston-pensar 1300ms ease-in-out; }
@@ -1283,6 +1357,7 @@ button {
   .walk-card img { width: 110px; }
   .destination-head { padding-right: 120px; }
   .destination-head h1 { font-size: 28px; }
+  .destination-head h1.long { font-size: 22px; }
   .destination-sheet .sheet-handle { min-height: 118px; }
   .destination-mascot { height: 136px; }
   .destination-gaston { width: 145px; }

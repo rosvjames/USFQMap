@@ -37,7 +37,7 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
           <span className="grabber" aria-hidden="true" />
           <div className="destination-head">
             <p className="kicker">{kicker}</p>
-            <h1>{title}</h1>
+            <h1 className={title.length > 6 ? 'long' : undefined}>{title}</h1>
             {(sub || walk) && <p className="sub">{sub}{sub && walk && ' · '}{walk && <strong className="eta">{walk.minutes} min</strong>}</p>}
           </div>
         </div>
