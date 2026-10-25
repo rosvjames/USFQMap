@@ -53,7 +53,7 @@ const BUILDING_RESULTS: SearchResult[] = BUILDINGS.map((b) => ({
 const REFERENCE_RESULTS: SearchResult[] = LOCATIONS.map((reference) => ({
   kind: 'building', key: `ref-${reference.code}`, buildingId: reference.buildingId,
   floor: reference.floor, title: reference.code, reference,
-  subtitle: `${reference.label} · ${BUILDINGS.find((b) => b.id === reference.buildingId)?.name} · ${reference.historical ? 'referencia histórica' : 'fuente USFQ'}`,
+  subtitle: `${reference.label} · ${BUILDINGS.find((b) => b.id === reference.buildingId)?.name} · ${floorName(reference.floor, reference.buildingId).replace(/^./, (letter) => letter.toUpperCase())}`,
 }))
 
 const APICE_RESULT: SearchResult = { kind: 'building', key: 'apice', buildingId: 'hayek', floor: 0, landmark: true, title: 'Ápice', subtitle: 'Cafetería y punto de encuentro · Hayek · piso 0' }
