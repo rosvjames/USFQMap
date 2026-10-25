@@ -35,6 +35,7 @@ import { MaxwellCourtyard } from './MaxwellCourtyard'
 import { MiguelGardenEntrance } from './MiguelGardenEntrance'
 import { MiguelBuilding, MiguelEntrance } from './MiguelDeSantiago'
 import { CAMPUS_GATE, CAMPUS_GATE_CUTOUT, CAMPUS_GATE_LINTEL } from '../lib/miguel'
+import { PIN_POSITIONS } from '../lib/entrances'
 import { DaVinciPassage } from './DaVinciPassage'
 import { DaVinciPlaza } from './DaVinciPlaza'
 import { HallPlazaFacade } from './HallPlazaFacade'
@@ -414,8 +415,10 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
   useEffect(()=>()=>tunnelUpper?.dispose(),[tunnelUpper])
   const brick = ['galileo', 'newton', 'einstein', 'hayek', 'miguel-de-santiago'].includes(info?.id ?? '')
   const wallMaterial = info?.id === 'gobe' ? materials.casitaWhite : info?.id === 'epicuro' ? materials.epicuroStone : ['newton','galileo'].includes(info?.id ?? '') ? materials.academicOrange : ['guardiania-norte','galileo'].includes(info?.id ?? '') ? materials.hallRed : info?.id === 'da-vinci' ? materials.daVinciYellow : info?.id === 'hall-principal' ? materials.hallRed : info?.id === 'maxwell' || info?.id === 'casa-blanca' || info?.id === 'obelisco' ? materials.cream : brick ? materials.brick : materials.stucco
+  const groundY = (info?.id === 'hayek' ? 0 : CAMPUS_ELEVATION) + (['coliseo','banos-deportes'].includes(info?.id ?? '') ? 0 : grade)
+  const pin = PIN_POSITIONS[info?.id ?? '']
   return (
-    <group position={[0,(info?.id === 'hayek' ? 0 : CAMPUS_ELEVATION) + (['coliseo','banos-deportes'].includes(info?.id ?? '') ? 0 : grade),0]}>
+    <group position={[0,groundY,0]}>
       {info?.id === 'banos-deportes' ? <SportsAnnex materials={materials} onSelect={() => onSelect('banos-deportes')} /> : info?.id === 'coliseo' ? <ColiseoBuilding materials={materials} onSelect={() => onSelect('coliseo')} /> : info?.id === 'miguel-de-santiago' ? <MiguelBuilding materials={materials} onSelect={() => onSelect('miguel-de-santiago')} /> : info?.id === 'pagoda' ? <Pagoda materials={materials} onSelect={() => onSelect('pagoda')} /> : <mesh
         geometry={geometry}
         position={[0, base - grade, 0]}
@@ -444,8 +447,8 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       {tunnelUpper && <mesh geometry={tunnelUpper} position={[0,HALL_TUNNEL.ceiling,0]} rotation={[-Math.PI/2,0,0]} material={materials.brick} castShadow receiveShadow onClick={event=>{if(event.delta>5)return;event.stopPropagation();onSelect('einstein')}}/>}
       {building.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe', 'coliseo', 'banos-deportes'].includes(info?.id ?? '') && <IllustratedRoof building={building} height={height} materials={materials} />}
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
-      {selected && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
-      {selected && <DestinationMarker position={toScene(...building.center, height + roofExtra)} buildingId={info?.id} name={building.name} />}
+      {selected && !pin && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
+      {selected && <DestinationMarker position={pin ? toScene(...pin, terrainHeightAt(pin) + 10 - groundY) : toScene(...building.center, height + roofExtra)} buildingId={info?.id} name={building.name} />}
       {props.labelled && building.name && !selected && (
         <MapLabel text={building.name} position={toScene(...building.center, height + roofExtra + 4)} depthTest={false} priority={labelPriority(building, false)} />
       )}

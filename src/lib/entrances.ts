@@ -48,6 +48,9 @@ export const MAIN_GATE = {
   outside: mid(CAMPUS_GATE_CUTOUT[1], CAMPUS_GATE_CUTOUT[2]),
 }
 
+/** The map pin stands here instead of on the footprint: the catalogued Dragon Shop outline sits in Hayek's courtyard. */
+export const PIN_POSITIONS: Record<string, Vec2> = { 'dragon-shop': DRAGON_SHOP_DOOR }
+
 /** Where a route to or from each building starts and ends. Others use the outline point closest to a walkway. */
 export const CONFIRMED_DOORS: Record<string, Vec2> = {
   ciceron: CICERON_DOOR,
