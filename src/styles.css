@@ -618,6 +618,27 @@ button {
   justify-content: space-between;
 }
 
+.campus-overview { position: relative; }
+
+.campus-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  padding-right: 40px;
+  cursor: pointer;
+  list-style: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.campus-toggle::-webkit-details-marker { display: none; }
+.campus-chevron { flex: none; color: var(--red); transform: rotate(-90deg); }
+.campus-disclosure[open] .campus-chevron { transform: rotate(90deg); }
+.campus-disclosure[open] .places { margin-top: 12px; }
+.campus-overview > .info-button { position: absolute; top: 0; right: 0; min-height: 44px; margin-top: 0; }
+
 .sheet h2 {
   margin: 0;
   font-family: var(--display);

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { SearchResult } from '../lib/search'
 import { useSwipeDown } from '../lib/useSheetGestures'
-import { ArrowIcon, ColumnsIcon, FieldIcon, InfoIcon, PagodaIcon, SearchIcon, StadiumIcon, WalkerIcon } from './icons'
+import { ArrowIcon, BackIcon, ColumnsIcon, FieldIcon, InfoIcon, PagodaIcon, SearchIcon, StadiumIcon, WalkerIcon } from './icons'
 import { Mascot } from './Mascot'
 
 // Places worth a visit, each pictured with a view of the 3D campus; 'sports' frames the courts instead of one building.
@@ -75,20 +75,25 @@ export function HomeSheet({ query, onQuery, results, onChoose, onSelectBuilding,
             <img src="/ui/explorar-a-pie.svg" width={300} height={100} alt="" />
             <ArrowIcon size={22} />
           </button>
-          <div className="sheet-heading">
-            <h2>Conoce el campus</h2>
+          <div className="campus-overview">
+            <details className="campus-disclosure">
+              <summary className="campus-toggle">
+                <h2>Tu campus en un vistazo</h2>
+                <BackIcon className="campus-chevron" size={18} />
+              </summary>
+              <ul className="places">
+                {PLACES.map(({ label, target, image, Icon }) => (
+                  <li key={target}>
+                    <button className="place-card" onClick={() => target === 'sports' ? onSports() : onSelectBuilding(target)}>
+                      <img src={`/ui/lugares/${image}.webp`} width={640} height={320} alt="" loading="lazy" />
+                      <span><Icon size={18} />{label}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </details>
             <button className="info-button" onClick={onSources} aria-label="Fuentes, cobertura y créditos"><InfoIcon /></button>
           </div>
-          <ul className="places">
-            {PLACES.map(({ label, target, image, Icon }) => (
-              <li key={target}>
-                <button className="place-card" onClick={() => target === 'sports' ? onSports() : onSelectBuilding(target)}>
-                  <img src={`/ui/lugares/${image}.webp`} width={640} height={320} alt="" loading="lazy" />
-                  <span><Icon size={18} />{label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
         </>}
       </section>
     </div>
