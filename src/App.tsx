@@ -19,7 +19,7 @@ import { useSplashExit } from './components/SplashScreen'
 import { BackIcon, InfoIcon, LayersIcon, LocateIcon } from './components/icons'
 import { viewsFor } from './lib/buildingViews'
 import { useKeyboardInset } from './lib/useSheetGestures'
-import { LOCATIONS, MAP_NUMBERS } from './data/references'
+import { LOCATIONS } from './data/references'
 import { clearWalkInput, type WalkInputState } from './lib/walkInput'
 import type { CampusAnimalId } from './lib/campusAnimals'
 import { WalkControls } from './components/WalkControls'
@@ -178,7 +178,7 @@ export default function App() {
 
   const titleText = roomCode ?? heading ?? ''
   const kicker = roomCode ? `Aula · ${building?.name}` : landmark ? building?.name ?? '' : 'Edificio'
-  const sub = roomCode || landmark ? floorLabel : MAP_NUMBERS[building?.id ?? ''] ? `N.º ${MAP_NUMBERS[building!.id]} del mapa oficial` : undefined
+  const sub = roomCode || landmark ? floorLabel : undefined
   const walk = outdoorRoute ? { minutes: outdoorRoute.minutes, meters: Math.round(outdoorRoute.distance / 10) * 10 } : undefined
   const notice = originId === GPS && !gps.position ? gps.error ?? 'Buscando tu ubicación…' : plan?.placeholder ? 'Plano de ejemplo: las aulas y pasillos aún no son los reales.' : undefined
   const navigatingNow = navigating && steps.length > 0
