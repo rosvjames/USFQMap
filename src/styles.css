@@ -782,7 +782,6 @@ button {
   bottom: 0;
   width: 163px;
   height: auto;
-  animation: peek-in .6s ease-out both;
 }
 
 .kicker {
@@ -1309,27 +1308,22 @@ button {
   filter: drop-shadow(0 3px 4px rgb(35 31 32 / 30%));
 }
 
-/* Anchored at the tip of the pin: the pin is centered on the point, the name sits beside it. */
+/* Anchored at the tip of the pin, with the name centered above it, clear of the route and of the screen edges. */
 .route-destination {
   position: absolute;
   bottom: 0;
-  left: -22px;
+  left: 0;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   gap: 4px;
-}
-
-.route-destination.name-left {
-  left: auto;
-  right: -22px;
-  flex-direction: row-reverse;
+  transform: translateX(-50%);
 }
 
 .route-destination-name {
-  max-width: 42vw;
+  max-width: 60vw;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 8px;
   padding: 5px 10px;
   font: 700 14px/1.2 var(--text);
   color: var(--ink);
