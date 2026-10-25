@@ -19,6 +19,9 @@ export const FieldIcon = (props: IconProps) => <Stroke {...props}><rect x="3" y=
 export const ColumnsIcon = (props: IconProps) => <Stroke {...props}><path d="M3 9.5 12 4l9 5.5H3Z" /><path d="M5.5 10v8M10 10v8M14 10v8M18.5 10v8M3 20.5h18" /></Stroke>
 export const StadiumIcon = (props: IconProps) => <Stroke {...props}><ellipse cx="12" cy="10" rx="9" ry="4" /><path d="M3 10v5c0 2.2 4 4 9 4s9-1.8 9-4v-5" /><path d="M8 14.7v3.8M12 15v4M16 14.7v3.8" /></Stroke>
 export const BusIcon = (props: IconProps) => <Stroke {...props}><rect x="4" y="3.5" width="16" height="14" rx="3" /><path d="M4 11h16M7 17.5V20M17 17.5V20" /><circle cx="8" cy="14.3" r=".6" fill="currentColor" /><circle cx="16" cy="14.3" r=".6" fill="currentColor" /></Stroke>
-export const TurnIcon =(props: IconProps) => <Stroke strokeWidth="2.8" {...props}><path d="M7 20v-7a4 4 0 0 1 4-4h8" /><path d="m15 5 4 4-4 4" /></Stroke>
+export const StraightIcon = (props: IconProps) => <Stroke strokeWidth="2.8" {...props}><path d="M12 20V5M6 11l6-6 6 6" /></Stroke>
+export const PinIcon = (props: IconProps) => <Stroke strokeWidth="2.4" {...props}><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" /><circle cx="12" cy="9.5" r="2.5" /></Stroke>
+export const StairsIcon = (props: IconProps) => <Stroke strokeWidth="2.4" {...props}><path d="M3 20h5v-5h5v-5h5V5h3" /></Stroke>
+export const TurnIcon = (props: IconProps) => <Stroke strokeWidth="2.8" {...props}><path d="M7 20v-7a4 4 0 0 1 4-4h8" /><path d="m15 5 4 4-4 4" /></Stroke>
 export const LocateIcon = ({ size = 22, ...props }: IconProps) => <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" {...props}><path d="M21 3 3 10.5l7.2 2.3L12.5 20Z" /></svg>
 export const HeartIcon = ({ size = 22, ...props }: IconProps) => <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" {...props}><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.8-8 11-8 11Z" /></svg>

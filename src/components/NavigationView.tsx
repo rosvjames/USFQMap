@@ -1,4 +1,4 @@
-import { ArrowIcon, BackIcon, TurnIcon } from './icons'
+import { ArrowIcon, BackIcon, PinIcon, StairsIcon, StraightIcon, TurnIcon } from './icons'
 
 interface NavigationViewProps {
   steps: string[]
@@ -12,6 +12,14 @@ interface NavigationViewProps {
 /** Steps are read at a glance while walking: only the action, without a closing period. */
 const short = (text: string) => text.replace(/\.$/, '')
 
+/** The icon tells the kind of step: changing floors, arriving, a turn, or walking on along the line. */
+function StepIcon({ text }: { text: string }) {
+  if (/^(Sube|Baja|Busca)\b/.test(text)) return <StairsIcon size={24} />
+  if (/^Llega/.test(text)) return <PinIcon size={24} />
+  if (/^Gira/.test(text)) return <TurnIcon size={24} />
+  return <StraightIcon size={24} />
+}
+
 /** Turn-by-turn mode: the mascot reads out one step at a time; tapping the banner moves to the next one. */
 export function NavigationView({ steps, step, onStep, walk, destination, onEnd }: NavigationViewProps) {
   const last = step === steps.length - 1
@@ -19,7 +27,7 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
     <section className="nav-banner" aria-label="Indicación actual" aria-live="polite">
       <p className="nav-brand" aria-hidden="true">Explora <span>USFQ</span></p>
       <div className="nav-body">
-        <span className="nav-turn"><TurnIcon size={24} /></span>
+        <span className="nav-turn"><StepIcon text={steps[step]} /></span>
         <div className="nav-text">
           <p className="nav-progress">
             Paso {step + 1} de {steps.length}
