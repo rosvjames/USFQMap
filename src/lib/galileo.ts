@@ -1,6 +1,6 @@
 import { CAMPUS_AREAS, CAMPUS_BUILDINGS, CAMPUS_WALKWAYS, findCampusBuilding } from './campus'
-import { NEWTON_LAWNS } from './newton'
-import { centroid, pointInPolygon } from './geo'
+import { NEWTON_LAWNS, LAWN_EDGE_TOLERANCE } from './newton'
+import { centroid, pointInPolygon, pointInPolygonTolerant } from './geo'
 import type { Vec2 } from '../types'
 
 // Lake-facing edge of the existing footprint. Heights and portal dimensions are
@@ -29,12 +29,16 @@ export const GALILEO_LAWNS:Vec2[][] = [
   [[-length/2,.3],[h.x-3.65,.3],[h.x-3.65,6],[-length/2,9]],
   [[h.x+3.65,.3],[length/2,.3],[length/2,9],[h.x+3.65,6]],
 ].map(r=>r.map(p=>galileoToCampus(p as Vec2)))
+/** The lawn's own slope, defined everywhere so its mesh never depends on re-testing membership. */
+export function galileoLawnHeightAt(point:Vec2):number {
+  return h.ground+(h.level-h.ground)*(1-campusToGalileo(point)[1]/9)
+}
 export function galileoHeightAt(point:Vec2):number|undefined {
   const [x,z]=campusToGalileo(point)
   if(Math.abs(x-h.x)<=h.stairWidth/2&&z>=0&&z<=h.stairFront) {
     return z<=h.platformFront?h.level:h.level+(h.ground-h.level)*(z-h.platformFront)/(h.stairFront-h.platformFront)
   }
-  if(GALILEO_LAWNS.some(r=>pointInPolygon(point,r)))return h.ground+(h.level-h.ground)*(1-z/9)
+  if(GALILEO_LAWNS.some(r=>pointInPolygonTolerant(point,r,LAWN_EDGE_TOLERANCE)))return galileoLawnHeightAt(point)
 }
 export const GALILEO_DOOR_APPROACH=galileoToCampus([h.x,h.stairFront])
 // Attach the photographed access to the existing mapped footway at its nearest point.

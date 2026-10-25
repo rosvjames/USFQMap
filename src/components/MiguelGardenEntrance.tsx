@@ -1,27 +1,30 @@
 import { useEffect,useMemo } from 'react'
 import { MeshStandardMaterial } from 'three'
 import type { CampusMaterials } from '../lib/materials'
+import { useMiguelMaterials } from './MiguelMaterials'
 import { createPavedShapes,createWalkwayGeometry } from '../lib/architecture'
 import { CAMPUS_BUILDINGS } from '../lib/campus'
 import { MIGUEL_GARDEN_ENTRANCE as h,MIGUEL_GARDEN_APPROACH,MIGUEL_GARDEN_FORECOURT } from '../lib/miguelGarden'
 import { MiguelRocketGarden } from './MiguelRocketGarden'
+import { boxUv } from '../lib/worldUv'
 const noRaycast=()=>null
 type Point=[number,number,number]
 function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMaterial}) {
-  return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size}/></mesh>
+  // Miguel's own plaster and roof maps are not projected by the batcher, so each box carries metric UVs (one tile per 2.4 m).
+  return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size} onUpdate={boxUv}/></mesh>
 }
 /** Full-height glazed garden entrance from the second Miguel photograph. */
-export function MiguelGardenEntrance({materials}:{materials:CampusMaterials}) {
-  const finish=useMemo(()=>({
-    glass:new MeshStandardMaterial({color:'#779c8f',metalness:.46,roughness:.19}),
-    reflection:new MeshStandardMaterial({color:'#9aa79a',metalness:.4,roughness:.22}),
-    door:new MeshStandardMaterial({color:'#3c6359',metalness:.4,roughness:.2}),
+export function MiguelGardenEntrance({materials:base}:{materials:CampusMaterials}) {
+  const materials=useMiguelMaterials(base)
+  const owned=useMemo(()=>({
     frame:new MeshStandardMaterial({color:'#8bbcab',metalness:.35,roughness:.52}),
     dark:new MeshStandardMaterial({color:'#52665b',roughness:.8}),
   }),[])
+  // The panes are the shared matte glass, owned by the campus materials, so they stay out of the set disposed below.
+  const finish={...owned,glass:materials.glass('#243b2c'),reflection:materials.glass('#344b35'),door:materials.glass('#182d24')}
   const walk=useMemo(()=>createWalkwayGeometry(MIGUEL_GARDEN_APPROACH,2.2,h.ground+.01),[])
   const garden=useMemo(()=>createPavedShapes([MIGUEL_GARDEN_FORECOURT],CAMPUS_BUILDINGS.map(b=>b.ring)),[])
-  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());walk.dispose()},[finish,walk])
+  useEffect(()=>()=>{Object.values(owned).forEach(m=>m.dispose());walk.dispose()},[owned,walk])
   return <group>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,.51,0]} material={materials.grass} receiveShadow raycast={noRaycast}><shapeGeometry args={[garden]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/></mesh>
     <mesh geometry={walk} material={materials.lakePaving} receiveShadow raycast={noRaycast}/>

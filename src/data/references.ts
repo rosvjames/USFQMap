@@ -11,6 +11,9 @@ export const SOURCES = {
   campusPhoto: { title: 'Fotografía del campus · USFQ Next', url: 'https://www.usfq.edu.ec/sites/default/files/2024-08/usfq-next-main-slide.jpg' },
   obeliskPhoto: { title: 'Obelisco y jardines · Noticias USFQ, 2021', url: 'https://noticias.usfq.edu.ec/2021/03/usfq-elegida-como-la-universidad-1-del.html' },
   david: { title: 'El David en la USFQ · Alumni, 2024', url: 'https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html' },
+  davidScan: { title: 'David (Michelangelo) · Scan the World @ Myminifactory.com · CC BY-SA 4.0', url: 'https://commons.wikimedia.org/wiki/File:David_(Michelangelo).stl' },
+  pigModel: { title: 'Farm Pig · Innerscene · CC0', url: 'https://www.innerscene.com/tools/library/3d-parts/farm-pig-85281eb9' },
+  dogModel: { title: 'Large Dog Standing · Innerscene · CC0', url: 'https://www.innerscene.com/tools/library/3d-parts/large-dog-standing-6d1b30be' },
   satellite: { title: 'Vista satelital del campus · Apple Maps', url: 'https://maps.apple.com/frame?map=satellite&center=-0.197353%2C-78.436621&span=0.004231%2C0.003931' },
 }
 

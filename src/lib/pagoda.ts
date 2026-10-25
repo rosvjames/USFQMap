@@ -33,6 +33,13 @@ export const PAGODA_STAIR_LEVEL = campusBaseHeightAt(PAGODA_STAIR_FOOT)
 export function pagodaStairWidthAt(t: number): number {
   return PAGODA_STAIRS.topWidth + (PAGODA_STAIRS.bottomWidth - PAGODA_STAIRS.topWidth) * t
 }
+// Match the eight widening stone blocks so graded lawns cannot poke through their treads.
+export const PAGODA_STAIR_CUTOUTS: Vec2[][] = Array.from({ length: PAGODA_STAIRS.count }, (_, i) => {
+  const run = (PAGODA_STAIRS.topX - PAGODA_STAIRS.bottomX) / PAGODA_STAIRS.count
+  const high = PAGODA_STAIRS.topX - i * run + .003, low = high - run - .006
+  const halfWidth = pagodaStairWidthAt((i + 1) / PAGODA_STAIRS.count) / 2
+  return ([[high, -halfWidth], [high, halfWidth], [low, halfWidth], [low, -halfWidth]] as Vec2[]).map(pagodaToCampus)
+})
 export function isPagodaStairApproach([x, z]: Vec2, margin = 0): boolean {
   const t = (PAGODA_STAIRS.topX - x) / (PAGODA_STAIRS.topX - PAGODA_STAIRS.bottomX)
   return x <= PAGODA_STAIRS.topX + margin && x >= PAGODA_STAIRS.bottomX - margin && Math.abs(z) <= pagodaStairWidthAt(Math.max(0, Math.min(1, t))) / 2 + margin

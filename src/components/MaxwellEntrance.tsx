@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 import { MAXWELL_ENTRANCE as entrance, createArchBand } from '../lib/maxwell'
 import { createSculptureGeometry } from '../lib/sculptures'
 import type { CampusMaterials } from '../lib/materials'
+import { Bush } from './CampusPlants'
 
 type Point = [number, number, number]
 const noRaycast = () => null
@@ -57,7 +58,8 @@ export function MaxwellEntrance({ materials }: { materials: CampusMaterials }) {
       const top = level - i * (level - entrance.ground) / entrance.steps
       return <Block key={i} at={[0, (top + 0.25) / 2, entrance.platformFront + (i + 0.5) * 0.45]} size={[entrance.width + i * 0.15, top - 0.25, 0.45]} material={materials.entranceStone} />
     })}
-    <mesh geometry={stones} castShadow receiveShadow raycast={noRaycast}><meshStandardMaterial vertexColors roughness={0.94} /></mesh>
+    {/* Each arch stone keeps its own vertex shade over the shared stone relief. */}
+    <mesh geometry={stones} material={materials.surface('stone', '#ffffff', { roughness: 0.94, vertexColors: true })} castShadow receiveShadow raycast={noRaycast} />
     <Block at={[0, 8.37, 0.54]} size={[11.25, 0.96, 0.92]} material={cream} />
     <Block at={[0, 8.92, 0.6]} size={[11.7, 0.15, 1.05]} material={cream} />
     {Array.from({ length: 15 }, (_, i) => <mesh key={i} geometry={friezeArch} position={[(i - 7) * 0.65, 8.24, 1.025]} material={materials.entranceStone} raycast={noRaycast} />)}
@@ -104,6 +106,6 @@ function Planter({ x, level, materials }: { x: number; level: number; materials:
   return <group position={[x, level, 1.75]} raycast={noRaycast}>
     <mesh position={[0, 0.25, 0]} material={materials.hallRed} castShadow><cylinderGeometry args={[0.28, 0.2, 0.5, 12]} /></mesh>
     <mesh position={[0, 0.97, 0]} castShadow><cylinderGeometry args={[0.035, 0.045, 1.4, 8]} /><meshStandardMaterial color="#5d5239" /></mesh>
-    {Array.from({ length: 8 }, (_, i) => <mesh key={i} position={[Math.sin(i * 2.4) * 0.20, 1.45 + Math.sin(i * 7) * 0.3, Math.cos(i * 2.4) * 0.16]} scale={[0.3, 0.24, 0.19]} castShadow><icosahedronGeometry args={[1, 1]} /><meshStandardMaterial color={i % 2 ? '#596e3c' : '#415e34'} roughness={1} /></mesh>)}
+    <Bush materials={materials} position={[0, 1.5, 0]} scale={[0.42, 0.34, 0.32]} rotation={x} tone="#c3d0a4" />
   </group>
 }

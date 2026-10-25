@@ -50,3 +50,15 @@ export function closestPointOnRing(p: Vec2, ring: Vec2[]): Vec2 {
   }
   return best
 }
+
+/** Like pointInPolygon, but a point within `tolerance` of the outline counts as inside (edges rounded by booleans or Float32). */
+export function pointInPolygonTolerant(point: Vec2, ring: Vec2[], tolerance: number): boolean {
+  if (pointInPolygon(point, ring)) return true
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [ax, ay] = ring[j], [bx, by] = ring[i]
+    const dx = bx - ax, dy = by - ay, lengthSq = dx * dx + dy * dy
+    const t = lengthSq ? Math.max(0, Math.min(1, ((point[0] - ax) * dx + (point[1] - ay) * dy) / lengthSq)) : 0
+    if (Math.hypot(point[0] - ax - t * dx, point[1] - ay - t * dy) <= tolerance) return true
+  }
+  return false
+}

@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { CanvasTexture, MeshStandardMaterial, SRGBColorSpace } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import { HAYEK_APICE as cafe } from '../lib/hayek'
+import { Bush } from './CampusPlants'
 
 type Point = [number, number, number]
 const noRaycast = () => null
@@ -24,13 +25,13 @@ function logoTexture() {
 /** Ground-floor café beneath the existing bridge terrace; local coordinates shared with HayekEntrance. */
 export function HayekApice({materials}:{materials:CampusMaterials}) {
   const finishes=useMemo(()=>({
-    white:new MeshStandardMaterial({color:'#eeeae0',roughness:.92}),
-    glass:new MeshStandardMaterial({color:'#192e2e',roughness:.22,metalness:.24,envMap:materials.environment,envMapIntensity:.6}),
     frame:new MeshStandardMaterial({color:'#393e38',roughness:.65,metalness:.42}),
     red:new MeshStandardMaterial({color:'#bb2937',roughness:.6,metalness:.15}),
-    green:new MeshStandardMaterial({color:'#52723b',roughness:1}),
     light:new MeshStandardMaterial({color:'#fff3c9',emissive:'#ffe3a5',emissiveIntensity:.6}),
-  }),[materials])
+  }),[])
+  const glass=materials.glass('#192e2e')
+  // The café's white plaster piers and slab take the shared stucco.
+  const white=materials.surface('stucco','#eeeae0',{roughness:.92})
   const logo=useMemo(logoTexture,[])
   const sign=useMemo(()=>new MeshStandardMaterial({map:logo,roughness:1}),[logo])
   useEffect(()=>()=>{Object.values(finishes).forEach(m=>m.dispose());logo.dispose();sign.dispose()},[finishes,logo,sign])
@@ -38,10 +39,10 @@ export function HayekApice({materials}:{materials:CampusMaterials}) {
   const bays=[{x:cafe.center-5.25,w:5.2},{x:cafe.center+4.5,w:4},{x:cafe.center+10.9,w:4.7}]
   return <group>
     <Block at={[(cafe.left+cafe.right)/2,bottom-.09,3.8]} size={[cafe.right-cafe.left,.18,7.6]} material={materials.entranceStone}/>
-    <Block at={[(cafe.left+cafe.right)/2,(top+bottom)/2,.47]} size={[cafe.right-cafe.left,height,.22]} material={finishes.white}/>
+    <Block at={[(cafe.left+cafe.right)/2,(top+bottom)/2,.47]} size={[cafe.right-cafe.left,height,.22]} material={white}/>
     {/* A white pier with red lettering separates the dark glazed café bays. */}
     {bays.map(({x,w},i)=><group key={i}>
-      <Block at={[x,bottom+2.05,.61]} size={[w,4.1,.1]} material={finishes.glass}/>
+      <Block at={[x,bottom+2.05,.61]} size={[w,4.1,.1]} material={glass}/>
       {[-w/2,0,w/2].map(px=><Block key={px} at={[x+px,bottom+2.05,.7]} size={[.07,4.1,.08]} material={finishes.frame}/>)}
       {[1.35,2.75,3.7].map(y=><Block key={y} at={[x,bottom+y,.71]} size={[w,.055,.08]} material={finishes.frame}/>)}
       {i===2&&[-.18,.18].map(px=><Block key={px} at={[x+px,bottom+1.3,.8]} size={[.035,.55,.04]} material={materials.cream}/>)}
@@ -51,9 +52,9 @@ export function HayekApice({materials}:{materials:CampusMaterials}) {
     {[-1,1].map(side=><group key={side}>
       <Block at={[cafe.center+side*4.65,(bottom+top)/2,3.2]} size={[1.95,height,1.8]} material={materials.hayekBrick}/>
       <Block at={[cafe.center+side*4.65,bottom+.43,3.2]} size={[2.15,.86,2]} material={materials.entranceStone}/>
-      <Block at={[cafe.center+side*4.65,bottom+.92,3.2]} size={[2.25,.16,2.1]} material={finishes.white}/>
+      <Block at={[cafe.center+side*4.65,bottom+.92,3.2]} size={[2.25,.16,2.1]} material={white}/>
     </group>)}
-    <Block at={[(cafe.left+cafe.right)/2,top-.04,2.25]} size={[cafe.right-cafe.left,.09,4.45]} material={finishes.white}/>
+    <Block at={[(cafe.left+cafe.right)/2,top-.04,2.25]} size={[cafe.right-cafe.left,.09,4.45]} material={white}/>
     {Array.from({length:8},(_,i)=><mesh key={i} position={[cafe.left+1.2+i*2.85,top-.095,2.6]} rotation={[-Math.PI/2,0,0]} material={finishes.light} raycast={noRaycast}><circleGeometry args={[.075,12]}/></mesh>)}
     {/* Red bicycle racks visible beside the piers in the reference. */}
     {[cafe.center-3.25,cafe.center+3.25].map(x=><group key={x} position={[x,bottom+.44,2.15]} rotation={[0,Math.PI/2,0]}>
@@ -72,6 +73,6 @@ export function HayekApice({materials}:{materials:CampusMaterials}) {
     </group>)}
     <Block at={[cafe.left+.7,bottom+.15,5.7]} size={[1.3,.3,1.3]} material={materials.entranceStone}/>
     <Block at={[cafe.left+.7,bottom+1,5.7]} size={[.15,1.5,.15]} material={finishes.frame}/>
-    {[1.45,2.3].map((y,i)=><mesh key={y} position={[cafe.left+.7,bottom+y,5.7]} scale={[i?.65:.85,i?.75:.9,i?.65:.85]} material={finishes.green} castShadow raycast={noRaycast}><sphereGeometry args={[1,14,10]}/></mesh>)}
+    {[1.45,2.3].map((y,i)=><Bush key={y} materials={materials} position={[cafe.left+.7,bottom+y,5.7]} scale={[i?.65:.85,i?.75:.9,i?.65:.85]} rotation={i*2} tone="#c3d0a4"/>)}
   </group>
 }

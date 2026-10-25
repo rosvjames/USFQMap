@@ -1,117 +1,149 @@
-import { CanvasTexture, CubeTexture, MeshStandardMaterial, RepeatWrapping, SRGBColorSpace } from 'three'
+import { Color, DoubleSide, MeshPhysicalMaterial, MeshStandardMaterial, type Side, type Texture } from 'three'
+import {
+  type CampusTextureSet, type FamilyTextures, type SharedSurface, type SurfaceFamily, type SurfaceSpec, type WaterTextures,
+  NORMAL_STRENGTH, SHARED_SURFACES, SURFACE_ALIASES, TILE_METERS, WATER_SLOTS, WATER_TILE_METERS, surfaceColor,
+} from './campusTextures'
+import { createPlantGeometry } from './campusFoliage'
+import { withWorldUv } from './worldUv'
 
-type Surface = 'stucco' | 'brick' | 'tile' | 'metal' | 'grass' | 'paving' | 'water' | 'sand' | 'stone' | 'wood'
+/** Families whose UVs are authored by their own geometry (trunks wrap their own bark tiles), not projected in world metres. */
+const OWN_UV: readonly SurfaceFamily[] = ['bark', 'palm-bark']
 
-/** Locally generated, seamless textures. No third-party photographs/assets are bundled. */
-function surfaceTexture(kind: Surface, bump = false): CanvasTexture {
-  const canvas = document.createElement('canvas')
-  canvas.width = canvas.height = 256
-  const ctx = canvas.getContext('2d')!
-  let seed = 71
-  const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296 }
-  const pixels = ctx.createImageData(256, 256)
-  for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) {
-    const noise = random() - 0.5
-    const course = Math.floor(y / 16)
-    const joint = kind === 'brick' ? y % 16 < 1.5 || (x + course % 2 * 32) % 64 < 1.5
-      : kind === 'tile' ? y % 24 < 2 || (x + Math.floor(y / 24) % 2 * 16) % 32 < 1.5
-      : kind === 'metal' ? x % 32 < 1.5
-      : kind === 'paving' ? x % 64 < 1.5 || y % 64 < 1.5
-      : kind === 'stone' ? y % 32 < 1.5 || (x + Math.floor(y / 32) % 2 * 32) % 64 < 1.5 : false
-    const pattern = kind === 'wood' ? Math.sin(x * 0.48 + Math.sin(y * 0.07) * 3 + Math.sin(y * 0.019) * 4) * 17 + Math.sin(x * 2.2 + Math.sin(y * 0.09)) * 5
-      : kind === 'water' ? Math.sin(x * Math.PI / 16 + Math.sin(y * Math.PI / 32) * 2) * 3
-      : kind === 'sand' ? Math.sin(x*.5+Math.sin(y*.13)*3)*9+Math.sin(y*.8+x*.23)*5
-      : kind === 'grass' ? Math.sin(x * 1.7 + y * 2.4) * 10
-      : kind === 'stone' ? Math.sin(Math.floor(x / 32) * 21 + Math.floor(y / 32) * 17) * 18 : 0
-    const shade = Math.max(0, Math.min(255, (joint ? bump ? 95 : kind === 'stone' ? 210 : 155 : 230) + noise * (kind === 'grass' ? 65 : kind === 'sand' ? 48 : 22) + pattern))
-    const i = (y * 256 + x) * 4
-    pixels.data[i] = pixels.data[i + 1] = pixels.data[i + 2] = shade
-    pixels.data[i + 3] = 255
-  }
-  ctx.putImageData(pixels, 0, 0)
-  if (kind === 'sand') {
-    // Shallow scuffs and footprints in the sand, at the scale of the UV tile.
-    for(let i=0;i<18;i++) {
-      const x=random()*256,y=random()*256
-      ctx.save();ctx.translate(x,y);ctx.rotate(random()*Math.PI)
-      ctx.fillStyle=bump?'#9f9f9f':'#bdbdbd';ctx.beginPath();ctx.ellipse(0,0,4,10,0,0,Math.PI*2);ctx.fill()
-      ctx.strokeStyle='#ededed';ctx.lineWidth=1.2;ctx.beginPath();ctx.ellipse(.5,.5,5,11,0,.2,Math.PI*1.2);ctx.stroke();ctx.restore()
-    }
-  }
-  const texture = new CanvasTexture(canvas)
-  texture.wrapS = texture.wrapT = RepeatWrapping
-  texture.anisotropy = 4
-  if (!bump) texture.colorSpace = SRGBColorSpace
-  return texture
+/**
+ * Still pond water: a dielectric (ior 1.333, no metalness) whose capillary ripples come from the normal map, so the
+ * reflection fades in with a Fresnel response toward the horizon. It stays opaque, with no transmission or refraction
+ * pass, so it batches and receives shadows like every other flat surface.
+ *
+ * `reflection` is the campus panorama, and the water is the only surface that receives it: the scene has no environment
+ * and no glass or window samples it. It is assigned explicitly, which is also
+ * what lets envMapIntensity apply. The envMap feeds the diffuse term at the same intensity, hence the deeper jade. The
+ * texture is owned by its loader, not by this material.
+ *
+ * UVs reach the material in tiles of TILE_METERS (the batcher projects them from world metres, and Shape geometry is scaled
+ * to match); each map's repeat then converts that to its own WATER_TILE_METERS, so ripples have the same physical size on
+ * the lagoon, the pagoda pond and the fountains, batched or not. The repeats live on the shared textures.
+ */
+export function createWaterMaterial(textures: WaterTextures, reflection: Texture): MeshPhysicalMaterial {
+  for (const slot of WATER_SLOTS) textures[slot].repeat.setScalar(TILE_METERS / WATER_TILE_METERS[slot])
+  const material = new MeshPhysicalMaterial({
+    color: '#3c6558', map: textures.map, normalMap: textures.normalMap, roughnessMap: textures.roughnessMap,
+    envMap: reflection, envMapIntensity: 0.9,
+    // The roughness image is near white (about 0.9), so this multiplier lands the surface around 0.19: calm, never mirror-like.
+    roughness: 0.21, metalness: 0, ior: 1.333,
+  })
+  material.normalScale.setScalar(0.5)
+  material.userData.worldUv = true
+  return material
 }
 
-export function createCampusMaterials() {
-  const textures: CanvasTexture[] = []
-  const surfaces = new Map<Surface, { map: CanvasTexture; bumpMap: CanvasTexture }>()
-  function material(kind: Surface, color: string, roughness = 0.9, bumpScale = 0.035, metalness = 0) {
-    let surface = surfaces.get(kind)
-    if (!surface) {
-      surface = { map: surfaceTexture(kind), bumpMap: surfaceTexture(kind, true) }
-      surfaces.set(kind, surface); textures.push(surface.map, surface.bumpMap)
-    }
-    const { map, bumpMap } = surface
-    return new MeshStandardMaterial({ color, map, bumpMap, bumpScale, roughness, metalness })
-  }
-  const grass = material('grass', '#718554', 1, 0.025)
-  const paving = material('paving', '#c1b8a2', 0.95, 0.025)
-  grass.userData.groundSurface = paving.userData.groundSurface = true
-  const materials = {
-    pagodaWood: material('wood', '#ac7841', 0.83, 0.024),
-    pagodaRoof: material('tile', '#504b43', 0.95, 0.055),
-    pondRock: material('stone', '#767569', 0.98, 0.04),
-    pondWater: material('water', '#527e70', 0.22, 0.008, 0.25),
-    stucco: material('stucco', '#d5af94'),
-    casitaWhite: material('stucco', '#f0ece0'),
-    daVinciYellow: material('stucco', '#e5b55f'),
-    miguelCream: material('stucco', '#dccaaa'),
-    brick: material('brick', '#b65e43', 0.92, 0.045),
-    hayekBrick: material('brick', '#ac8964', 0.96, 0.05),
-    hayekStone: material('brick', '#aaa99b', 0.96, 0.012),
-    cream: material('stucco', '#e4ddc8'),
-    epicuroStone: material('stucco', '#b6b09c', 0.96, 0.025),
-    academicOrange: material('stucco', '#db7842', 0.95, 0.025),
-    coliseoOrange: material('stucco', '#c85e35', .95, .025),
-    coliseoLane: material('paving', '#c1b8a2', .95, .025),
-    hallRed: material('stucco', '#c3654f', 0.95, 0.025),
-    entranceStone: material('stone', '#b8b6a8', 0.95, 0.025),
-    redStone: material('stone', '#aa705a', 0.95, 0.025),
-    terracotta: material('tile', '#64504a', 0.92, 0.065),
-    redTileRoof: material('tile', '#b78368', 0.95, 0.055),
-    tealRoof: material('metal', '#8bafa3', 0.77, 0.035, 0.15),
-    concreteRoof: material('stone', '#d6d0bd', 0.96, 0.018),
-    roofGlass: new MeshStandardMaterial({ color: '#8aafab', roughness: 0.28, metalness: 0.35, transparent: true, opacity: 0.88 }),
-    metalRoof: material('metal', '#708c7e', 0.65, 0.045, 0.25),
-    grass,
-    garden: grass,
-    paving,
-    lakePaving: paving,
-    road: material('stucco', '#aaa9a0', 1, 0.025),
-    sand: material('sand', '#cec0a0', 1, 0.09),
-    tennis: material('stucco', '#286fa8', 0.95, 0.008),
-    synthetic: material('grass', '#3b6a48', 0.95, 0.009),
-    water: material('water', '#557e63', 0.22, 0.035, 0.35),
-  }
-  // A static sky/ground reflection gives glass and water depth without remote HDR assets.
-  const reflectionFaces = Array.from({ length: 6 }, (_, face) => {
-    const canvas = document.createElement('canvas')
-    canvas.width = canvas.height = 128
-    const ctx = canvas.getContext('2d')!
-    const gradient = ctx.createLinearGradient(0, 0, 0, 128)
-    gradient.addColorStop(0, face === 3 ? '#7a7859' : '#8aafc3')
-    gradient.addColorStop(0.58, face === 2 ? '#8aafc3' : '#d4dedc')
-    gradient.addColorStop(1, face === 2 ? '#a4c2cf' : '#8b8d70')
-    ctx.fillStyle = gradient; ctx.fillRect(0, 0, 128, 128)
-    return canvas
+export interface SurfaceOptions { roughness?: number; metalness?: number; normal?: number; side?: Side; vertexColors?: boolean }
+
+/**
+ * A MeshStandardMaterial drawing from one family: albedo, normal and roughness images, one repeat per 2.4 m.
+ * 'tint' families multiply the palette colour (with TINT_GAIN); 'color' families keep their natural albedo and only
+ * take the colour as a gentle multiplier. UVs follow world metres when batched, except bark which wraps its own tiles.
+ */
+export function createSurfaceMaterial(textures: FamilyTextures, spec: SurfaceSpec, options: SurfaceOptions = {}): MeshStandardMaterial {
+  const { hex, gain } = surfaceColor(spec)
+  const material = new MeshStandardMaterial({
+    color: new Color(hex).multiplyScalar(gain), map: textures.map, normalMap: textures.normalMap, roughnessMap: textures.roughnessMap,
+    roughness: options.roughness ?? spec.roughness, metalness: options.metalness ?? spec.metalness ?? 0,
+    ...(options.side === undefined ? {} : { side: options.side }), ...(options.vertexColors === undefined ? {} : { vertexColors: options.vertexColors }),
   })
-  const environment = new CubeTexture(reflectionFaces)
-  environment.colorSpace = SRGBColorSpace
-  environment.needsUpdate = true
-  return { ...materials, environment, dispose: () => { new Set(Object.values(materials)).forEach((m) => m.dispose()); textures.forEach((t) => t.dispose()); environment.dispose() } }
+  material.normalScale.setScalar(options.normal ?? spec.normal ?? NORMAL_STRENGTH[spec.family])
+  material.userData.surfaceFamily = spec.family
+  if (!OWN_UV.includes(spec.family)) material.userData.worldUv = true
+  return material
+}
+
+/**
+ * Windows and glazed doors use plain matte panes without an environment map, including on phones.
+ */
+export const GLASS_ROUGHNESS = 0.55
+export interface GlassOptions { roughness?: number; opacity?: number }
+
+/** `reflection` is for the water only; nothing else in the campus receives an environment map. */
+export function createCampusMaterials(textures: CampusTextureSet, reflection: Texture) {
+  const owned = new Set<MeshStandardMaterial>()
+  const own = <T extends MeshStandardMaterial>(material: T, name: string): T => { material.name = name; owned.add(material); return material }
+
+  const shared = Object.fromEntries(Object.entries(SHARED_SURFACES).map(([key, spec]) =>
+    [key, own(createSurfaceMaterial(textures.families[spec.family], spec), key)])) as Record<SharedSurface, MeshStandardMaterial>
+  const aliases = Object.fromEntries(Object.entries(SURFACE_ALIASES).map(([alias, key]) => [alias, shared[key]])) as Record<keyof typeof SURFACE_ALIASES, MeshStandardMaterial>
+
+  const roofGlass = own(new MeshStandardMaterial({ color: '#8aafab', roughness: 0.6, metalness: 0, transparent: true, opacity: 0.88 }), 'roofGlass')
+
+  const panes = new Map<string, MeshStandardMaterial>()
+  /** A cached pane per colour and finish, owned (and disposed) here: components borrow it and never dispose it. */
+  function glass(color: string, options: GlassOptions = {}) {
+    const roughness = options.roughness ?? GLASS_ROUGHNESS, opacity = options.opacity ?? 1
+    const key = [color, roughness, opacity].join('|')
+    let material = panes.get(key)
+    if (!material) {
+      material = own(new MeshStandardMaterial({ color, roughness, metalness: 0, ...(opacity < 1 ? { transparent: true, opacity } : {}) }), `glass-${key}`)
+      panes.set(key, material)
+    }
+    return material
+  }
+
+  const locals = new Map<string, MeshStandardMaterial>()
+  /** Finishes that components used to build as flat local colours, now cached and shared by family and colour. */
+  function surface(family: SurfaceFamily, color?: string, options: SurfaceOptions = {}) {
+    const key = [family, color, options.roughness, options.metalness, options.normal, options.side, options.vertexColors].join('|')
+    let material = locals.get(key)
+    if (!material) {
+      const spec: SurfaceSpec = { family, color, roughness: options.roughness ?? defaultRoughness(family) }
+      material = own(createSurfaceMaterial(textures.families[family], spec, options), key)
+      locals.set(key, material)
+    }
+    return material
+  }
+
+  const worldUvVariants = new Map<MeshStandardMaterial, MeshStandardMaterial>()
+  /** For instanced boxes of varying size, whose baked UVs cannot follow each instance. Only for flat-faced geometry. */
+  function worldUv(material: MeshStandardMaterial) {
+    let variant = worldUvVariants.get(material)
+    if (!variant) { variant = own(withWorldUv(material), `${material.name}-worldUv`); worldUvVariants.set(material, variant) }
+    return variant
+  }
+
+  const foliageMaterials = new Map<string, MeshStandardMaterial>()
+  /** Alpha-tested leaf cards. `tone` is a light multiplier over the natural leaf colour, never a replacement. */
+  function leaf(tone = '#ffffff', kind: 'tree' | 'palm' = 'tree') {
+    const key = `${kind}|${tone}`
+    let material = foliageMaterials.get(key)
+    if (!material) {
+      material = own(new MeshStandardMaterial({
+        color: tone, map: textures.foliage[kind], alphaTest: kind === 'tree' ? 0.4 : 0.35, alphaToCoverage: true, side: DoubleSide, roughness: kind === 'tree' ? 0.92 : 0.8,
+      }), `leaf-${key}`)
+      foliageMaterials.set(key, material)
+    }
+    return material
+  }
+  const plants = createPlantGeometry()
+
+  const materials = {
+    ...shared,
+    ...aliases,
+    pondWater: own(createWaterMaterial(textures.water, reflection), 'pondWater'),
+    roofGlass,
+    bark: surface('bark'),
+    palmBark: surface('palm-bark'),
+  }
+  return {
+    ...materials, plants, surface, worldUv, leaf, glass,
+    dispose: () => { owned.forEach((material) => material.dispose()); plants.dispose() },
+  }
+}
+
+/** Per-family roughness when a component asks for a finish without choosing one. */
+function defaultRoughness(family: SurfaceFamily): number {
+  switch (family) {
+    case 'roof-metal': return 0.7
+    case 'wood': case 'bark': case 'palm-bark': return 0.9
+    case 'asphalt': case 'grass': case 'sand': case 'soil': return 1
+    default: return 0.95
+  }
 }
 
 export type CampusMaterials = ReturnType<typeof createCampusMaterials>

@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "ready": true,
+  "description": "Materiales GPT Image para todo MiCampus, con la paleta existente y detalle a pie.",
+  "assets": {
+    "grass": {
+      "label": "Césped natural",
+      "colorMode": "color",
+      "resolution": 1024,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/grass.webp",
+      "mobileAlbedo": "/textures/campus-v1/grass-512.webp",
+      "normal": "/textures/campus-v1/grass-normal.webp",
+      "roughness": "/textures/campus-v1/grass-roughness.webp"
+    },
+    "sand": {
+      "label": "Arena",
+      "colorMode": "color",
+      "resolution": 1024,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/sand.webp",
+      "mobileAlbedo": "/textures/campus-v1/sand-512.webp",
+      "normal": "/textures/campus-v1/sand-normal.webp",
+      "roughness": "/textures/campus-v1/sand-roughness.webp"
+    },
+    "paving": {
+      "label": "Adoquín gris cálido",
+      "colorMode": "tint",
+      "resolution": 1024,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/paving.webp",
+      "mobileAlbedo": "/textures/campus-v1/paving-512.webp",
+      "normal": "/textures/campus-v1/paving-normal.webp",
+      "roughness": "/textures/campus-v1/paving-roughness.webp"
+    },
+    "limestone": {
+      "label": "Piedra clara de plazas",
+      "colorMode": "tint",
+      "resolution": 1024,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/limestone.webp",
+      "mobileAlbedo": "/textures/campus-v1/limestone-512.webp",
+      "normal": "/textures/campus-v1/limestone-normal.webp",
+      "roughness": "/textures/campus-v1/limestone-roughness.webp"
+    },
+    "concrete": {
+      "label": "Hormigón",
+      "colorMode": "tint",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/concrete.webp",
+      "mobileAlbedo": "/textures/campus-v1/concrete.webp",
+      "normal": "/textures/campus-v1/concrete-normal.webp",
+      "roughness": "/textures/campus-v1/concrete-roughness.webp"
+    },
+    "asphalt": {
+      "label": "Asfalto",
+      "colorMode": "tint",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/asphalt.webp",
+      "mobileAlbedo": "/textures/campus-v1/asphalt.webp",
+      "normal": "/textures/campus-v1/asphalt-normal.webp",
+      "roughness": "/textures/campus-v1/asphalt-roughness.webp"
+    },
+    "stucco": {
+      "label": "Estuco mineral",
+      "colorMode": "tint",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/stucco.webp",
+      "mobileAlbedo": "/textures/campus-v1/stucco.webp",
+      "normal": "/textures/campus-v1/stucco-normal.webp",
+      "roughness": "/textures/campus-v1/stucco-roughness.webp"
+    },
+    "brick": {
+      "label": "Ladrillo de aparejo corrido",
+      "colorMode": "tint",
+      "resolution": 1024,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/brick.webp",
+      "mobileAlbedo": "/textures/campus-v1/brick-512.webp",
+      "normal": "/textures/campus-v1/brick-normal.webp",
+      "roughness": "/textures/campus-v1/brick-roughness.webp"
+    },
+    "stone": {
+      "label": "Bloques de piedra",
+      "colorMode": "tint",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/stone.webp",
+      "mobileAlbedo": "/textures/campus-v1/stone.webp",
+      "normal": "/textures/campus-v1/stone-normal.webp",
+      "roughness": "/textures/campus-v1/stone-roughness.webp"
+    },
+    "wood": {
+      "label": "Madera",
+      "colorMode": "tint",
+      "resolution": 1024,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/wood.webp",
+      "mobileAlbedo": "/textures/campus-v1/wood-512.webp",
+      "normal": "/textures/campus-v1/wood-normal.webp",
+      "roughness": "/textures/campus-v1/wood-roughness.webp"
+    },
+    "roof-tile": {
+      "label": "Teja",
+      "colorMode": "tint",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/roof-tile.webp",
+      "mobileAlbedo": "/textures/campus-v1/roof-tile.webp",
+      "normal": "/textures/campus-v1/roof-tile-normal.webp",
+      "roughness": "/textures/campus-v1/roof-tile-roughness.webp"
+    },
+    "roof-metal": {
+      "label": "Metal de junta alzada",
+      "colorMode": "tint",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/roof-metal.webp",
+      "mobileAlbedo": "/textures/campus-v1/roof-metal.webp",
+      "normal": "/textures/campus-v1/roof-metal-normal.webp",
+      "roughness": "/textures/campus-v1/roof-metal-roughness.webp"
+    },
+    "bark": {
+      "label": "Corteza de árbol",
+      "colorMode": "color",
+      "resolution": 1024,
+      "tileMeters": [
+        1.2,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/bark.webp",
+      "mobileAlbedo": "/textures/campus-v1/bark-512.webp",
+      "normal": "/textures/campus-v1/bark-normal.webp",
+      "roughness": "/textures/campus-v1/bark-roughness.webp"
+    },
+    "palm-bark": {
+      "label": "Tronco de palmera",
+      "colorMode": "color",
+      "resolution": 1024,
+      "tileMeters": [
+        1.2,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/palm-bark.webp",
+      "mobileAlbedo": "/textures/campus-v1/palm-bark-512.webp",
+      "normal": "/textures/campus-v1/palm-bark-normal.webp",
+      "roughness": "/textures/campus-v1/palm-bark-roughness.webp"
+    },
+    "soil": {
+      "label": "Tierra de jardín",
+      "colorMode": "color",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/soil.webp",
+      "mobileAlbedo": "/textures/campus-v1/soil.webp",
+      "normal": "/textures/campus-v1/soil-normal.webp",
+      "roughness": "/textures/campus-v1/soil-roughness.webp"
+    },
+    "synthetic": {
+      "label": "Césped sintético",
+      "colorMode": "color",
+      "resolution": 512,
+      "tileMeters": [
+        2.4,
+        2.4
+      ],
+      "albedo": "/textures/campus-v1/synthetic.webp",
+      "mobileAlbedo": "/textures/campus-v1/synthetic.webp",
+      "normal": "/textures/campus-v1/synthetic-normal.webp",
+      "roughness": "/textures/campus-v1/synthetic-roughness.webp"
+    }
+  },
+  "foliage": {
+    "tree": "/textures/campus-v1/tree-leaves.webp",
+    "palm": "/textures/campus-v1/palm-frond.webp"
+  }
+}

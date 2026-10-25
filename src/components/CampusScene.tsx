@@ -1,6 +1,6 @@
-import { Edges, Line, Sky } from '@react-three/drei'
+import { ContactShadows, Edges, Line } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { type Ref, memo, useEffect, useMemo } from 'react'
+import { type ReactNode, type Ref, Suspense, memo, useEffect, useMemo } from 'react'
 import { ACESFilmicToneMapping, DoubleSide, ExtrudeGeometry, Shape, ShapeGeometry, Vector2 } from 'three'
 import {
   CAMPUS_AREAS,
@@ -34,6 +34,7 @@ import { MaxwellEntrance } from './MaxwellEntrance'
 import { MaxwellCourtyard } from './MaxwellCourtyard'
 import { MiguelGardenEntrance } from './MiguelGardenEntrance'
 import { MiguelBuilding, MiguelEntrance } from './MiguelDeSantiago'
+import { MiguelMaterials, useWaterReflection } from './MiguelMaterials'
 import { CAMPUS_GATE, CAMPUS_GATE_CUTOUT, CAMPUS_GATE_LINTEL } from '../lib/miguel'
 import { PIN_POSITIONS } from '../lib/entrances'
 import { DaVinciPassage } from './DaVinciPassage'
@@ -56,9 +57,11 @@ import { SPORT_ZONES, TERRAIN_CUTOUTS, PATH_LEVEL, terrainHeightAt } from '../li
 import { LandscapeDetails } from './LandscapeDetails'
 import { createWalkwayGeometry, createTerrainShapes, createPavedShapes } from '../lib/architecture'
 import { createCampusMaterials, type CampusMaterials } from '../lib/materials'
-import { NEWTON_ENTRANCE, newtonHeightAt } from '../lib/newton'
-import { GALILEO_LAGOON, galileoHeightAt } from '../lib/galileo'
-import { createCampusGroundShapes, createCampusRetainingGeometry } from '../lib/ground'
+import { CampusSky } from './CampusSky'
+import { SceneLoadBoundary, SceneReady, useCampusTextures } from './CampusTextures'
+import { NEWTON_ENTRANCE } from '../lib/newton'
+import { GALILEO_LAGOON } from '../lib/galileo'
+import { createCampusGroundShapes, createCampusRetainingGeometry, createLandscapePavingGeometry, createLandscapePavingWalls } from '../lib/ground'
 import { CAMPUS_ELEVATION, cityBaseHeightAt } from '../lib/elevation'
 import { CAMPUS_STREET_CUTOUTS } from '../lib/campus'
 import { centroid, pointInPolygon } from '../lib/geo'
@@ -151,8 +154,6 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
     ? !ACADEMIC_COMPLEX.buildings.includes(building.info?.id ?? '') && !ACADEMIC_COMPLEX.extraFootprints.includes(building.osmId)
     : !interiorBuildingId || building.info?.id !== interiorBuildingId), [interiorBuildingId])
   const lightweight = useLightweightRendering()
-  const materials = useMemo(createCampusMaterials, [])
-  useEffect(() => () => materials.dispose(), [materials])
   const focus = useMemo((): MapFocus => {
     const aboveThePanel = !!selectedBuildingId
     // With a route, frame the whole walk; otherwise just the selected building.
@@ -169,20 +170,22 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
   }, [selectedBuildingId, props.outdoorRoute])
 
   return (
-    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, antialias: true, powerPreference: 'high-performance' }} onCreated={({ scene }) => { scene.environmentIntensity = 0.4; requestAnimationFrame(() => props.onReady?.()) }} dpr={[1, 2]} frameloop={props.walking ? 'always' : 'demand'} shadows="percentage">
+    <SceneLoadBoundary onFail={props.onReady}>
+    <Canvas camera={{ position: INITIAL_CAMERA, fov: 45, near: 5, far: 4000 }} gl={{ toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, antialias: true, powerPreference: 'high-performance' }} dpr={[1, 2]} frameloop={props.walking ? 'always' : 'demand'} shadows="percentage">
+      <Suspense fallback={null}><CampusSky walking={props.walking} /><MiguelMaterials><WithCampusMaterials>{(materials) => <>
       <color attach="background" args={[COLOR.city]} />
       {import.meta.env.DEV && <SceneMetrics />}
       <fog attach="fog" args={[COLOR.city, 900, 2400]} />
-      <Sky distance={4500} sunPosition={[-140, 240, 100]} turbidity={4} rayleigh={0.6} mieCoefficient={0.005} />
-      <primitive object={materials.environment} attach="environment" />
-      <hemisphereLight args={['#e2edf0', '#72654d', 0.75]} />
-      <ambientLight intensity={0.12} />
+      {/* The scene has no environment map (no reflections, none of its cost): this sky/ground fill replaces the soft ambient light it used to add. */}
+      <hemisphereLight args={['#e2edf0', '#8a7c63', 1]} />
+      <ambientLight intensity={0.04} />
       <directionalLight
         position={[-140, 240, 100]}
         color="#fff1da"
         intensity={2.8}
         castShadow
-        shadow-mapSize={lightweight ? [1024, 1024] : [2048, 2048]}
+        shadow-mapSize={lightweight ? [1024, 1024] : [4096, 4096]}
+        shadow-radius={2}
         shadow-bias={-0.00015}
         shadow-normalBias={0.035}
         shadow-camera-left={-230}
@@ -196,9 +199,9 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <StaticDetails>
       <CityContext />
       <Ground materials={materials} />
-      <CampusBridges />
+      <CampusBridges materials={materials} />
       <HayekEntrance materials={materials} />
-      <LandscapeDetails />
+      <LandscapeDetails materials={materials} />
       <group position={[0, CAMPUS_ELEVATION, 0]}>
       <ColiseoLandscape materials={materials} />
       <SportsGround materials={materials} />
@@ -221,6 +224,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       <MaxwellDragon materials={materials} />
       </group>
       </StaticDetails>
+      <ContactShadows position={[-94.5, CAMPUS_ELEVATION + .585, 28.6]} scale={1} width={54} height={24} opacity={.32} blur={1.8} far={22} frames={1} resolution={512} color="#514936" />
       <CampusAnimals walking={props.walking} onNearbyAnimalChange={props.onNearbyAnimalChange}/>
       <CachedShadows sceneKey={`${plan?.buildingId}|${interiorBuildingId}|${props.activeFloor}|${lightweight}`} />
 
@@ -239,7 +243,7 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
       )}
       </LabelCollision>
 
-      <FacadeDetails buildings={exteriors} />
+      <FacadeDetails buildings={exteriors} materials={materials} />
       <group position={[0, CAMPUS_ELEVATION, 0]}>
       {interiorBuildingId === 'coliseo' && <ColiseoInterior materials={materials} />}
       {interiorBuildingId === ACADEMIC_COMPLEX.id && <AcademicComplexInterior materials={materials} floor={props.activeFloor} />}
@@ -256,9 +260,21 @@ export const CampusScene = memo(function CampusScene(props: SceneProps) {
         focusKey={`${selectedBuildingId}|${props.originId}|${!!props.outdoorRoute}`}
         onViewChange={props.onViewChange}
       />}
+      <SceneReady onReady={props.onReady} />
+      </>}</WithCampusMaterials></MiguelMaterials></Suspense>
     </Canvas>
+    </SceneLoadBoundary>
   )
 })
+
+/** Builds the shared materials from the loaded images, so nothing is drawn before they exist. */
+function WithCampusMaterials({ children }: { children: (materials: CampusMaterials) => ReactNode }) {
+  const textures = useCampusTextures()
+  const reflection = useWaterReflection()
+  const materials = useMemo(() => createCampusMaterials(textures, reflection), [textures, reflection])
+  useEffect(() => () => materials.dispose(), [materials])
+  return <>{children(materials)}</>
+}
 
 /** Neutral city volumes share one draw; the university remains individually selectable. */
 function CityContext() {
@@ -307,7 +323,7 @@ function Ground({ materials }: { materials: CampusMaterials }) {
       {CAMPUS_BOUNDARY.length > 0 && <Line points={CAMPUS_BOUNDARY.map(([x, y]) => toScene(x, y, CAMPUS_ELEVATION + 0.6 + campusSlopeOffsetAt([x,y])))} color="#a0b69a" lineWidth={1} />}
       {CAMPUS_AREAS.filter((area) => (area.kind !== 'green' || !pointInPolygon(centroid(area.ring), CAMPUS_BOUNDARY)) && !SPORT_ZONES.some((zone) => zone.area.osmId === area.osmId)).map((area, i) => (
         <group key={i} position={[0, pointInPolygon(centroid(area.ring), CAMPUS_BOUNDARY) ? CAMPUS_ELEVATION : 0, 0]}>
-          <FlatArea ring={area.ring} height={0.4} color={AREA_COLOR[area.kind]} cutTerrain={area.kind !== 'water'} graded={area.kind !== 'water' && pointInPolygon(centroid(area.ring), CAMPUS_BOUNDARY)} cityGrade={!pointInPolygon(centroid(area.ring), CAMPUS_BOUNDARY)} material={area.kind === 'water' ? materials.pondWater : area.kind === 'green' ? materials.grass : undefined} />
+          <FlatArea ring={area.ring} height={0.4} color={AREA_COLOR[area.kind]} cutTerrain={area.kind !== 'water'} graded={area.kind !== 'water' && pointInPolygon(centroid(area.ring), CAMPUS_BOUNDARY)} cityGrade={!pointInPolygon(centroid(area.ring), CAMPUS_BOUNDARY)} material={area.kind === 'water' ? materials.pondWater : area.kind === 'green' ? materials.grass : materials.synthetic} />
           {area.kind === 'water' && area.osmId !== GALILEO_LAGOON.osmId && <Line points={area.ring.map(([x, y]) => toScene(x, y, 0.6))} color="#a19a82" lineWidth={0.8} worldUnits />}
           {area.kind === 'pitch' && <Line points={area.ring.map(([x, y]) => toScene(x, y, 0.6))} color="#f2f4df" lineWidth={0.2} worldUnits />}
         </group>
@@ -318,23 +334,24 @@ function Ground({ materials }: { materials: CampusMaterials }) {
 
 function CampusGround({ materials }: { materials: CampusMaterials }) {
   const retaining = useMemo(createCampusRetainingGeometry, [])
+  const retainingWall = materials.surface('concrete', '#a89e88', { roughness: .96, side: DoubleSide })
   const cityPaving = useMemo(() => new ShapeGeometry(createPavedShapes(SATELLITE_PLAZAS.filter(r => !pointInPolygon(centroid(r), CAMPUS_BOUNDARY)), CAMPUS_BUILDINGS.map(b => b.ring))), [])
   useEffect(() => () => { retaining.dispose(); cityPaving.dispose() }, [retaining, cityPaving])
-  const { paving, grass, landscapePaving } = useMemo(() => {
+  const { paving, grass, landscapePaving, landscapeWalls } = useMemo(() => {
     const shapes = createCampusGroundShapes()
-    const flat = new ShapeGeometry(shapes.landscapePaving)
-    const landscapePaving = createGradedSurfaceGeometry(flat, 'shape', 1, p => (newtonHeightAt(p) ?? galileoHeightAt(p) ?? PATH_LEVEL) - PATH_LEVEL)
-    flat.dispose(); scaleGroundUV(landscapePaving)
-    return { paving: gradedShapes(shapes.paving), grass: gradedShapes(shapes.grass), landscapePaving }
+    const landscapePaving = createLandscapePavingGeometry(shapes.landscapePaving)
+    scaleGroundUV(landscapePaving)
+    return { paving: gradedShapes(shapes.paving), grass: gradedShapes(shapes.grass), landscapePaving, landscapeWalls: createLandscapePavingWalls(shapes.landscapePaving) }
   }, [])
-  useEffect(() => () => { paving.dispose(); grass.dispose(); landscapePaving.dispose() }, [paving, grass, landscapePaving])
+  useEffect(() => () => { paving.dispose(); grass.dispose(); landscapePaving.dispose(); landscapeWalls.dispose() }, [paving, grass, landscapePaving, landscapeWalls])
   return <group>
-    <mesh geometry={retaining} receiveShadow raycast={() => null}><meshStandardMaterial color="#a89e88" roughness={.96} side={DoubleSide}/></mesh>
+    <mesh geometry={retaining} material={retainingWall} receiveShadow raycast={() => null} />
     <mesh geometry={cityPaving} material={materials.paving} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} receiveShadow raycast={() => null}/>
     <group position={[0, CAMPUS_ELEVATION, 0]}>
     <mesh geometry={paving} material={materials.paving} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} receiveShadow raycast={() => null} />
     <mesh geometry={grass} material={materials.grass} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} receiveShadow raycast={() => null} />
     <mesh geometry={landscapePaving} material={materials.paving} rotation={[-Math.PI / 2, 0, 0]} position={[0, PATH_LEVEL, 0]} receiveShadow raycast={() => null} />
+    <mesh geometry={landscapeWalls} material={materials.paving} receiveShadow raycast={() => null} />
     </group>
   </group>
 }
@@ -447,7 +464,7 @@ function BuildingMesh(props: { building: CampusBuilding; materials: CampusMateri
       {tunnelUpper && <mesh geometry={tunnelUpper} position={[0,HALL_TUNNEL.ceiling,0]} rotation={[-Math.PI/2,0,0]} material={materials.brick} castShadow receiveShadow onClick={event=>{if(event.delta>5)return;event.stopPropagation();onSelect('einstein')}}/>}
       {building.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe', 'coliseo', 'banos-deportes'].includes(info?.id ?? '') && <IllustratedRoof building={building} height={height} materials={materials} />}
       {building.onCampus && <LandmarkRoof building={building} height={height} materials={materials} />}
-      {selected && !pin && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
+      {selected && !pin && info?.id !== 'miguel-de-santiago' && <Line points={building.ring.map(([x, y]) => toScene(x, y, 0.8))} color={COLOR.red} lineWidth={0.35} worldUnits raycast={() => null} />}
       {selected && <DestinationMarker position={pin ? toScene(...pin, terrainHeightAt(pin) + 10 - groundY) : toScene(...building.center, height + roofExtra)} buildingId={info?.id} name={building.name} />}
       {props.labelled && building.name && !selected && (
         <MapLabel text={building.name} position={toScene(...building.center, height + roofExtra + 4)} depthTest={false} priority={labelPriority(building, false)} />

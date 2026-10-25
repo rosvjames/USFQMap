@@ -10,17 +10,15 @@ function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMate
   return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size}/></mesh>
 }
 export function HallPlazaFacade({materials}:{materials:CampusMaterials}) {
-  const finishes=useMemo(()=>({
-    yellow:new MeshStandardMaterial({color:'#e3be78',roughness:.95}),
-    green:new MeshStandardMaterial({color:'#3f7263',roughness:.86}),
-    iron:new MeshStandardMaterial({color:'#293c33',roughness:.65,metalness:.4}),
-  }),[])
+  const iron=useMemo(()=>new MeshStandardMaterial({color:'#293c33',roughness:.65,metalness:.4}),[])
+  // Yellow plaster wall; the green dome and its slim mullions are painted sheet metal.
+  const finishes={yellow:materials.surface('stucco','#e3be78',{roughness:.95}),green:materials.surface('roof-metal','#3f7263',{roughness:.86,metalness:0}),iron}
   const upper=useMemo(()=>new ExtrudeGeometry(HALL_PLAZA_WING.map(p=>new Shape((p[0] as Vec2[]).map(([x,y])=>new Vector2(x,y)))),{depth:2,bevelEnabled:false}),[])
   const arch=useMemo(()=>{
     const shape=new Shape();shape.moveTo(-.5,0);shape.lineTo(.5,0);shape.lineTo(.5,1.5);shape.absarc(0,1.5,.5,0,Math.PI,false);shape.lineTo(-.5,0)
     return new ExtrudeGeometry(shape,{depth:.1,bevelEnabled:false,curveSegments:16})
   },[])
-  useEffect(()=>()=>{Object.values(finishes).forEach(m=>m.dispose());upper.dispose();arch.dispose()},[finishes,upper,arch])
+  useEffect(()=>()=>{iron.dispose();upper.dispose();arch.dispose()},[iron,upper,arch])
   return <group>
     {/* Add height above the existing wing; the complete Hall ground volume stays intact. */}
     <mesh geometry={upper} position={[0,5.5,0]} rotation={[-Math.PI/2,0,0]} material={finishes.yellow} castShadow receiveShadow raycast={noRaycast}/>

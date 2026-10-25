@@ -1,8 +1,12 @@
-import { useEffect, useMemo } from 'react'
-import { CatmullRomCurve3, ExtrudeGeometry, MeshStandardMaterial, Shape, Vector3 } from 'three'
+import { useEffect, useMemo, useState } from 'react'
+import { useGLTF } from '@react-three/drei'
+import { ExtrudeGeometry, type Mesh, MeshStandardMaterial, Shape } from 'three'
 import type { CampusMaterials } from '../lib/materials'
+import { DAVID_MODEL } from '../lib/davidModel'
 import { HALL_ENTRANCE as hall } from '../lib/hall'
 import { createSculptureGeometry } from '../lib/sculptures'
+import { Bush } from './CampusPlants'
+import { LIGHTWEIGHT_QUERY } from './RenderSettings'
 
 type Point = [number, number, number]
 const noRaycast = () => null
@@ -27,22 +31,34 @@ function Pediment({ points, material }: { points: [number, number][]; material: 
   return <mesh geometry={geometry} position={[0, 0, 3.05]} material={material} castShadow receiveShadow raycast={noRaycast} />
 }
 
-function Rope({ a, b }: { a: Point; b: Point }) {
-  const curve = useMemo(() => new CatmullRomCurve3([new Vector3(...a), new Vector3((a[0] + b[0]) / 2, a[1] - 0.22, (a[2] + b[2]) / 2), new Vector3(...b)]), [a, b])
-  return <mesh raycast={noRaycast}><tubeGeometry args={[curve, 16, 0.018, 6, false]} /><meshStandardMaterial color="#9a2831" roughness={0.9} /></mesh>
+/** Scan the World's David (CC BY-SA 4.0). Drei caches the parsed file, so each mount draws its own clone of it. */
+function DavidStatue({ position }: { position: Point }) {
+  // The variant is chosen once: switching it later would load another file and blank the statue.
+  const [lightweight] = useState(() => window.matchMedia(LIGHTWEIGHT_QUERY).matches)
+  const { scene } = useGLTF(lightweight ? DAVID_MODEL.mobile : DAVID_MODEL.desktop, false, false)
+  // clone() copies the nodes but shares geometry and material with the cache; neither is disposed here.
+  const statue = useMemo(() => {
+    const copy = scene.clone()
+    copy.traverse((object) => {
+      const mesh = object as Mesh
+      if (!mesh.isMesh) return
+      mesh.castShadow = mesh.receiveShadow = true
+      mesh.raycast = noRaycast
+    })
+    return copy
+  }, [scene])
+  return <primitive object={statue} position={position} />
 }
 
-/** Photo-derived entrance proportions and original approximate sculpture meshes. */
+/** Photo-derived entrance proportions, approximate lion meshes and the scanned David. */
 export function HallEntrance({ materials }: { materials: CampusMaterials }) {
-  const david = useMemo(() => createSculptureGeometry('david'), [])
   const lion = useMemo(() => createSculptureGeometry('lion'), [])
   const trim = materials.cream, red = materials.hallRed, stone = materials.entranceStone
   const fittings = useMemo(() => new MeshStandardMaterial({ color: '#313b36', metalness: 0.55, roughness: 0.45 }), [])
-  const gable = useMemo(() => new MeshStandardMaterial({ color: '#aaafa5', roughness: 0.94 }), [])
-  useEffect(() => () => { david.dispose(); lion.dispose(); fittings.dispose(); gable.dispose() }, [david, lion, fittings, gable])
+  const gable = materials.surface('stucco', '#aaafa5', { roughness: 0.94 })
+  useEffect(() => () => { lion.dispose(); fittings.dispose() }, [lion, fittings])
   const redSpandrel = useMemo<[number, number][]>(() => [[-7.1, 5.45], [0, 7.1], [7.1, 5.45], [7.1, 7.5], [-7.1, 7.5]], [])
   const grayPediment = useMemo<[number, number][]>(() => [[-7.1, 5.45], [7.1, 5.45], [0, 7.1]], [])
-  const ropes: Point[] = [[-1.05, hall.level + 0.82, 3.1], [1.05, hall.level + 0.82, 3.1], [1.05, hall.level + 0.82, 4.8], [-1.05, hall.level + 0.82, 4.8]]
   return <group position={[hall.center[0], 0, -hall.center[1]]} rotation={[0, hall.angle, 0]}>
     <Block at={[0, (hall.level + 0.25) / 2, hall.platformFront / 2]} size={[18.8, hall.level - 0.25, hall.platformFront]} material={stone} />
     {Array.from({ length: hall.steps }, (_, i) => {
@@ -69,25 +85,18 @@ export function HallEntrance({ materials }: { materials: CampusMaterials }) {
     <Block at={[0, 7.49, 3.18]} size={[17.2, 0.24, 0.85]} material={trim} />
     <Block at={[0, 7.68, 3.18]} size={[17.65, 0.14, 1.0]} material={trim} />
     {[-4.75, 0, 4.75].map((x) => <group key={x} position={[x, hall.level, 0.08]}>
-      <mesh position={[0, 1.55, 0]} receiveShadow raycast={noRaycast}><boxGeometry args={[4.05, 3.1, 0.10]} /><meshStandardMaterial color="#263936" roughness={0.28} metalness={0.3} /></mesh>
+      <mesh position={[0, 1.55, 0]} material={materials.glass('#263936')} receiveShadow raycast={noRaycast}><boxGeometry args={[4.05, 3.1, 0.10]} /></mesh>
       {[-2.1, -1.05, 0, 1.05, 2.1].map((px) => <Block key={px} at={[px, 1.55, 0.08]} size={[0.07, 3.15, 0.08]} material={fittings} />)}
       {[0.06, 1.75, 2.65, 3.15].map((y) => <Block key={y} at={[0, y, 0.08]} size={[4.25, 0.065, 0.08]} material={fittings} />)}
       {[-1.55, -0.52, 0.52, 1.55].map((px) => <group key={px} position={[px, 2.9, 0.1]}>
         {[-0.7, 0.7].map((angle) => <group key={angle} rotation={[0, 0, angle]}><Block at={[0, 0, 0]} size={[0.035, 0.6, 0.035]} material={fittings} /></group>)}
       </group>)}
     </group>)}
-    <Block at={[0, hall.level + 0.075, 4]} size={[1.4, 0.15, 1.3]} material={trim} />
-    <mesh geometry={david} position={[0, hall.level + 0.15, 4]} scale={[2.35, 2.35, 2.35]} castShadow receiveShadow raycast={noRaycast}>
-      <meshStandardMaterial vertexColors roughness={0.75} metalness={0.015} />
-    </mesh>
-    {ropes.map((point, i) => <group key={i}>
-      <mesh position={[point[0], hall.level + 0.43, point[2]]} castShadow raycast={noRaycast}><cylinderGeometry args={[0.025, 0.045, 0.86, 12]} /><meshStandardMaterial color="#b79c59" metalness={0.75} roughness={0.3} /></mesh>
-      <mesh position={[point[0], hall.level + 0.035, point[2]]} raycast={noRaycast}><cylinderGeometry args={[0.14, 0.17, 0.07, 16]} /><meshStandardMaterial color="#b79c59" metalness={0.7} roughness={0.3} /></mesh>
-      <Rope a={point} b={ropes[(i + 1) % ropes.length]} />
-    </group>)}
+    <Block at={[0, hall.level + 0.075, 4]} size={[2, 0.15, 1.3]} material={trim} />
+    <DavidStatue position={[0, hall.level + 0.15, 4]} />
     {[-6.2, 6.2].map((x) => <group key={x} position={[x, hall.level, 1.25]}>
       <mesh position={[0, 0.23, 0]} material={trim} raycast={noRaycast}><cylinderGeometry args={[0.42, 0.24, 0.46, 24]} /></mesh>
-      <mesh position={[0, 0.48, 0]} castShadow raycast={noRaycast}><sphereGeometry args={[0.36, 16, 12]} /><meshStandardMaterial color="#4f6949" roughness={1} /></mesh>
+      <Bush materials={materials} position={[0, 0.5, 0]} scale={[.42, .38, .42]} tone="#c3d0a4" />
     </group>)}
   </group>
 }

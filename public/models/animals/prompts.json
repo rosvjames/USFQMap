@@ -1,0 +1,14 @@
+{
+  "generator": "GPT Image",
+  "purpose": "Diffuse animal coat textures",
+  "textures": [
+    {
+      "kind": "pig",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless tileable animal skin albedo for a realistic small domestic pig in a real-time 3D campus scene. One square image only, filling entire frame. Extreme close-up orthographic diffuse texture of pale dusty pink porcine skin, subtle irregular warm gray pink mottling, fine pores and extremely sparse tiny pale short bristles, soft and understated. Skin is natural and slightly rough, not shiny or waxy. Even neutral light, NO baked shadows, NO folds with strong lighting, NO body parts, NO pig face, NO eyes, NO nose, NO legs, NO background, NO text. Seamless edges on both axes. Moderate natural detail without dramatic marks, spots or high contrast. Suitable for repeated texture across a continuous 3D pig body. No scratches, no injuries, no redness, no wet sheen. Texture sheet, not an animal portrait."
+    },
+    {
+      "kind": "dog",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless tileable short black greyhound fur albedo for a lightweight real-time 3D animal material. One square image, entire frame. Orthographic macro close-up of very short sleek black charcoal canine fur, extremely fine close-lying hairs with a soft prevailing direction, natural slight charcoal gray variation. The diffuse color remains mostly dark charcoal gray, dark enough to read as a black dog under sunlight but with visible fine hair detail. No long hair, no fluffy coat, no clumps, no gray patches, no spots. Even neutral illumination, no directional highlights or shadows baked in. Seamless edges in both axes. NO dog face, NO eyes, NO ears or limbs, NO background, NO text. Just a flat physically plausible diffuse material texture for a greyhound coat, not a photograph of a dog."
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react'
-import { CanvasTexture, DoubleSide, ExtrudeGeometry, MeshStandardMaterial, Quaternion, Shape, SRGBColorSpace, Vector3 } from 'three'
+import { CanvasTexture, ExtrudeGeometry, MeshStandardMaterial, Quaternion, Shape, SRGBColorSpace, Vector3 } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import { MIGUEL_GARDEN_ENTRANCE as h, MIGUEL_GARDEN_BIN as bin, MIGUEL_GARDEN_TABLES, MIGUEL_ROCKET as rocket } from '../lib/miguelGarden'
-import { foliageTexture, palmFrond } from './LandscapeDetails'
+import { Bush, Palm, Tree } from './CampusPlants'
 
 const noRaycast=()=>null
 type Point=[number,number,number]
@@ -42,26 +42,22 @@ function rocketPaint() {
 }
 
 export function MiguelRocketGarden({materials}:{materials:CampusMaterials}) {
-  const paint=useMemo(rocketPaint,[]),leaves=useMemo(foliageTexture,[]),frond=useMemo(palmFrond,[])
-  const finish=useMemo(()=>({
+  const paint=useMemo(rocketPaint,[])
+  const painted=useMemo(()=>({
     body:new MeshStandardMaterial({map:paint,roughness:.78,color:'#f7f5ee'}),
     white:new MeshStandardMaterial({color:'#e9e6dc',roughness:.78}),
     black:new MeshStandardMaterial({color:'#20262a',roughness:.66,metalness:.25}),
     metal:new MeshStandardMaterial({color:'#999e9b',roughness:.48,metalness:.65}),
     green:new MeshStandardMaterial({color:'#3f5947',roughness:.83,metalness:.25}),
-    gravel:new MeshStandardMaterial({color:'#d7d4bd',map:materials.grass.map,roughness:1}),
-    earth:new MeshStandardMaterial({color:'#8d8160',map:materials.grass.map,roughness:1}),
-    bark:new MeshStandardMaterial({color:'#766954',roughness:1}),
-    leaves:new MeshStandardMaterial({color:'#5f7545',map:leaves,alphaTest:.45,side:DoubleSide,roughness:1}),
-    palm:new MeshStandardMaterial({color:'#799149',side:DoubleSide,roughness:1}),
-    hedge:new MeshStandardMaterial({color:'#8d9c40',roughness:1}),
     flower:new MeshStandardMaterial({color:'#9673a0',roughness:1}),
-  }),[paint,leaves,materials])
+  }),[paint])
+  // The worn earth and the pale gravel seat are the soil and sand families; bark comes from the shared trunk finish.
+  const finish={...painted,gravel:materials.gravel,earth:materials.soil,bark:materials.bark}
   const fin=useMemo(()=>{
     const shape=new Shape();shape.moveTo(.75,1.55);shape.lineTo(1.8,1.55);shape.lineTo(1.8,1.9);shape.lineTo(.82,4.4);shape.closePath()
     return new ExtrudeGeometry(shape,{depth:.07,bevelEnabled:false})
   },[])
-  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());paint.dispose();leaves.dispose();frond.dispose();fin.dispose()},[finish,paint,leaves,frond,fin])
+  useEffect(()=>()=>{Object.values(painted).forEach(m=>m.dispose());paint.dispose();fin.dispose()},[painted,paint,fin])
   return <group position={[h.center[0],.55,-h.center[1]]} rotation={[0,h.angle,0]}>
     {/* Sparse lawn with the worn earth seen between the exhibit and the bins. */}
     {[[10,17,3.4,5.7],[7.5,11,1.8,3.3],[12.3,21,2.1,2.2]].map(([x,z,rx,rz],i)=><mesh key={i} position={[x,-.025+i*.002,z]} rotation={[-Math.PI/2,0,.17+i*.3]} scale={[rx,rz,1]} material={finish.earth} receiveShadow raycast={noRaycast}><circleGeometry args={[1,28]}/></mesh>)}
@@ -126,19 +122,10 @@ export function MiguelRocketGarden({materials}:{materials:CampusMaterials}) {
     <mesh position={[12.73,3.91,12.8]} material={finish.white} raycast={noRaycast}><sphereGeometry args={[.16,12,8]}/></mesh>
     <mesh position={[12.73,3.85,12.8]} material={finish.black} raycast={noRaycast}><sphereGeometry args={[.125,12,8]}/></mesh>
     {/* Palms next to the glazing; broad, branching trees stay beyond the exhibit. */}
-    {[[4.8,2.4,5.8],[18,3.6,6.8]].map(([x,z,height],i)=><group key={i} position={[x,0,z]}>
-      <mesh position={[0,height/2,0]} material={finish.bark} castShadow raycast={noRaycast}><cylinderGeometry args={[.15,.25,height,9]}/></mesh>
-      {Array.from({length:13},(_,j)=><mesh key={j} position={[0,height-.2+(j%3)*.15,0]} rotation={[0,j*Math.PI*2/13,.1]} scale={[.85,.85,.85]} geometry={frond} material={finish.palm} castShadow raycast={noRaycast}/>)}
-    </group>)}
-    {[[20,23,7.8],[20,3,6.3]].map(([x,z,height],i)=><group key={i} position={[x,0,z]}>
-      <Rod from={[0,0,0]} to={[.3,height*.75,0]} radius={.15} material={finish.bark}/>
-      {Array.from({length:6},(_,j)=>{const t=j*2.4,dx=Math.sin(t)*1.8,dz=Math.cos(t)*1.8;return <group key={j}>
-        <Rod from={[.15,height*.45,0]} to={[dx,height-.6,dz]} radius={.06} material={finish.bark}/>
-        <mesh position={[dx,height+(j%2)*.6,dz]} scale={[1.8,1.1,1.7]} rotation={[0,t,0]} material={finish.leaves} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,2]}/></mesh>
-      </group>})}
-    </group>)}
+    {[[4.8,2.4,5.8],[18,3.6,6.8]].map(([x,z,height],i)=><Palm key={i} materials={materials} position={[x,0,z]} height={height} girth={1.05} crown={.85} yaw={i*2.1}/>)}
+    {[[20,23,7.8],[20,3,6.3]].map(([x,z,height],i)=><Tree key={i} materials={materials} position={[x,0,z]} height={height*.8} girth={.85} crown={3.2} rotation={i*2.7} tone={i?'#b2c29f':'#bdc9aa'}/>)}
     {[[13,4],[19,7],[19.8,12.5],[12.4,20],[6,2]].map(([x,z],i)=><group key={i} position={[x,0,z]}>
-      {Array.from({length:9},(_,j)=><mesh key={j} position={[Math.sin(j*2.4)*1.1,.35,Math.cos(j*2.4)*.65]} scale={[.55,.37,.5]} material={finish.hedge} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>)}
+      <Bush materials={materials} position={[0,.4,0]} scale={[1.55,.62,1.1]} rotation={i*1.4} tone="#d3dba6"/>
       {i%2===0&&Array.from({length:12},(_,j)=><mesh key={`f${j}`} position={[Math.sin(j*2.4)*.8,.72+Math.sin(j)*.1,Math.cos(j*2.4)*.5]} material={finish.flower} raycast={noRaycast}><icosahedronGeometry args={[.11,0]}/></mesh>)}
     </group>)}
   </group>

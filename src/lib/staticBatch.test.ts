@@ -1,8 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import { BoxGeometry, Group, InstancedMesh, Mesh, MeshStandardMaterial, PlaneGeometry } from 'three'
+import { BoxGeometry, Group, InstancedMesh, Mesh, MeshStandardMaterial, MeshPhysicalMaterial, PlaneGeometry } from 'three'
 import { batchStaticMeshes } from './staticBatch'
 
 describe('static scene batching', () => {
+  it('preserves physical glass coatings instead of merging them into matte surfaces', () => {
+    const root = new Group(), geometry = new BoxGeometry()
+    const materials = [new MeshPhysicalMaterial({ clearcoat: 1, ior: 1.5 }), new MeshPhysicalMaterial({ clearcoat: 0, ior: 1.2 })]
+    for (const material of materials) for (const x of [-2, 2]) {
+      const mesh = new Mesh(geometry, material); mesh.position.x = x; root.add(mesh)
+    }
+    const result = batchStaticMeshes(root)
+    expect(result.batches).toHaveLength(2)
+    result.dispose(); geometry.dispose(); materials.forEach(material => material.dispose())
+  })
   it('combines identical materials while preserving world positions and shadow flags', () => {
     const root = new Group(), nested = new Group(); root.position.set(10, 0, 20); nested.position.x = 5; root.add(nested)
     for (const x of [-2, 2]) {

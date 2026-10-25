@@ -37,10 +37,9 @@ export function HayekEntrance({materials}:{materials:CampusMaterials}) {
   const terraceLeft=HAYEK_LANDING[0][0], terraceRight=HAYEK_LANDING[1][0]
   const finishes=useMemo(()=>({
     iron:new MeshStandardMaterial({color:'#27302c',metalness:.45,roughness:.66}),
-    glass:new MeshStandardMaterial({color:'#5c624a',emissive:'#bc923d',emissiveIntensity:.3,roughness:.38,metalness:.12}),
+    glass:new MeshStandardMaterial({color:'#5c624a',emissive:'#bc923d',emissiveIntensity:.3,roughness:.55,metalness:0}),
     warm:new MeshStandardMaterial({color:'#a28b4e',emissive:'#dfad45',emissiveIntensity:.3,roughness:.85}),
     lamp:new MeshStandardMaterial({color:'#eee4b2',emissive:'#ffde72',emissiveIntensity:.8}),
-    hedge:new MeshStandardMaterial({color:'#71813d',roughness:1}),
   }),[])
   const banner=useMemo(bannerTexture,[])
   const bannerMaterial=useMemo(()=>new MeshStandardMaterial({map:banner,roughness:1}),[banner])
@@ -95,7 +94,7 @@ export function HayekEntrance({materials}:{materials:CampusMaterials}) {
     <HayekApice materials={materials}/>
     {[portalX-4.9,portalX+4.2,doorX+5.8,doorX+10.8].map((x,i)=><group key={i} position={[x,level,.95]}>
       <Block at={[0,.28,0]} size={[i<2?1.2:3.4,.56,.8]} material={materials.hayekBrick}/>
-      <Block at={[0,.62,0]} size={[i<2?1.05:3.2,.16,.68]} material={finishes.hedge}/>
+      <Block at={[0,.62,0]} size={[i<2?1.05:3.2,.16,.68]} material={materials.hedge}/>
     </group>)}
     <Block at={[doorX+2.85,level+1.25,.5]} size={[.8,1.5,.1]} material={materials.cream}/>
     <Railing from={entrance.facadeMidpoint-entrance.facadeLength/2} to={entrance.facadeMidpoint+entrance.facadeLength/2} level={top+.1} z={.3} iron={finishes.iron}/>

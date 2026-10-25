@@ -82,14 +82,17 @@ export function createGradedSurfaceGeometry(input: BufferGeometry, frame: 'shape
   const triangle = (a: Vertex, b: Vertex, c: Vertex, depth: number) => {
     const points = [a, b, c].map(map)
     const outside = Math.max(...points.map(p => p[0])) < bounds.minX || Math.min(...points.map(p => p[0])) > bounds.maxX || Math.max(...points.map(p => p[1])) < bounds.minY || Math.min(...points.map(p => p[1])) > bounds.maxY
-    const longest = Math.max(...points.map((p, i) => Math.hypot(p[0] - points[(i + 1) % 3][0], p[1] - points[(i + 1) % 3][1])))
+    const lengths = points.map((p, i) => Math.hypot(p[0] - points[(i + 1) % 3][0], p[1] - points[(i + 1) % 3][1]))
+    const longest = Math.max(...lengths)
     if ((outside && offsetAt === campusSlopeOffsetAt) || longest <= maxEdge || depth === 0) { emit(a); emit(b); emit(c); return }
-    const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a)
-    triangle(a, ab, ca, depth - 1); triangle(ab, b, bc, depth - 1)
-    triangle(ca, bc, c, depth - 1); triangle(ab, bc, ca, depth - 1)
+    // Split only an overlong edge: neighbours then sample their shared edge identically,
+    // even when their other edges require different subdivision depths.
+    const edge = lengths.indexOf(longest), vertices = [a, b, c]
+    const start = vertices[edge], end = vertices[(edge + 1) % 3], opposite = vertices[(edge + 2) % 3], middle = mid(start, end)
+    triangle(start, middle, opposite, depth - 1); triangle(middle, end, opposite, depth - 1)
   }
   const count = index?.count ?? position.count
-  for (let i = 0; i < count; i += 3) triangle(read(index?.getX(i) ?? i), read(index?.getX(i + 1) ?? i + 1), read(index?.getX(i + 2) ?? i + 2), 9)
+  for (let i = 0; i < count; i += 3) triangle(read(index?.getX(i) ?? i), read(index?.getX(i + 1) ?? i + 1), read(index?.getX(i + 2) ?? i + 2), 24)
   const geometry = new BufferGeometry()
   geometry.setAttribute('position', new Float32BufferAttribute(vertices, 3))
   geometry.setAttribute('uv', new Float32BufferAttribute(uvs, 2))

@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react'
-import { DoubleSide, MeshStandardMaterial, Vector2 } from 'three'
+import { MeshStandardMaterial, Vector2 } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import { CAMPUS_BUILDINGS } from '../lib/campus'
 import { createPavedShapes } from '../lib/architecture'
 import { DA_VINCI_FRONT as front, DA_VINCI_WORLD_PLAZA, DA_VINCI_FOUNTAIN as fountain, DA_VINCI_PLAZA_TREES, DA_VINCI_LAWNS, DA_VINCI_GARDEN_PATHS } from '../lib/daVinciPlaza'
-import { palmFrond, foliageTexture } from './LandscapeDetails'
+import { Palm, Tree } from './CampusPlants'
 
 type Point=[number,number,number]
 const noRaycast=()=>null
@@ -16,28 +16,20 @@ const pedestalProfile=[[.7,0],[.7,.12],[.48,.22],[.27,.5],[.23,1.25],[.48,1.42],
 
 /** Photograph-guided northwest colonnade and the paved circular-fountain plaza. */
 export function DaVinciPlaza({materials}:{materials:CampusMaterials}) {
-  const foliage=useMemo(foliageTexture,[])
-  const finishes=useMemo(()=>({
-    cream:new MeshStandardMaterial({color:'#ecdcb9',roughness:.94}),
-    glass:new MeshStandardMaterial({color:'#29413b',roughness:.28,metalness:.26}),
-    iron:new MeshStandardMaterial({color:'#293831',roughness:.6,metalness:.45}),
-    tan:new MeshStandardMaterial({color:'#c39b67',roughness:1}),
-    gray:new MeshStandardMaterial({color:'#86877c',roughness:1}),
-    water:new MeshStandardMaterial({color:'#71948d',roughness:.2,metalness:.3}),
-    bark:new MeshStandardMaterial({color:'#71614a',roughness:1}),
-    leaves:new MeshStandardMaterial({color:'#405e38',roughness:1,side:DoubleSide}),
-    crown:new MeshStandardMaterial({color:'#476038',map:foliage,alphaTest:.45,roughness:1}),
-  }),[foliage])
+  const iron=useMemo(()=>new MeshStandardMaterial({color:'#293831',roughness:.6,metalness:.45}),[])
+  // The pane and the fountain water are shared, owned by the campus materials; only the iron is ours to dispose.
+  const finishes={glass:materials.glass('#29413b'),iron,water:materials.pondWater}
+  // The pale facade is plaster and the alternating plaza bands are paving in warm and dark tones.
+  const surfaces={cream:materials.surface('stucco','#ecdcb9',{roughness:.94}),tan:materials.surface('paving','#c39b67',{roughness:1}),gray:materials.surface('paving','#86877c',{roughness:1})}
   const paved=useMemo(()=>createPavedShapes([DA_VINCI_WORLD_PLAZA],CAMPUS_BUILDINGS.map(b=>b.ring)),[])
   const lawns=useMemo(()=>createPavedShapes(DA_VINCI_LAWNS,[...CAMPUS_BUILDINGS.map(b=>b.ring),...DA_VINCI_GARDEN_PATHS]),[])
-  const frond=useMemo(palmFrond,[])
-  useEffect(()=>()=>{Object.values(finishes).forEach(m=>m.dispose());frond.dispose();foliage.dispose()},[finishes,frond,foliage])
+  useEffect(()=>()=>{iron.dispose()},[iron])
   return <group>
     <mesh position={[0,front.ground,0]} rotation={[-Math.PI/2,0,0]} material={materials.paving} receiveShadow raycast={noRaycast}><shapeGeometry args={[paved]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/></mesh>
     <mesh position={[0,.645,0]} rotation={[-Math.PI/2,0,0]} material={materials.garden} receiveShadow raycast={noRaycast}><shapeGeometry args={[lawns]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/></mesh>
     <group position={[front.start[0],0,-front.start[1]]} rotation={[0,front.angle,0]}>
       {/* Two tall window rows, pale side panels and the central terracotta portico. */}
-      <Block at={[front.length/2,5.25,.05]} size={[front.length,10.5,.14]} material={finishes.cream}/>
+      <Block at={[front.length/2,5.25,.05]} size={[front.length,10.5,.14]} material={surfaces.cream}/>
       <Block at={[front.portico,5.22,.15]} size={[17,10.44,.13]} material={materials.hallRed}/>
       {[.7,5.5,10.4].map(y=><Block key={y} at={[front.length/2,y,.21]} size={[front.length,.2,.28]} material={materials.cream}/>)}
       {Array.from({length:10},(_,i)=>(i+.5)*front.length/10).map(x=>[0,1].map(floor=><group key={`${x}-${floor}`}>
@@ -66,16 +58,15 @@ export function DaVinciPlaza({materials}:{materials:CampusMaterials}) {
       <Rail from={.6} to={front.portico-7.4} z={2.7} level={front.level} material={finishes.iron}/>
       <Rail from={front.portico+7.4} to={front.length-.6} z={2.7} level={front.level} material={finishes.iron}/>
       {/* Alternating warm and dark paving bands from the fountain photograph. */}
-      {[3,9,15,21,27,33,38].map((x,i)=><Block key={x} at={[x,.605,16]} size={[i%2?1.8:.8,.025,15.5]} material={i%2?finishes.tan:finishes.gray}/>)}
+      {[3,9,15,21,27,33,38].map((x,i)=><Block key={x} at={[x,.605,16]} size={[i%2?1.8:.8,.025,15.5]} material={i%2?surfaces.tan:surfaces.gray}/>)}
       {[9.5,14.5,19.5,23.5].map(z=><Block key={z} at={[20,.624,z]} size={[37,.025,.09]} material={materials.cream}/>)}
       <RoundFountain materials={materials} water={finishes.water}/>
-      {DA_VINCI_PLAZA_TREES.map(({at,palm},i)=><group key={i} position={[at[0],front.ground,at[1]]}>
-        <mesh position={[0,3.1,0]} material={finishes.bark} castShadow raycast={noRaycast}><cylinderGeometry args={[.2,.35,6.2,12]}/></mesh>
-        {palm?Array.from({length:13},(_,j)=><mesh key={j} geometry={frond} position={[0,6.25+j%3*.13,0]} rotation={[0,j*Math.PI*2/13,0]} scale={[.86,.9,.86]} material={finishes.leaves} castShadow raycast={noRaycast}/>):Array.from({length:8},(_,j)=><mesh key={j} position={[Math.cos(j*2.4)*1.6,5.6+Math.sin(j*3)*.7,Math.sin(j*2.4)*1.6]} scale={[2.2,1.6,2.2]} material={finishes.crown} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,2]}/></mesh>)}
-      </group>)}
+      {DA_VINCI_PLAZA_TREES.map(({at,palm},i)=>palm
+        ?<Palm key={i} materials={materials} position={[at[0],front.ground,at[1]]} height={6.2} girth={1.15} crown={.95} yaw={i*1.3}/>
+        :<Tree key={i} materials={materials} position={[at[0],front.ground,at[1]]} height={6.2} girth={1.3} crown={3} rotation={i*1.1} tone={['#bdc9aa','#c8d1ae','#b2c29f'][i%3]}/>)}
       {[6,32].map(x=><group key={x}>
         <Block at={[x,.83,23]} size={[4,.5,.8]} material={materials.redStone}/>
-        <Block at={[x,1.12,23]} size={[4.3,.12,1]} material={finishes.tan}/>
+        <Block at={[x,1.12,23]} size={[4.3,.12,1]} material={surfaces.tan}/>
       </group>)}
     </group>
   </group>

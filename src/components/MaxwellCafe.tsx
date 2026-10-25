@@ -4,6 +4,7 @@ import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
 import { MAXWELL_ENTRANCE as entrance } from '../lib/maxwell'
 import { CAFE_BUS, CAFE_FACADE_HEIGHT, CAFE_OBELISK, CAFE_OUTLINE, CAFE_PLANTERS, CAFE_TABLES, CAFE_TURF } from '../lib/maxwellCafe'
+import { Bush } from './CampusPlants'
 
 const noRaycast = () => null
 type Position = [number, number, number]
@@ -48,11 +49,10 @@ export function MaxwellCafe({ materials }: { materials: CampusMaterials }) {
     iron: new MeshStandardMaterial({ color: '#343b36', roughness: 0.8 }),
     white: new MeshStandardMaterial({ color: '#e9e7dc', roughness: 0.72 }),
     bus: new MeshStandardMaterial({ color: '#c9c9ba', roughness: 0.94 }),
-    glass: new MeshStandardMaterial({ color: '#263936', roughness: 0.32, metalness: 0.28 }),
     red: new MeshStandardMaterial({ color: '#a81930', roughness: 0.86, side: DoubleSide }),
-    trunk: new MeshStandardMaterial({ color: '#766b55', roughness: 1 }),
-    leaves: new MeshStandardMaterial({ color: '#596d42', roughness: 1 }),
   }), [])
+  // The pane is shared and owned by the campus materials, so it stays out of the set disposed below.
+  const glass = materials.glass('#263936')
   const mural = useMemo(busMural, [])
   const muralFinish = useMemo(() => new MeshStandardMaterial({ map: mural, roughness: 1 }), [mural])
   const paving = useMemo(() => groundShape(CAFE_OUTLINE), [])
@@ -63,7 +63,7 @@ export function MaxwellCafe({ materials }: { materials: CampusMaterials }) {
       <shapeGeometry args={[paving]} onUpdate={(g) => { const uv = g.getAttribute('uv'); for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / 1.1, uv.getY(i) / 1.1); uv.needsUpdate = true }} />
     </mesh>
     <mesh position={[0, 0.64, 0]} rotation={[-Math.PI / 2, 0, 0]} material={materials.garden} receiveShadow raycast={noRaycast}><shapeGeometry args={[turf]} /></mesh>
-    <VintageBus finishes={finishes} mural={muralFinish} />
+    <VintageBus finishes={{ ...finishes, glass }} mural={muralFinish} />
     <group position={[CAFE_OBELISK[0], 0.61, CAFE_OBELISK[1]]}>
       <Box at={[0, 0.17, 0]} size={[2.4, 0.34, 2.4]} material={materials.entranceStone} />
       <Box at={[0, 0.45, 0]} size={[1.8, 0.24, 1.8]} material={materials.redStone} />
@@ -80,20 +80,19 @@ export function MaxwellCafe({ materials }: { materials: CampusMaterials }) {
     </group>)}
     {CAFE_PLANTERS.map(([x, z], i) => <group key={i} position={[x, 0.61, z]}>
       <mesh position={[0, 0.46, 0]} rotation={[0, Math.PI / 4, 0]} material={materials.cream} castShadow raycast={noRaycast}><cylinderGeometry args={[0.61, 0.43, 0.92, 4]} /></mesh>
-      <Box at={[0, 0.925, 0]} size={[0.77, 0.035, 0.77]} material={finishes.trunk} />
-      <Rod from={[0, 0.9, 0]} to={[0.04, 3.3, 0]} radius={0.065} material={finishes.trunk} />
+      <Box at={[0, 0.925, 0]} size={[0.77, 0.035, 0.77]} material={materials.soil} />
+      <Rod from={[0, 0.9, 0]} to={[0.04, 3.3, 0]} radius={0.065} material={materials.bark} />
       {Array.from({ length: 5 }, (_, j) => {
         const angle = j * 2.4 + i, end: Position = [Math.sin(angle) * 0.58, 2.8 + j * 0.16, Math.cos(angle) * 0.58]
-        return <group key={j}><Rod from={[0, 1.75 + j * 0.2, 0]} to={end} radius={0.025} material={finishes.trunk} />
-          <mesh position={end} scale={[0.35, 0.2, 0.3]} material={finishes.leaves} raycast={noRaycast}><icosahedronGeometry args={[1, 1]} /></mesh>
-        </group>
+        return <Rod key={j} from={[0, 1.75 + j * 0.2, 0]} to={end} radius={0.025} material={materials.bark} />
       })}
+      <Bush materials={materials} position={[0, 3.05, 0]} scale={[0.95, 0.55, 0.95]} rotation={i} tone="#c3d0a4" />
     </group>)}
-    <CafeBalcony materials={materials} iron={finishes.iron} glass={finishes.glass} />
+    <CafeBalcony materials={materials} iron={finishes.iron} glass={glass} />
   </group>
 }
 
-type Finishes = { iron: Finish; white: Finish; bus: Finish; glass: Finish; red: Finish; trunk: Finish; leaves: Finish }
+type Finishes = { iron: Finish; white: Finish; bus: Finish; glass: Finish; red: Finish }
 function VintageBus({ finishes: f, mural }: { finishes: Finishes; mural: Finish }) {
   const geometry = useMemo(() => {
     const s = new Shape(); s.moveTo(-4.4, 0.5); s.lineTo(4.1, 0.5); s.quadraticCurveTo(4.4, 0.5, 4.4, 0.8)

@@ -4,6 +4,7 @@ import type { CampusMaterials } from '../lib/materials'
 import { HALL_ENTRANCE as hall } from '../lib/hall'
 import { HALL_EINSTEIN_GAP } from '../lib/campus'
 import { HALL_PASSAGE as passage, HALL_TUNNEL as tunnel, EINSTEIN_ENTRANCE as entrance } from '../lib/hallPassage'
+import { Bush } from './CampusPlants'
 
 type Point=[number,number,number]
 const noRaycast=()=>null
@@ -16,10 +17,9 @@ function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMate
 }
 /** Open-air stair passage beside the Hall's orange right pillar, toward Einstein. */
 export function HallEinsteinPassage({materials}:{materials:CampusMaterials}) {
-  const glass=useMemo(()=>new MeshStandardMaterial({color:'#334a42',roughness:.28,metalness:.25}),[])
+  const glass=materials.glass('#334a42')
   const iron=useMemo(()=>new MeshStandardMaterial({color:'#414d43',roughness:.7,metalness:.3}),[])
   const handle=useMemo(()=>new MeshStandardMaterial({color:'#b9c1ba',roughness:.3,metalness:.75}),[])
-  const foliage=useMemo(()=>new MeshStandardMaterial({color:'#536c38',roughness:1}),[])
   const lamp=useMemo(()=>new MeshStandardMaterial({color:'#e7d9b5',emissive:'#baa77d',emissiveIntensity:.65,roughness:.8}),[])
   const ramp=useMemo(()=>{
     const a=[tunnel.left,tunnel.lower,tunnel.mouth],b=[tunnel.right,tunnel.lower,tunnel.mouth],c=[tunnel.right,tunnel.upper,tunnel.back],d=[tunnel.left,tunnel.upper,tunnel.back]
@@ -27,7 +27,7 @@ export function HallEinsteinPassage({materials}:{materials:CampusMaterials}) {
     g.setAttribute('position',new Float32BufferAttribute(points.flat(),3))
     g.setAttribute('uv',new Float32BufferAttribute(points.flatMap(([x,,z])=>[x/2.4,z/2.4]),2));g.computeVertexNormals();return g
   },[])
-  useEffect(()=>()=>{glass.dispose();iron.dispose();handle.dispose();foliage.dispose();lamp.dispose();ramp.dispose()},[glass,iron,handle,foliage,lamp,ramp])
+  useEffect(()=>()=>{iron.dispose();handle.dispose();lamp.dispose();ramp.dispose()},[iron,handle,lamp,ramp])
   // Floor, steps and landing span the whole gap, wall to wall, since the general ground stops at it.
   const width=HALL_EINSTEIN_GAP,length=-passage.back
   const left=passage.left,right=passage.right,center=passage.center
@@ -74,7 +74,7 @@ export function HallEinsteinPassage({materials}:{materials:CampusMaterials}) {
     {[-18,-25,-30].map(z=><Block key={z} at={[center,tunnel.ceiling-.07,z]} size={[.65,.04,.25]} material={lamp}/>)}
     {[-8.7,-12.2].map(z=><group key={z} position={[left+.4,hall.ground,z]}>
       <mesh position={[0,.24,0]} material={materials.redStone} castShadow raycast={noRaycast}><cylinderGeometry args={[.22,.16,.48,12]}/></mesh>
-      <mesh position={[0,.74,0]} scale={[.26,.43,.26]} material={foliage} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>
+      <Bush materials={materials} position={[0,.78,0]} scale={[.34,.42,.34]} rotation={z} tone="#c3d0a4"/>
     </group>)}
   </group>
 }

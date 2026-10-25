@@ -7,7 +7,7 @@ export const GARDEN_TABLES: Vec2[] = [[-7,-6],[7,-6],[-7,6],[7,6],[0,-10],[0,10]
 type Shrub = [number,number,number,number,number,number]
 
 /** Shared low-poly planting keeps the densely planted garden inexpensive. */
-export function SportsPlanting({ shrubs, color = '#718343' }: { shrubs: Shrub[]; color?: string }) {
+export function SportsPlanting({ materials, shrubs, tone = '#d3dba6' }: { materials: CampusMaterials; shrubs: Shrub[]; tone?: string }) {
   const ref = useRef<InstancedMesh>(null)
   useLayoutEffect(() => {
     const object = new Object3D()
@@ -17,9 +17,8 @@ export function SportsPlanting({ shrubs, color = '#718343' }: { shrubs: Shrub[];
     })
     if (ref.current) { ref.current.instanceMatrix.needsUpdate=true; ref.current.computeBoundingSphere() }
   },[shrubs])
-  return <instancedMesh ref={ref} args={[undefined,undefined,shrubs.length]} castShadow receiveShadow raycast={()=>null}>
-    <icosahedronGeometry args={[1,1]} /><meshStandardMaterial color={color} roughness={1} />
-  </instancedMesh>
+  // Shrubs are small volumes of the campus leaf cards, one draw call per planting.
+  return <instancedMesh ref={ref} args={[materials.plants.bush,materials.leaf(tone),shrubs.length]} castShadow receiveShadow raycast={()=>null} />
 }
 
 const vines: Shrub[] = [], hedges: Shrub[] = [], crowns: Shrub[] = []
@@ -63,10 +62,10 @@ export function GardenTerrace({ materials }: { materials: CampusMaterials }) {
         <mesh position={[0,2.52,0]}><cylinderGeometry args={[2.3,2.3,.09,8,1,true]} /><meshStandardMaterial color="#af3035" /></mesh>
       </group>}
     </group>)}
-    <SportsPlanting shrubs={hedges} color="#adb64c" />
-    <SportsPlanting shrubs={vines} color="#5c783f" />
-    <SportsPlanting shrubs={crowns} color="#4f713f" />
-    {[[-12,-10],[12,10],[-12,10],[12,-10]].map(([x,z],i)=><mesh key={i} position={[x,2,z]} castShadow><cylinderGeometry args={[.13,.22,4,8]} /><meshStandardMaterial color="#80755a" /></mesh>)}
+    <SportsPlanting materials={materials} shrubs={hedges} tone="#e1e3a8" />
+    <SportsPlanting materials={materials} shrubs={vines} tone="#bccb9c" />
+    <SportsPlanting materials={materials} shrubs={crowns} tone="#b2c29f" />
+    {[[-12,-10],[12,10],[-12,10],[12,-10]].map(([x,z],i)=><mesh key={i} position={[x,2,z]} material={materials.bark} castShadow><cylinderGeometry args={[.13,.22,4,8]} /></mesh>)}
     {[[-11,3],[11,-3]].map(([x,z],i)=><group key={i} position={[x,0,z]}>
       <mesh position={[0,3.4,0]} castShadow><cylinderGeometry args={[.055,.08,6.8,8]} /><meshStandardMaterial color="#35413b" /></mesh>
       <mesh position={[0,6.8,0]}><boxGeometry args={[.85,.12,.28]} /><meshStandardMaterial color="#e3e4ce" emissive="#d6dfb1" emissiveIntensity={.25} /></mesh>
@@ -75,11 +74,11 @@ export function GardenTerrace({ materials }: { materials: CampusMaterials }) {
 }
 
 /** Hedge boundary with an opening; dark protective netting sits behind it. */
-export function SandCourtPlanting({ width, length }: { width: number; length: number }) {
+export function SandCourtPlanting({ materials, width, length }: { materials: CampusMaterials; width: number; length: number }) {
   const shrubs: Shrub[]=[]
   for(const side of [-1,1]) {
     for(let z=-length/2;z<=length/2;z+=.7) if (!(side===-1 && Math.abs(z)<1.5)) shrubs.push([side*(width/2+.35),.32,z,.48,.35,.48])
     for(let x=-width/2;x<=width/2;x+=.7) shrubs.push([x,.32,side*(length/2+.3),.48,.35,.48])
   }
-  return <SportsPlanting shrubs={shrubs} color="#65824c" />
+  return <SportsPlanting materials={materials} shrubs={shrubs} tone="#c4d3a3" />
 }
