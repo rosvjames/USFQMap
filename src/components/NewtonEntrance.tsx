@@ -1,11 +1,10 @@
-import { VISUAL_PATH_WIDTHS } from '../data/siteAppearance'
 import { useEffect,useMemo } from 'react'
 import { MeshStandardMaterial } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
-import { CAMPUS_BUILDINGS,CAMPUS_WALKWAYS } from '../lib/campus'
-import { createPavedShapes,createRoofGeometry,createWalkwayGeometry,walkwayOutlines } from '../lib/architecture'
-import { NEWTON_ENTRANCE as h,NEWTON_LAWNS,NEWTON_ACCESS_PATH,newtonHeightAt } from '../lib/newton'
+import { createWalkwayGeometry } from '../lib/architecture'
+import { createNewtonLawn } from '../lib/raisedLawn'
+import { NEWTON_ENTRANCE as h,NEWTON_ACCESS_PATH,newtonHeightAt } from '../lib/newton'
 const noRaycast=()=>null
 type Point=[number,number,number]
 function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMaterial}) {
@@ -13,19 +12,15 @@ function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMate
 }
 /** The lower orange wing and its second lake-facing entrance in the supplied photograph. */
 export function NewtonEntrance({materials}:{materials:CampusMaterials}) {
-  const finish=useMemo(()=>({glass:new MeshStandardMaterial({color:'#324d4d',roughness:.24,metalness:.35}),iron:new MeshStandardMaterial({color:'#35443c',roughness:.65,metalness:.3})}),[])
-  const lawns=useMemo(()=>{
-    const paths=CAMPUS_WALKWAYS.filter(w=>!w.bridge).flatMap(w=>walkwayOutlines(w.line,(w.mappedWidth ?? VISUAL_PATH_WIDTHS[w.osmId] ?? w.width)+.24))
-    return createPavedShapes(NEWTON_LAWNS,[...CAMPUS_BUILDINGS.map(b=>b.ring),...paths]).map(shape=>{
-      const points=shape.extractPoints(1),g=createRoofGeometry(points.shape.map(p=>[p.x,p.y] as Vec2),0,0,points.holes.map(r=>r.map(p=>[p.x,p.y] as Vec2)))
-      const p=g.getAttribute('position');for(let i=0;i<p.count;i++)p.setY(i,newtonHeightAt([p.getX(i),-p.getZ(i)])??h.ground)
-      g.computeVertexNormals();return g
-    })
-  },[])
+  const iron=useMemo(()=>new MeshStandardMaterial({color:'#35443c',roughness:.65,metalness:.3}),[])
+  // The pane is shared and owned by the campus materials; only the iron is ours to dispose.
+  const finish={glass:materials.glass('#324d4d'),iron}
+  const lawn=useMemo(createNewtonLawn,[])
   const approach=useMemo(()=>createWalkwayGeometry(NEWTON_ACCESS_PATH.slice(1),2.1,p=>newtonHeightAt(p)??h.ground),[])
-  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());lawns.forEach(g=>g.dispose());approach.dispose()},[finish,lawns,approach])
+  useEffect(()=>()=>{iron.dispose();lawn.tops.forEach(g=>g.dispose());lawn.sides.dispose();approach.dispose()},[iron,lawn,approach])
   return <group>
-    {lawns.map((g,i)=><mesh key={i} geometry={g} material={materials.grass} receiveShadow raycast={noRaycast}/>)}
+    {lawn.tops.map((g,i)=><mesh key={i} geometry={g} material={materials.grass} receiveShadow raycast={noRaycast}/>)}
+    <mesh geometry={lawn.sides} material={materials.soil} receiveShadow raycast={noRaycast}/>
     <mesh geometry={approach} material={materials.lakePaving} receiveShadow raycast={noRaycast}/>
     <group position={[h.center[0],0,-h.center[1]]} rotation={[0,h.angle,0]}>
       {/* Two rows of broad rectangular windows, leaving the portal clear. */}

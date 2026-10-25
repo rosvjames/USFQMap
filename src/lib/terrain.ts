@@ -2,7 +2,7 @@ import { CAMPUS_AREAS, CAMPUS_WALKWAYS, CAMPUS_BOUNDARY, CAMPUS_STREET_CUTOUTS, 
 import { CAMPUS_ELEVATION, cityBaseHeightAt } from './elevation'
 import { pointInPolygon } from './geo'
 import { maxwellEntranceHeightAt } from './maxwell'
-import { PAGODA_POND, pagodaEntranceHeightAt } from './pagoda'
+import { PAGODA_POND, PAGODA_STAIR_CUTOUTS, pagodaEntranceHeightAt } from './pagoda'
 import { campusBaseHeightAt } from './campusSlope'
 import { hallEntranceHeightAt } from './hall'
 import { HAYEK_ENTRANCE, hayekLandingHeightAt } from './hayek'
@@ -137,6 +137,19 @@ export function boundarySegments(zone: SportZone): [Vec2, Vec2][] {
   })
 }
 
+/** The rendered protective fences and walking collision share the same open entrances. */
+export function sportFenceSegments(zone: SportZone): [Vec2, Vec2][] {
+  if (zone.kind !== 'sand' && zone.kind !== 'synthetic') return []
+  const centerX = (Math.min(...zone.area.ring.map(p => p[0])) + Math.max(...zone.area.ring.map(p => p[0]))) / 2
+  return boundarySegments(zone).flatMap(([a, b]): [Vec2, Vec2][] => {
+    const length = Math.hypot(b[0] - a[0], b[1] - a[1])
+    // The sand court has a three-metre entrance in its long western fence.
+    if (zone.kind !== 'sand' || (a[0] + b[0]) / 2 > centerX || length < 20) return [[a, b]]
+    const at = (t: number): Vec2 => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
+    return [[a, at(.5 - 1.5 / length)], [at(.5 + 1.5 / length), b]]
+  })
+}
+
 export function bridgeVertexHeight(way: CampusWalkway, index: number): number {
   if (way.osmId === 'way/1032704764' || way.osmId === 'way/1032704766') return index === way.line.length - 1 ? PATH_LEVEL : BRIDGE_LEVEL
   return BRIDGE_LEVEL
@@ -209,6 +222,7 @@ export function campusTerrainHeightAt(point: Vec2): number {
 export const TERRAIN_CUTOUTS: Vec2[][] = [
   ...CAMPUS_STREET_CUTOUTS,
   PAGODA_POND,
+  ...PAGODA_STAIR_CUTOUTS,
   COLISEO_GARDEN_STAIRS, COLISEO_ANNEX_APRON, COLISEO_LOWER_FORECOURT,
   ...SPORT_ZONES.filter((zone) => zone.height < 0).map((zone) => zone.area.ring),
   ...SPORT_STAIRS.map(stairOutline),

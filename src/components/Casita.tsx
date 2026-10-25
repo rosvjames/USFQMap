@@ -23,11 +23,8 @@ function Window({x,y,w=1,h=1.25,timber,glass}:{x:number;y:number;w?:number;h?:nu
 
 /** White plaster, exposed dark red timber and balconies interpreted from the supplied house photo. */
 export function Casita({materials}:{materials:CampusMaterials}) {
-  const finishes=useMemo(()=>({
-    timber:new MeshStandardMaterial({color:'#62352d',roughness:.9}),
-    glass:new MeshStandardMaterial({color:'#263d3b',roughness:.3,metalness:.2,envMap:materials.environment}),
-    roof:new MeshStandardMaterial({color:'#343d3d',map:materials.terracotta.map,roughness:.9}),
-  }),[materials])
+  // Dark timber and slate-grey tile come from the shared wood and roof-tile families; the panes are the shared matte glass.
+  const finishes={timber:materials.surface('wood','#62352d',{roughness:.9}),glass:materials.glass('#263d3b'),roof:materials.surface('roof-tile','#343d3d',{roughness:.9})}
   const roof=useMemo(createCasitaRoof,[])
   const gable=useMemo(()=>{
     const shape=new Shape();shape.moveTo(-house.width/2,house.height);shape.lineTo(house.width/2,house.height);shape.lineTo(0,house.height+house.rise);shape.closePath()
@@ -37,7 +34,7 @@ export function Casita({materials}:{materials:CampusMaterials}) {
     const shape=new Shape();shape.moveTo(-.55,.55);shape.lineTo(.55,.55);shape.lineTo(.55,1.7);shape.absarc(0,1.7,.55,0,Math.PI,false);shape.lineTo(-.55,.55);shape.closePath()
     return new ExtrudeGeometry(shape,{depth:.06,bevelEnabled:false,curveSegments:20})
   },[])
-  useEffect(()=>()=>{Object.values(finishes).forEach(m=>m.dispose());roof.dispose();gable.dispose();arch.dispose()},[finishes,roof,gable,arch])
+  useEffect(()=>()=>{roof.dispose();gable.dispose();arch.dispose()},[roof,gable,arch])
   const half=house.width/2
   return <group position={[house.center[0],0,-house.center[1]]} rotation={[0,house.angle,0]}>
     <mesh geometry={roof} material={finishes.roof} castShadow receiveShadow raycast={noRaycast}/>

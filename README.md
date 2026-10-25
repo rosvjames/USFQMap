@@ -53,13 +53,17 @@ La investigación completa y los próximos pasos están en [referencias/INVESTIG
 | `src/components/SportsGround.tsx` | Arena, tenis, fútbol, redes y mobiliario |
 | `src/components/CampusBridges.tsx` | Tablero, barandillas y soportes del puente a Hayek |
 | `src/lib/hall.ts` | Posición, gradas y alturas de la entrada del Hall |
-| `src/components/HallEntrance.tsx` | Pórtico, escalinata, David y leones según fotos del usuario |
-| `src/lib/sculptures.ts` | Mallas originales aproximadas de las esculturas |
+| `src/components/HallEntrance.tsx` | Pórtico, escalinata, leones según fotos del usuario y David escaneado |
+| `src/lib/sculptures.ts` | Mallas originales aproximadas de los leones |
+| `src/lib/davidModel.ts` | Rutas y presupuesto del modelo 3D del David |
 | `src/components/Pagoda.tsx` | Pabellón de madera, galería, puente, gradas, estanque y palmera |
 | `src/lib/pagoda.ts` | Huella orientada y geometría de la cubierta curva |
 | `src/components/IllustratedRoof.tsx` | Cubiertas y detalles de los hitos |
 | `src/lib/architecture.ts` | Superficies de techos y senderos |
-| `src/lib/materials.ts` | Texturas y materiales generados localmente |
+| `src/lib/materials.ts` | Materiales compartidos del campus sobre las 16 familias de `public/textures/campus-v1/` (albedo, normal y rugosidad); agua física con las imágenes de `public/textures/water/` y vidrio mate sin mapas de reflexión |
+| `src/lib/campusTextures.ts` | Contrato del manifest, tabla de superficies compartidas y ganancia de tinte |
+| `src/lib/worldUv.ts` | UVs en metros de mundo (2,4 m por repetición) para suelos, muros y cubiertas |
+| `src/lib/campusFoliage.ts` | Geometría compartida de copas, ramas, troncos y palmeras radiales |
 | `referencias/` | Investigación, ilustración del usuario y plantilla de levantamiento |
 
 ## Incorporar un plano interior
@@ -79,11 +83,17 @@ Huellas y senderos: © colaboradores de [OpenStreetMap](https://www.openstreetma
 
 ### Apariencia exterior
 
-Los materiales se contrastaron con fotografías públicas de USFQ Next y Noticias USFQ: ladrillo, revoque crema, cubiertas oscuras y metálicas, cúpula dorada y Obelisco blanco con relojes. Las texturas se generan en el navegador, sin descargas de imágenes ni servicios externos. Los senderos reciben sombras y el vidrio y la laguna reflejan un cielo generado localmente.
+Los materiales se contrastaron con fotografías públicas de USFQ Next y Noticias USFQ: ladrillo, revoque crema, cubiertas oscuras y metálicas, cúpula dorada y Obelisco blanco con relojes. Las superficies de todo el campus (césped, arena, adoquín, piedra, hormigón, asfalto, estuco, ladrillo, madera, tejas, cubiertas metálicas, cortezas y tierra) usan imágenes WebP generadas con GPT Image en `public/textures/campus-v1/` (véase su README y `manifest.json`), con mapas de normales y rugosidad derivados, no medidos; el agua usa mapas de ondulación, normales y rugosidad generados con GPT Image en `public/textures/water/`, con normal de 512 px en móvil. Las copas y palmeras comparten una geometría de tarjetas con recorte alfa, instanciada. Miguel de Santiago prueba texturas WebP de estuco, metal, piedra y follaje generadas con GPT Image y servidas desde la propia aplicación, con un panorama sintético reservado al reflejo estático del agua; véase [la procedencia y los límites de estos materiales](public/textures/miguel/README.md). No se llama a servicios de generación durante el uso del mapa. Los senderos reciben sombras. El agua refleja un panorama estático; ventanas y espejos no usan reflejos del entorno, y no hay entorno global ni pasos de reflexión en tiempo real.
+
+**Cielo a pie.** Al caminar, `src/components/CampusSky.tsx` sustituye el `Sky` procedural por una panorámica equirectangular estática (`scene.background`, sin blur, sin tocar `scene.environment` ni la iluminación). La primera vez que se camina se convierte una sola vez en un cubemap de 512 px por cara en escritorio y 256 px en móvil (ancho/4, sin buffer de profundidad), se libera la copia GPU de la panorámica y se reutiliza el cubemap en cada cambio; quedan unos 8 MiB (escritorio) y 2 MiB (móvil) con mips, estimados, no medidos. Imágenes: `public/textures/sky/campus-day.webp` (2048×1024, ~52 KB) o `campus-day-mobile.webp` (1024×512, ~19 KB) según `LIGHTWEIGHT_QUERY`, elegida una sola vez al montar y cacheada por `useLoader`. El modo mapa conserva su `Sky` y color. Procedencia y prompt en `public/textures/sky/README.md`.
 
 El volumen exterior, los detalles y la plantación siguen siendo aproximados. Se conservan las huellas y senderos de OpenStreetMap; no se infiere la distribución interior a partir de las fotografías. Las alturas de OSM se usan cuando existen; en los demás edificios se estiman a partir de pisos o proporciones visuales.
 
-La entrada del Hall Principal utiliza las tres fotos compartidas por el estudiante: fachada roja, frontón gris, columnas, plataforma elevada, seis gradas, estatua central clara y dos leones en bronce sobre bases rojizas. La figura central representa al David de Miguel Ángel, cuya réplica identifica [Alumni USFQ](https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html). Las esculturas se generan como mallas propias y no son escaneos de las piezas reales. Alturas, distancias y proporciones se estiman a partir de las fotos.
+La entrada del Hall Principal utiliza las tres fotos compartidas por el estudiante: fachada roja, frontón gris, columnas, plataforma elevada, seis gradas, estatua central clara y dos leones en bronce sobre bases rojizas. La figura central representa al David de Miguel Ángel, cuya réplica identifica [Alumni USFQ](https://vivealumni.usfq.edu.ec/2024/05/esta-obra-representa-la-razon-de-ser-de.html), y se dibuja con un escaneo 3D real (véase abajo). Los leones se generan como mallas propias y no son escaneos de las piezas reales. Alturas, distancias y proporciones se estiman a partir de las fotos.
+
+#### Modelo 3D del David
+
+`public/models/david/` contiene una adaptación del modelo «David (Michelangelo)» de **Scan the World @ Myminifactory.com** ([fuente en Wikimedia Commons](https://commons.wikimedia.org/wiki/File:David_(Michelangelo).stl)), bajo licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Representa el David de Miguel Ángel; no es un levantamiento de la réplica de la USFQ. Cambios: conversión de STL a GLB, simplificación (`david.glb`, unos 100 000 triángulos; `david-mobile.glb`, unos 40 000, usado con el criterio de modo ligero), orientación Y arriba, escala a 4,4 m y normales recalculadas; los pasos están en `scripts/prepare-david.mjs` y los metadatos en `attribution.json`. La licencia CC BY-SA 4.0 aplica a este modelo adaptado y no cambia la de los demás contenidos del repositorio.
 
 Para verificar: `npm test` y `npm run build`. Las pruebas cubren búsqueda, rutas, desniveles, alturas del puente, entrada del Hall, mallas de esculturas y geometría de techos cóncavos, pavimentos y terreno rebajado.
 
@@ -135,6 +145,8 @@ La fotografía aportada el 21 de octubre de 2026 corrige el jardín contiguo: se
 La huella anteriormente identificada como GOBE se muestra como «La casita de la 12 de octubre», según la indicación del estudiante. La fotografía guía el cuerpo blanco, entramado de madera rojiza, cubierta a dos aguas con hastial alto, ventanas de ático, balcones y arcos inferiores. El volumen de dos plantas y ático es una estimación visual; la descarga original de OSM se conserva.
 
 Gastón, el cerdito, camina automáticamente por senderos entre la casita y el Hall y visita el borde ajardinado de la laguna y vuelve por el sendero amplio. Pancho y Pancha son dos galgos negros que recorren el patio de la entrada principal de Miguel de Santiago. Los modelos incluyen nombres y movimiento de patas y cola. Los recorridos dejan espacio para el cuerpo completo al girar y se comprueban contra edificios, agua, muros, rejas, bebederos y pedestales de los accesos. Cada movimiento comprueba también el tramo entre cuadros; si queda bloqueado, el animal se detiene sin saltar al otro lado. Las barreras añadidas al modelo se registran en `src/lib/animalObstacles.ts`; el jardín de las banderas se mantiene libre. La animación se pausa al ocultar la pestaña.
+
+Las mallas continuas de los animales están en `public/models/animals/`: bases de Innerscene (CC0), adaptadas con piel rosada para Gastón y proporciones de galgo y pelaje negro para los Panchos. Los mapas difusos se generaron con GPT Image; los prompts y las fuentes se conservan junto a los modelos. Son aproximaciones, no escaneos de los animales reales. `scripts/prepare-campus-animals.mjs` descarga las bases verificando SHA-256, ajusta proporciones, simplifica y añade esqueletos. Las variantes móviles usan unos 5 300 triángulos para Gastón y 6 900 por perro, frente a 10 800 y 11 600 en escritorio. Los perros comparten geometría y textura, con esqueletos y collares independientes; las superficies no añaden reflejos ni pases extra de sombras. La marcha sigue la distancia recorrida y se detiene al esperar una caricia.
 
 La última fotografía del Hall deja el césped central despejado: se retiran los árboles ilustrativos de esa parcela y se añaden la reja negra del extremo de la calle, retornos laterales y diez banderas bicolores en dos filas de cinco. Las banderas son recreaciones gráficas, no emblemas oficiales verificados.
 

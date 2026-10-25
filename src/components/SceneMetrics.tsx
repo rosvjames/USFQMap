@@ -12,6 +12,7 @@ export function SceneMetrics() {
     data.triangles = String(gl.info.render.triangles)
     data.pixelRatio = String(gl.getPixelRatio())
     data.antialias = String(gl.getContext().getContextAttributes()?.antialias)
+    data.gpuTextures = String(gl.info.memory.textures)
     data.frame = String(gl.info.render.frame)
     data.shadowAutoUpdate = String(gl.shadowMap.autoUpdate)
     data.cameraPosition = camera.position.toArray().join(',')

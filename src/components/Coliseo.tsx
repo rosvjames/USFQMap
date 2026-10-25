@@ -9,23 +9,26 @@ import { SPORT_ZONES, SPORT_STAIRS, stairOutline } from '../lib/terrain'
 import type { CampusMaterials } from '../lib/materials'
 import { pointInPolygon } from '../lib/geo'
 import type { Vec2 } from '../types'
+import { boxUv } from '../lib/worldUv'
 
 type Point = [number, number, number]
 const noRaycast = () => null
 const rectangle = (left: number, right: number, back: number, front: number): Vec2[] =>
   ([[left, back], [right, back], [right, front], [left, front]] as Vec2[]).map(coliseoToCampus)
 function Block({ at, size, material }: { at: Point; size: Point; material: MeshStandardMaterial }) {
-  return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size} /></mesh>
+  // The hall is a selectable building, outside the batched details, so each box carries its own metric UVs.
+  return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size} onUpdate={boxUv} /></mesh>
 }
 
 /** Orange sports hall and raised, ventilated green roof in the supplied photos. */
 export function ColiseoBuilding({ materials, onSelect }: { materials: CampusMaterials; onSelect: () => void }) {
-  const finish = useMemo(() => ({
-    trim: new MeshStandardMaterial({ color: '#26483b', roughness: .7 }),
-    shutter: new MeshStandardMaterial({ color: '#e5c98c', roughness: .85 }),
-    glass: new MeshStandardMaterial({ color: '#7eaaa8', roughness: .26, metalness: .25 }),
-    dark: new MeshStandardMaterial({ color: '#33453e', roughness: .8 }),
-  }), [])
+  // Painted trim, timber shutters and dark panels draw from the stucco and wood families; the panes are the shared matte glass.
+  const finish = {
+    trim: materials.surface('stucco', '#26483b', { roughness: .7 }),
+    shutter: materials.surface('wood', '#e5c98c', { roughness: .85 }),
+    glass: materials.glass('#7eaaa8'),
+    dark: materials.surface('stucco', '#33453e', { roughness: .8 }),
+  }
   const geometry = useMemo(() => {
     const ring = findCampusBuilding('coliseo')!.ring
     const base = Math.min(...ring.map(campusBaseHeightAt)) - .35
@@ -40,8 +43,7 @@ export function ColiseoBuilding({ materials, onSelect }: { materials: CampusMate
   }, [])
   useEffect(() => () => {
     geometry.body.dispose(); geometry.roof.dispose(); geometry.upperRoof.dispose()
-    Object.values(finish).forEach(m => m.dispose())
-  }, [geometry, finish])
+  }, [geometry])
   const click = (event: { delta: number; stopPropagation: () => void }) => { if (event.delta <= 5) { event.stopPropagation(); onSelect() } }
   return <group>
     <mesh geometry={geometry.body} position={[0, geometry.base, 0]} rotation={[-Math.PI / 2, 0, 0]} material={materials.coliseoOrange} castShadow receiveShadow onClick={click} />
@@ -144,6 +146,6 @@ export function ColiseoLandscape({ materials }: { materials: CampusMaterials }) 
     <mesh geometry={geometry.apron} material={materials.coliseoLane} receiveShadow raycast={noRaycast} />
     <mesh geometry={geometry.wall} material={materials.entranceStone} receiveShadow castShadow raycast={noRaycast} />
     {geometry.lawns.map((lawn, i) => <mesh key={i} geometry={lawn} material={materials.grass} receiveShadow raycast={noRaycast} />)}
-    <mesh geometry={geometry.curb} receiveShadow raycast={noRaycast}><meshStandardMaterial color="#d4b54e" roughness={.9} /></mesh>
+    <mesh geometry={geometry.curb} material={materials.surface('concrete', '#d4b54e', { roughness: .9 })} receiveShadow raycast={noRaycast} />
   </group>
 }

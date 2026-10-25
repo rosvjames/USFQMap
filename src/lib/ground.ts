@@ -2,9 +2,11 @@ import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_WALKWAYS } from
 import polygonClipping from 'polygon-clipping'
 import { shapesFromPolygons, walkwayOutlines, createTerrainShapes } from './architecture'
 import { centroid, pointInPolygon } from './geo'
-import { BufferGeometry, Float32BufferAttribute } from 'three'
+import { BufferGeometry, Float32BufferAttribute, ShapeGeometry, type Shape } from 'three'
+import { createGradedSurfaceGeometry } from './campusSlope'
+import { createEdgeWalls, orientedRings } from './raisedLawn'
 import { SATELLITE_GARDENS, SATELLITE_PLAZAS, VISUAL_PATH_WIDTHS } from '../data/siteAppearance'
-import { TERRAIN_CUTOUTS, SPORT_ZONES, SPORT_ACCESS_AREAS, campusTerrainHeightAt } from './terrain'
+import { TERRAIN_CUTOUTS, SPORT_ZONES, SPORT_ACCESS_AREAS, PATH_LEVEL, campusTerrainHeightAt } from './terrain'
 import { CAMPUS_STREET_CUTOUTS } from './campus'
 import { CAMPUS_ELEVATION } from './elevation'
 import { COURTYARD_WORLD_OUTLINE } from './maxwellCourtyard'
@@ -13,8 +15,8 @@ import { DA_VINCI_WORLD_PAVING } from './daVinci'
 import { DA_VINCI_WORLD_PLAZA } from './daVinciPlaza'
 import { MIGUEL_WORLD_FORECOURT } from './miguel'
 import { MIGUEL_GARDEN_FORECOURT } from './miguelGarden'
-import { GALILEO_LAWNS, LAGOON_GARDEN } from './galileo'
-import { NEWTON_LAWNS } from './newton'
+import { GALILEO_LAWNS, LAGOON_GARDEN, galileoHeightAt } from './galileo'
+import { NEWTON_LAWNS, newtonHeightAt } from './newton'
 import { EPICURO_FORECOURT } from './epicuro'
 import { HALL_MINI_WORLD_OUTLINE } from './hallMiniPlaza'
 import { HALL_PASSAGE_OUTLINE } from './hallPassage'
@@ -52,6 +54,39 @@ export function createCampusGroundShapes() {
   )
   const grass = polygonClipping.difference(polygon(CAMPUS_BOUNDARY), plaza, ...paths.map(polygon), ...obstacles.map(polygon))
   return { paving: shapesFromPolygons(paving), grass: shapesFromPolygons(grass), landscapePaving: shapesFromPolygons(landscapePaving) }
+}
+
+/** Path openings in the lawns follow the lawns' own slope; elsewhere they stay at path level. */
+export const landscapeHeightAt = (point: Vec2) => newtonHeightAt(point) ?? galileoHeightAt(point) ?? PATH_LEVEL
+
+/** Shape-frame geometry whose offsets above PATH_LEVEL come from landscapeHeightAt. */
+export function createLandscapePavingGeometry(shapes: Shape[]) {
+  const flat = new ShapeGeometry(shapes)
+  const geometry = createGradedSurfaceGeometry(flat, 'shape', 1, p => landscapeHeightAt(p) - PATH_LEVEL)
+  flat.dispose()
+  return geometry
+}
+
+/** A probe this close to an edge, on its outer side, is compared with the edge's own height. */
+const WALL_PROBE = .01
+/** Lawn slopes change less than this over the probe distance, so a smaller drop is not a step. */
+const WALL_MIN_DROP = .005
+
+/**
+ * Whether the raised landscape paving edge a→b (interior on its left) has lower ground just outside it that is not
+ * a building or water. Edges beside the lawn or other paving at the same level need no wall.
+ */
+export function landscapeEdgeDrops(a: Vec2, b: Vec2, outward: Vec2): boolean {
+  const probe: Vec2 = [(a[0] + b[0]) / 2 + outward[0] * WALL_PROBE, (a[1] + b[1]) / 2 + outward[1] * WALL_PROBE]
+  const edge = (landscapeHeightAt(a) + landscapeHeightAt(b)) / 2
+  if (edge - landscapeHeightAt(probe) < WALL_MIN_DROP) return false
+  return !CAMPUS_BUILDINGS.some(building => pointInPolygon(probe, building.ring))
+    && !CAMPUS_AREAS.some(area => area.kind === 'water' && pointInPolygon(probe, area.ring))
+}
+
+/** Pavement-coloured faces closing the raised landscape paving down to PATH_LEVEL where it stands above the ground beside it. */
+export function createLandscapePavingWalls(shapes: Shape[]) {
+  return createEdgeWalls(shapes.flatMap(shape => orientedRings(shape).oriented), landscapeHeightAt, PATH_LEVEL, { maxSegment: 1, wanted: landscapeEdgeDrops })
 }
 
 /** Close the elevated site's perimeter, including the separate street-ramp recess. */

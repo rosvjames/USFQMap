@@ -1,7 +1,7 @@
 import { CAMPUS_ELEVATION } from './elevation'
 import { CAMPUS_BRIDGE_ACCESS } from './campus'
 import { describe, expect, it } from 'vitest'
-import { Path, Shape, ShapeGeometry, Vector2 } from 'three'
+import { BufferGeometry, Float32BufferAttribute, Path, Shape, ShapeGeometry, Vector2 } from 'three'
 import { CAMPUS_SLOPE, campusBaseHeightAt, campusSlopeOffsetAt, createGradedSurfaceGeometry, buildingFoundationBase } from './campusSlope'
 import { findCampusBuilding } from './campus'
 import { ELEVATED_WALKWAYS, SPORT_ZONES, bridgeVertexHeight, terrainHeightAt } from './terrain'
@@ -124,6 +124,25 @@ describe('Pagoda to campus-side bridge grade', () => {
       if (p.getX(i) === 80) expect(p.getZ(i)).toBeCloseTo(0)
       if (p.getX(i) === 84) expect(p.getZ(i)).toBeCloseTo(.6)
     }
+    flat.dispose(); graded.dispose()
+  })
+
+  it.each(['shape', 'scene'] as const)('keeps the shared edge of unequal triangles sealed after grading (%s frame)', frame => {
+    // Both triangles share the eight-metre edge y=0; one extends much farther from it.
+    const points = [[0,0],[8,0],[0,2], [8,0],[0,0],[4,-40]]
+    const flat = new BufferGeometry().setAttribute('position', new Float32BufferAttribute(points.flatMap(([x,y]) => frame === 'shape' ? [x,y,0] : [x,0,-y]), 3))
+    const graded = createGradedSurfaceGeometry(flat, frame, 3, ([x]) => x * x * .02)
+    const p = graded.getAttribute('position'), edges = new Map<string, number>()
+    const across = (i: number) => frame === 'shape' ? p.getY(i) : -p.getZ(i)
+    const key = (i: number) => `${p.getX(i).toFixed(5)},${(frame === 'shape' ? p.getZ(i) : p.getY(i)).toFixed(5)}`
+    for (let i = 0; i < p.count; i += 3) for (let edge = 0; edge < 3; edge++) {
+      const a = i + edge, b = i + (edge + 1) % 3
+      if (Math.abs(across(a)) > 1e-6 || Math.abs(across(b)) > 1e-6) continue
+      const pair = [key(a), key(b)].sort().join('|')
+      edges.set(pair, (edges.get(pair) ?? 0) + 1)
+    }
+    expect(edges.size).toBeGreaterThan(1)
+    expect([...edges.values()].every(count => count === 2)).toBe(true)
     flat.dispose(); graded.dispose()
   })
 

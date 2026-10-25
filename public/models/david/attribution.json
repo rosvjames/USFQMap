@@ -1,0 +1,51 @@
+{
+  "title": "David (Michelangelo)",
+  "author": "Scan the World @ Myminifactory.com",
+  "source": "https://commons.wikimedia.org/wiki/File:David_(Michelangelo).stl",
+  "artwork": "https://www.myminifactory.com/object/3d-print-michelangelo-s-david-in-florence-italy-2052",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "sourceSha1": "4d9648fad3882ea2fcb5c17232ef4826b23c045c",
+  "changes": "STL converted to GLB, reoriented from Z-up to Y-up, centered, scaled to 4.4 metres, simplified and smooth normals recalculated.",
+  "originalTriangles": 1199948,
+  "variants": [
+    {
+      "file": "david.glb",
+      "triangles": 99992,
+      "vertices": 49960,
+      "bytes": 2400600,
+      "error": 0.000188101883395575,
+      "bounds": {
+        "min": [
+          -0.918148934841156,
+          2.618993923059137e-19,
+          -0.6335073113441467
+        ],
+        "max": [
+          0.9182603359222412,
+          4.400000095367432,
+          0.6334850788116455
+        ]
+      }
+    },
+    {
+      "file": "david-mobile.glb",
+      "triangles": 40000,
+      "vertices": 19973,
+      "bytes": 961004,
+      "error": 0.0003514803829602897,
+      "bounds": {
+        "min": [
+          -0.918148934841156,
+          2.618993923059137e-19,
+          -0.6335073113441467
+        ],
+        "max": [
+          0.9176143407821655,
+          4.400000095367432,
+          0.6334850788116455
+        ]
+      }
+    }
+  ]
+}

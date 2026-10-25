@@ -42,8 +42,8 @@ function Ivy() {
 /** Yellow ivy facade and the paved terrace photographed looking toward Maxwell. */
 export function DaVinciPassage({materials}:{materials:CampusMaterials}) {
   const iron=useMemo(()=>new MeshStandardMaterial({color:'#33453c',roughness:.72,metalness:.35}),[])
-  const hedge=useMemo(()=>new MeshStandardMaterial({color:'#829438',roughness:1}),[])
-  useEffect(()=>()=>{iron.dispose();hedge.dispose()},[iron,hedge])
+  const hedge=materials.hedge
+  useEffect(()=>()=>{iron.dispose()},[iron])
   const {length,height,columns}=passage
   return <group position={[passage.start[0],0,-passage.start[1]]} rotation={[0,passage.angle,0]}>
     <Ivy/>

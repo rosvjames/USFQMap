@@ -5,6 +5,8 @@ import { createCampusGroundShapes, LANDMARK_GROUND } from './ground'
 import { walkwayOutlines } from './architecture'
 import { CAMPUS_AREAS, CAMPUS_BUILDINGS } from './campus'
 import { TERRAIN_CUTOUTS, SPORT_ZONES } from './terrain'
+import { PAGODA_STAIRS, pagodaToCampus } from './pagoda'
+import { pointInPolygon } from './geo'
 
 function polygons(shapes: Shape[]): polygonClipping.MultiPolygon {
   return shapes.map(shape => {
@@ -46,5 +48,14 @@ describe('campus ground coverage', () => {
     const strips = walkwayOutlines([[0, 0], [10, 0], [10, 0], [10, 10]], 2)
     const union = polygonClipping.union([strips[0]], ...strips.slice(1).map(r => [r]))
     expect(area(union)).toBeCloseTo(39.7654, 3)
+  })
+
+  it('keeps the general grass and pavement from protruding through the Pagoda stairs', () => {
+    const shapes = createCampusGroundShapes()
+    const floors = [...shapes.grass, ...shapes.paving].map(shape => shape.extractPoints(1))
+    for (let i = 0; i < PAGODA_STAIRS.count; i++) for (const z of [-1, 0, 1]) {
+      const point = pagodaToCampus([PAGODA_STAIRS.topX + (PAGODA_STAIRS.bottomX - PAGODA_STAIRS.topX) * (i + .5) / PAGODA_STAIRS.count, z])
+      expect(floors.some(({shape, holes}) => pointInPolygon(point, shape.map(p => [p.x, p.y])) && !holes.some(ring => pointInPolygon(point, ring.map(p => [p.x, p.y]))))).toBe(false)
+    }
   })
 })

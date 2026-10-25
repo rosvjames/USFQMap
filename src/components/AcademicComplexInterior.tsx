@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { BoxGeometry, ExtrudeGeometry, InstancedMesh, MeshStandardMaterial, Object3D, Shape, Vector2 } from 'three'
+import { BoxGeometry, ExtrudeGeometry, InstancedMesh, Matrix4, MeshStandardMaterial, Object3D, Shape, Vector2 } from 'three'
 import { ACADEMIC_COMPLEX_FLOORS } from '../data/academicComplexWalls'
 import { ACADEMIC_COMPLEX as complex, complexFloorElevation } from '../lib/academicComplex'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
+import { projectWorldUv } from '../lib/worldUv'
 
 const noRaycast = () => null
 /** Floor 1 continues this far down so the plate stays closed where the lawn falls away. */
@@ -38,11 +39,10 @@ function Walls({ floor, material }: { floor: number; material: MeshStandardMater
 
 /** Roofless cut through the Galileo–Einstein–Darwin–Newton complex at `floor`, over the floors below. */
 export function AcademicComplexInterior({ materials, floor }: { materials: CampusMaterials; floor: number }) {
-  const finishes = useMemo(() => ({
-    floor: new MeshStandardMaterial({ color: '#e6ddcd', roughness: 0.85 }),
-    partition: new MeshStandardMaterial({ color: '#f3eee4', roughness: 0.9 }),
-  }), [])
-  useEffect(() => () => Object.values(finishes).forEach((material) => material.dispose()), [finishes])
+  const finishes = {
+    floor: materials.surface('paving', '#e6ddcd', { roughness: 0.85 }),
+    partition: materials.worldUv(materials.surface('stucco', '#f3eee4', { roughness: 0.9 })),
+  }
 
   const pieces = useMemo(() => complex.floors.filter((level) => level <= floor).flatMap((level) =>
     ACADEMIC_COMPLEX_FLOORS[level].slabs.map((ring, index) => {
@@ -50,7 +50,8 @@ export function AcademicComplexInterior({ materials, floor }: { materials: Campu
       // Floors below the cut are solid storeys up to the next plate; the cut floor is just its plate.
       const below = level < floor
       const top = below ? complexFloorElevation(level + 1) - SLAB : complexFloorElevation(level)
-      return { key: `${level}-${index}`, below, base, geometry: plate(ring, top - base) }
+      const transform = new Matrix4().makeTranslation(0, base, 0).multiply(new Matrix4().makeRotationX(-Math.PI / 2))
+      return { key: `${level}-${index}`, below, base, geometry: projectWorldUv(plate(ring, top - base), transform) }
     })), [floor])
   useEffect(() => () => pieces.forEach((piece) => piece.geometry.dispose()), [pieces])
 

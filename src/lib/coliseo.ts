@@ -30,7 +30,8 @@ export const COLISEO_GARDEN_STAIRS: Vec2[] = ([
 ] as Vec2[]).map(coliseoToCampus)
 export const COLISEO_PLATFORM: Vec2[] = ([[-24,COLISEO.platformFront],[COLISEO.southEdge,COLISEO.platformFront],[COLISEO.southEdge,23],[-24,23]] as Vec2[]).map(coliseoToCampus)
 
-export const COLISEO_LOWER_FORECOURT: Vec2[] = ([[-24,4.05],[COLISEO.southEdge,4.05],[COLISEO.southEdge,COLISEO.platformFront],[-24,COLISEO.platformFront]] as Vec2[]).map(coliseoToCampus)
+// Meet the lane inside its angled edge; the lane mesh is clipped against this same footprint.
+export const COLISEO_LOWER_FORECOURT: Vec2[] = ([[-24,3.2],[COLISEO.southEdge,3.2],[COLISEO.southEdge,COLISEO.platformFront],[-24,COLISEO.platformFront]] as Vec2[]).map(coliseoToCampus)
 
 const annexLocal = findCampusBuilding('banos-deportes')!.ring.map(campusToColiseo)
 export const SPORTS_ANNEX = {
