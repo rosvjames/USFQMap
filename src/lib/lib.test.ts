@@ -87,9 +87,9 @@ describe('outdoor routes', () => {
   })
 
   it('flags the stretch that has no mapped walkway', () => {
-    // The veterinary clinic sits ~75 m from the nearest mapped walkway.
+    // The veterinary clinic sits ~19 m from the street that leads to it.
     const route = findOutdoorRoute(endpointForBuilding('miguel-de-santiago')!, endpointForBuilding('veterinaria')!)!
-    expect(route.unmapped).toBeGreaterThan(30)
+    expect(route.unmapped).toBeGreaterThan(15)
   })
 
   it('walks straight between neighbours instead of detouring', () => {

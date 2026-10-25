@@ -32,7 +32,7 @@ Los detalles arquitectónicos son una interpretación visual de fotografías pú
 
 La revisión satelital en Apple Maps del 1 de octubre de 2026 diferencia cubiertas terracota, oscuras, verdes y turquesa, añade claraboyas a Da Vinci, Einstein, Galileo y Newton, y combina azoteas claras con bandas de cubierta oscura en Hayek. Los patios pavimentados se recortan alrededor de edificios, agua, jardines y desniveles; los centros de los céspedes se mantienen despejados y se concentra la plantación junto a la laguna. La vista general incluye el campus, el puente y Hayek. Los edificios ajenos a la universidad se dibujan como volúmenes bajos y neutros. Las posiciones y dimensiones interpretadas desde la imagen son aproximaciones visuales: no modifican las huellas ni añaden senderos confirmados al grafo de navegación.
 
-Las rutas terminan en puntos aproximados de la huella de cada edificio. Los tramos punteados no son senderos confirmados. El botón «Explorar a pie» activa de nuevo el recorrido exterior en primera persona; el mapa 3D mantiene sus rutas y el GPS.
+Las rutas terminan en las puertas fotografiadas o fijadas por el estudiante (`src/lib/entrances.ts`); el resto usa el punto de la huella más cercano a un sendero que se pueda alcanzar sin atravesar edificios. Los pasos por dentro de edificios confirmados (Hall, Maxwell, Newton, Casa Blanca, Hayek) se nombran en las indicaciones. Los tramos punteados no son senderos confirmados. El botón «Explorar a pie» activa de nuevo el recorrido exterior en primera persona; el mapa 3D mantiene sus rutas y el GPS.
 
 La zona deportiva se corrigió según la descripción del estudiante: dos canchas de vóley sobre arena, terraza inferior de césped con mesas y sillas metálicas, dos canchas de tenis azules más abajo, fútbol sintético con reja y fútbol natural a desnivel. Hay accesos por gradas a la izquierda del tenis y del campo natural. Las huellas se conservan, pero las profundidades, mobiliario, accesos y altura del puente son aproximaciones visuales, no un levantamiento topográfico.
 
@@ -49,6 +49,7 @@ La investigación completa y los próximos pasos están en [referencias/INVESTIG
 | `src/data/plans/` | Planos interiores verificados; el ejemplo del Hall no está registrado |
 | `src/lib/search.ts` | Buscador y lectura de códigos con avisos de procedencia |
 | `src/lib/outdoor.ts` | Rutas sobre el grafo de senderos |
+| `src/lib/entrances.ts` | Entradas, puertas del campus y pasos interiores confirmados |
 | `src/lib/terrain.ts` | Desniveles deportivos, gradas y alturas del puente |
 | `src/components/SportsGround.tsx` | Arena, tenis, fútbol, redes y mobiliario |
 | `src/components/CampusBridges.tsx` | Tablero, barandillas y soportes del puente a Hayek |

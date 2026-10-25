@@ -32,7 +32,7 @@ describe('photo-located Hayek entrance', () => {
   it('uses the bridge-facing door rather than the nearest rear wall', () => {
     const endpoint = endpointForBuilding('hayek')!
     expect(endpoint.point).toEqual(hayekToCampus(HAYEK_ENTRANCE.door))
-    expect(endpoint.nodeId).toBe(ELEVATED_WALKWAYS[0].line[0].map(v => v.toFixed(2)).join(','))
+    expect(endpoint.edge).toContain(ELEVATED_WALKWAYS[0].line[0].map(v => v.toFixed(2)).join(','))
     expect(pointInPolygon(endpoint.point, findCampusBuilding('hayek')!.ring)).toBe(false)
     expect(terrainHeightAt(endpoint.point)).toBeCloseTo(BRIDGE_LEVEL)
   })

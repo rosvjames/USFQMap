@@ -3,7 +3,8 @@ import { CampusScene } from './components/CampusScene'
 import type { MapCameraHandle } from './components/MapCamera'
 import { BUILDING_BY_ID, BUILDINGS } from './data/buildings'
 import { PLANS } from './data/plans'
-import { endpointForBuilding, endpointForPosition, findOutdoorRoute } from './lib/outdoor'
+import { endpointForPosition, endpointsForBuilding, findOutdoorRoute, isOnCampus, type Landmark } from './lib/outdoor'
+import { ARRIVAL_HINTS, MAIN_GATE } from './lib/entrances'
 import { findRoute, floorName } from './lib/pathfinding'
 import { search, type SearchResult } from './lib/search'
 import { HAYEK_LOWER_FLOORS } from './lib/hayek'
@@ -37,6 +38,21 @@ function initialOrigin(): string {
   if (BUILDING_BY_ID.has(originFromUrl)) return originFromUrl
   const owner = Object.values(PLANS).find((plan) => plan.nodes.some((n) => n.id === originFromUrl))
   return owner?.buildingId ?? DEFAULT_ORIGIN
+}
+
+/** "el Hall Principal" reads better than a bare name after "Cruza". */
+function nameOf(buildingId: string): string {
+  const name = BUILDING_BY_ID.get(buildingId)?.name ?? ''
+  return /^(Hall|Complejo|Coliseo|Teatro)/.test(name) ? `el ${name}` : name
+}
+
+function describeLandmark(landmark: Landmark, originId: string, destinationId: string): string | undefined {
+  if (landmark.kind === 'bridge') return destinationId === 'hayek' || destinationId === 'dragon-shop' ? 'Cruza el puente peatonal hacia Hayek' : 'Cruza el puente peatonal'
+  if (landmark.kind === 'hall-passage') return 'Toma el pasillo entre el Hall y Einstein'
+  if (landmark.kind === 'gate') return `${landmark.leaving ? 'Sal del campus' : 'Entra al campus'} por ${landmark.gate === 'principal' ? 'la entrada principal' : 'la puerta de la avenida Pampite'}`
+  if (landmark.id === originId || landmark.id === destinationId) return undefined
+  const name = nameOf(landmark.id)
+  return landmark.enters ? `Entra ${name.startsWith('el ') ? `al ${name.slice(3)}` : `a ${name}`}` : `Cruza ${name}`
 }
 
 function pickIndoorOrigin(plan: BuildingPlan): string {
@@ -121,12 +137,14 @@ export default function App() {
     () => (plan && destination?.kind === 'room' ? findRoute(plan, pickIndoorOrigin(plan), destination.node.id) : null),
     [plan, destination],
   )
+  // Far from campus the route starts where visitors come in, at the main gate.
+  const offCampus = originId === GPS && !!gps.position && !isOnCampus(gps.position)
   const outdoorRoute = useMemo(() => {
     if (!destination || originId === destination.buildingId) return null
-    const from = originId === GPS ? gps.position && endpointForPosition(gps.position) : endpointForBuilding(originId)
-    const to = endpointForBuilding(destination.buildingId)
-    return from && to ? findOutdoorRoute(from, to) : null
-  }, [destination, originId, gps.position])
+    const from = originId === GPS ? gps.position && endpointForPosition(offCampus ? MAIN_GATE.inside : gps.position) : endpointsForBuilding(originId)
+    const to = endpointsForBuilding(destination.buildingId)
+    return from && to.length > 0 ? findOutdoorRoute(from, to) : null
+  }, [destination, originId, gps.position, offCampus])
 
   const choose = useCallback((result: SearchResult) => {
     setDestination(result)
@@ -160,11 +178,13 @@ export default function App() {
   // One short line per step: where to leave from, the landmarks the red line goes through, the arrival and the floor.
   const steps: string[] = []
   if (outdoorRoute && building) {
-    steps.push(originId === GPS ? 'Sigue la línea roja' : `Sal de ${BUILDING_BY_ID.get(originId)?.name} y sigue la línea roja`)
+    steps.push(offCampus ? 'Entra por la entrada principal y sigue la línea roja' : originId === GPS ? 'Sigue la línea roja' : `Sal de ${BUILDING_BY_ID.get(originId)?.name} y sigue la línea roja`)
     if (outdoorRoute.unmapped > 0) steps.push('En el tramo punteado, busca el sendero más cercano')
-    if (outdoorRoute.usesHallPassage) steps.push('Toma el pasillo entre el Hall y Einstein')
-    if (outdoorRoute.crossesHall) steps.push('Cruza el Hall Principal')
-    if (outdoorRoute.usesBridge) steps.push('Cruza el puente peatonal hacia Hayek')
+    for (const landmark of outdoorRoute.landmarks) {
+      const step = describeLandmark(landmark, originId, building.id)
+      if (step) steps.push(step)
+    }
+    if (ARRIVAL_HINTS[building.id]) steps.push(ARRIVAL_HINTS[building.id])
     const lakeEntrance = building.id === 'newton' || building.id === 'galileo'
     if (!route) steps.push(`Llega a ${building.name}${lakeEntrance ? ', frente a la laguna' : ''}`)
   }
@@ -180,7 +200,7 @@ export default function App() {
   const kicker = roomCode ? `Aula · ${building?.name}` : landmark ? building?.name ?? '' : 'Edificio'
   const sub = roomCode || landmark ? floorLabel : undefined
   const walk = outdoorRoute ? { minutes: outdoorRoute.minutes, meters: Math.round(outdoorRoute.distance / 10) * 10 } : undefined
-  const notice = originId === GPS && !gps.position ? gps.error ?? 'Buscando tu ubicación…' : plan?.placeholder ? 'Plano de ejemplo: las aulas y pasillos aún no son los reales.' : undefined
+  const notice = originId === GPS && !gps.position ? gps.error ?? 'Buscando tu ubicación…' : offCampus ? 'Estás fuera del campus: la ruta empieza en la entrada principal.' : plan?.placeholder ? 'Plano de ejemplo: las aulas y pasillos aún no son los reales.' : undefined
   const navigatingNow = navigating && steps.length > 0
 
   return (

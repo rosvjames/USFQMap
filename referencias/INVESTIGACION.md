@@ -150,3 +150,17 @@ Gastón, el cerdito, camina automáticamente por senderos entre la casita y el H
 La última fotografía del Hall deja el césped central despejado: se retiran los árboles ilustrativos de esa parcela y se añaden la reja negra del extremo de la calle, retornos laterales y diez banderas bicolores en dos filas de cinco. Las banderas son recreaciones gráficas, no emblemas oficiales verificados.
 
 La referencia de la Pagoda corrige sus gradas: ocho peldaños que bajan y se ensanchan hacia el camino, con muros rojos inclinados y remates verdes. Piedras y plantas acuáticas dejan libre el acceso. El terreno y los senderos descienden de forma continua hasta el pie de la rampa de acceso al puente del lado del campus. El desnivel de 1.8 m es una estimación visual, sin levantar una topografía ni certificar accesibilidad; el tablero del puente y los niveles de las canchas se conservan.
+
+## Entradas y pasos interiores — ubicaciones del estudiante, 2026-10-24
+
+El estudiante fijó en Google Maps las entradas que faltaban y describió por dónde se llega. `src/lib/entrances.ts` las registra; un pin de celular tiene una precisión de pocos metros.
+
+- **Cicerón (Biblioteca):** única entrada en el código plus RH37+HMF, dentro del vestíbulo del Hall. Se llega cruzando el Hall por su puerta principal o por la trasera del patio.
+- **Clínica Odontológica y Casa Corona:** se conservan las puertas que ya usaba la aplicación; se llega atravesando Maxwell. El acceso alternativo por la calle Pampite no se modela.
+- **Clínica Veterinaria:** única entrada por la calle Gral. Francisco Robles, fuera del campus. La ruta sale por la entrada principal o la puerta de la avenida Pampite y sigue las calles de OSM. Falta el pin de la puerta: el último tramo llega al lado del edificio más próximo a la calle Diego de Robles.
+- **Casa Tomate y Teatro Casa Blanca:** dan a un patio compartido con Maxwell y Casa Blanca. Maxwell tiene una salida a ese patio; también se llega entrando por Newton y cruzando Casa Blanca. Dos de los cuatro pins de «entradas de Newton» caen sobre Galileo y Einstein según las huellas de OSM y no se usan.
+- **Dragon Shop:** primer piso de Hayek, en su extremo oeste. El pin queda a 0.8 m de la huella, contra el centro comercial, y se mueve sobre el borde de Hayek. La huella del catálogo, en el patio de Hayek, no coincide con este pin.
+- **Obelisco:** se llega hasta la puerta del Coliseo y se gira hacia él.
+- **Puertas del campus:** entrada principal (pasaje de la guardianía) y puerta de la avenida Pampite (-0.195631, -78.435432).
+
+Los recorridos interiores son líneas rectas aproximadas, no planos. Las indicaciones nombran cada edificio que se cruza. El enganche al grafo descarta líneas que atraviesen edificios o agua. Si el GPS está a más de 40 m del campus y de Hayek, la ruta empieza en la entrada principal.

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CAMPUS_BUILDINGS } from './campus'
 import { pointInPolygon } from './geo'
 import { HALL_CROSSING, HALL_CROSSING_INDOOR, NORTH_COURT_PATHS } from './northCourts'
-import { endpointForBuilding, findOutdoorRoute } from './outdoor'
+import { endpointsForBuilding, findOutdoorRoute } from './outdoor'
 import type { Vec2 } from '../types'
 
 /** Buildings a leg passes through, sampled every 25 cm (the leg's own ends excluded). */
@@ -25,16 +25,18 @@ describe('walkways north of Einstein', () => {
     })
   })
 
-  it('routes to Da Vinci, Epicuro and Maxwell without cutting through buildings', () => {
+  it('routes to Da Vinci, Epicuro and Maxwell through the Hall or a confirmed building, never across another', () => {
     for (const to of ['da-vinci', 'epicuro', 'maxwell']) for (const from of ['guardiania-norte', 'galileo', 'hayek', 'einstein']) {
-      const route = findOutdoorRoute(endpointForBuilding(from)!, endpointForBuilding(to)!)!
+      const route = findOutdoorRoute(endpointsForBuilding(from), endpointsForBuilding(to))!
       expect(route.unmapped, `${from} → ${to}`).toBe(0)
-      expect(route.crossesHall, `${from} → ${to}`).toBe(true)
+      // No mapped walkway reaches the courts: the way in is the Hall lobby, or Newton and Casa Blanca to Maxwell's yard.
+      const through = route.landmarks.flatMap((l) => l.kind === 'building' ? [l.id] : [])
+      expect(through.length, `${from} → ${to}`).toBeGreaterThan(0)
+      expect(through, `${from} → ${to}`).not.toContain(to)
       const legs = [...route.links, ...route.path.slice(1).map((p, i): [Vec2, Vec2] => [route.path[i], p])]
       const indoors = new Set(legs.flatMap(([a, b]) => [...crossed(a, b)]))
-      indoors.delete('hall-principal')
       // Endpoints sit on or beside their own footprint.
-      indoors.delete(from); indoors.delete(to)
+      for (const id of [...through, from, to]) indoors.delete(id)
       expect([...indoors], `${from} → ${to}`).toEqual([])
     }
   })
