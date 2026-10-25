@@ -17,7 +17,7 @@ import { WalkCamera } from './WalkCamera'
 import type { WalkInput } from '../lib/walkInput'
 import type { CampusAnimalId } from '../lib/campusAnimals'
 import { MapLabel } from './MapLabel'
-import { DestinationMarker, OriginMarker } from './RouteMarkers'
+import { DestinationMarker, EndDot, OriginMarker } from './RouteMarkers'
 import { LabelCollision } from './LabelCollision'
 import { FacadeDetails } from './FacadeDetails'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
@@ -481,8 +481,7 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
     <group>
       {path.length > 1 && (
         <>
-          {/* A soft red glow, then a white casing under the red line, as on road maps, so it reads over any background. */}
-          <Line points={path} color={COLOR.red} lineWidth={20} transparent opacity={0.14} depthTest={false} renderOrder={4} />
+          {/* White casing under the red line, as on road maps, so it reads over any background. */}
           <Line points={path} color="#ffffff" lineWidth={11} depthTest={false} renderOrder={5} />
           <Line points={path} color={COLOR.red} lineWidth={6} depthTest={false} renderOrder={6} />
         </>
@@ -501,6 +500,7 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
           renderOrder={6}
         />
       ))}
+      {path.length > 1 && <EndDot position={path[path.length - 1]} />}
       <OriginMarker position={at(start)} toward={path[Math.min(1, path.length - 1)] ?? at(start)} />
     </group>
   )

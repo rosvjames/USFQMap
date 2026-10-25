@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { BuildingView } from '../lib/buildingViews'
 import { useSwipeDown } from '../lib/useSheetGestures'
 import { ArrowIcon, BusIcon, EyeIcon, WalkerIcon } from './icons'
@@ -20,9 +20,33 @@ interface DestinationSheetProps {
   children?: ReactNode
 }
 
+/** Largest size, from 34 px down to 16 px, at which no word overflows and the name takes at most two lines. */
+function useFittedTitle(title: string) {
+  const heading = useRef<HTMLHeadingElement>(null)
+  useLayoutEffect(() => {
+    const element = heading.current
+    if (!element) return
+    const fit = () => {
+      let size = 34
+      element.style.fontSize = `${size}px`
+      while (size > 16 && (element.scrollWidth > element.clientWidth || element.offsetHeight > size * 1.2 * 2 + 2)) {
+        size -= 1
+        element.style.fontSize = `${size}px`
+      }
+    }
+    fit()
+    // The web font can arrive after the first layout and change the widths.
+    document.fonts.ready.then(fit)
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
+  }, [title])
+  return heading
+}
+
 /** What and where the destination is, how long the walk takes and what to look at before leaving. Swipe down to close. */
 export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMascot, onGo, views, onView, onWalk, onClose, children }: DestinationSheetProps) {
   const { sheet, handle } = useSwipeDown<HTMLDivElement>(onClose)
+  const heading = useFittedTitle(title)
   // Gastón stands over the head of the panel; once the content scrolls under him he steps away.
   const [scrolled, setScrolled] = useState(false)
   return (
@@ -37,7 +61,7 @@ export function DestinationSheet({ kicker, title, sub, walk, notice, noticeMasco
           <span className="grabber" aria-hidden="true" />
           <div className="destination-head">
             <p className="kicker">{kicker}</p>
-            <h1 className={title.length > 6 ? 'long' : undefined}>{title}</h1>
+            <h1 ref={heading}>{title}</h1>
             {(sub || walk) && <p className="sub">{sub}{sub && walk && ' · '}{walk && <strong className="eta">{walk.minutes} min</strong>}</p>}
           </div>
         </div>

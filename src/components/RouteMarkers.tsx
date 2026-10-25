@@ -29,6 +29,15 @@ export function OriginMarker({ position, toward }: { position: Point; toward: Po
   )
 }
 
+/** Where the walk ends, at the building's door: a red dot with a white rim. */
+export function EndDot({ position }: { position: Point }) {
+  return (
+    <Html position={position} center zIndexRange={BEHIND_UI} style={{ pointerEvents: 'none' }}>
+      <span className="route-end" />
+    </Html>
+  )
+}
+
 const PIN_ICONS: Record<string, string> = {
   // Open book
   ciceron: 'M12 7c-1.7-1.2-4.3-1.6-7-1.2v10.6c2.7-.4 5.3 0 7 1.2 1.7-1.2 4.3-1.6 7-1.2V5.8c-2.7-.4-5.3 0-7 1.2ZM12 7v10.6',
