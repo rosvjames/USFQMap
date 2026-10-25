@@ -3,6 +3,7 @@ import { DoubleSide, MeshStandardMaterial } from 'three'
 import { BASKETBALL, COLISEO as hall, COLISEO_STAIR as stair, COLISEO_STANDS as stands, COLISEO_WALLS, VOLLEYBALL, wallPieces, type Court } from '../lib/coliseoInterior'
 import type { CampusMaterials } from '../lib/materials'
 import type { Vec2 } from '../types'
+import { boxUv } from '../lib/worldUv'
 
 type Point = [number, number, number]
 const noRaycast = () => null
@@ -11,7 +12,7 @@ const LINE = 0.08
 const at = (x: number, y: number, height = 0): Point => [x, hall.floor + height, -y]
 
 function Block({ at: position, size, material, shadow = true }: { at: Point; size: Point; material: MeshStandardMaterial; shadow?: boolean }) {
-  return <mesh position={position} material={material} castShadow={shadow} receiveShadow raycast={noRaycast}><boxGeometry args={size} /></mesh>
+  return <mesh position={position} material={material} castShadow={shadow} receiveShadow raycast={noRaycast}><boxGeometry args={size} onUpdate={boxUv} /></mesh>
 }
 
 /** Painted rectangle outline, lying on the floor. */
@@ -58,15 +59,15 @@ function VolleyballCourt({ court, finishes }: { court: Court; finishes: Finishes
 type Finishes = ReturnType<typeof createFinishes>
 function createFinishes(materials: CampusMaterials) {
   return {
-    wood: new MeshStandardMaterial({ color: '#cfa468', roughness: 0.55 }),
-    tile: new MeshStandardMaterial({ color: '#c9cdc6', roughness: 0.8 }),
-    partition: new MeshStandardMaterial({ color: '#efe9dc', roughness: 0.9 }),
+    wood: materials.surface('wood', '#cfa468', { roughness: 0.62, normal: 0.2 }),
+    tile: materials.surface('paving', '#c9cdc6', { roughness: 0.8 }),
+    partition: materials.surface('stucco', '#efe9dc', { roughness: 0.9 }),
     line: new MeshStandardMaterial({ color: '#fbfaf3', roughness: 0.6, side: DoubleSide }),
     key: new MeshStandardMaterial({ color: '#b8463a', roughness: 0.6 }),
     volley: new MeshStandardMaterial({ color: '#4f8f8c', roughness: 0.6 }),
-    concrete: new MeshStandardMaterial({ color: '#b9b5a8', roughness: 0.95 }),
+    concrete: materials.surface('concrete', '#b9b5a8', { roughness: 0.95 }),
     steel: new MeshStandardMaterial({ color: '#4c5553', roughness: 0.5, metalness: 0.5 }),
-    board: new MeshStandardMaterial({ color: '#f4f6f3', roughness: 0.3, transparent: true, opacity: 0.85, envMap: materials.environment }),
+    board: materials.glass('#f4f6f3', { opacity: 0.85 }),
     rim: new MeshStandardMaterial({ color: '#d9622b', roughness: 0.5 }),
     net: new MeshStandardMaterial({ color: '#f4f4ee', transparent: true, opacity: 0.45, side: DoubleSide }),
   }
@@ -75,7 +76,7 @@ function createFinishes(materials: CampusMaterials) {
 /** Roofless ground floor of the Coliseo: walls cut low so the courts and rooms read from above. */
 export function ColiseoInterior({ materials }: { materials: CampusMaterials }) {
   const finishes = useMemo(() => createFinishes(materials), [materials])
-  useEffect(() => () => Object.values(finishes).forEach((material) => material.dispose()), [finishes])
+  useEffect(() => () => [finishes.line, finishes.key, finishes.volley, finishes.steel, finishes.rim, finishes.net].forEach(material => material.dispose()), [finishes])
   const walls = useMemo(() => COLISEO_WALLS.flatMap((wall, index) => {
     const dx = wall.to[0] - wall.from[0], dy = wall.to[1] - wall.from[1], length = Math.hypot(dx, dy)
     return wallPieces(wall).map(([start, end]) => {
@@ -92,7 +93,7 @@ export function ColiseoInterior({ materials }: { materials: CampusMaterials }) {
     {walls.map((wall) => {
       const height = wall.outer ? hall.outerWall + slab : hall.innerWall
       return <mesh key={wall.key} position={at(wall.x, wall.y, wall.outer ? (hall.outerWall - slab) / 2 : height / 2)} rotation={[0, wall.angle, 0]} material={wall.outer ? materials.stucco : finishes.partition} castShadow receiveShadow raycast={noRaycast}>
-        <boxGeometry args={[wall.length + (wall.outer ? 0.3 : 0), height, wall.outer ? 0.3 : 0.14]} />
+        <boxGeometry args={[wall.length + (wall.outer ? 0.3 : 0), height, wall.outer ? 0.3 : 0.14]} onUpdate={boxUv} />
       </mesh>
     })}
 

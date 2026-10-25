@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { BoxGeometry, Color, ExtrudeGeometry, InstancedMesh, Object3D, Shape } from 'three'
+import { BoxGeometry, Color, ExtrudeGeometry, InstancedMesh, type MeshStandardMaterial, Object3D, Shape } from 'three'
 import type { CampusBuilding } from '../lib/campus'
+import type { CampusMaterials } from '../lib/materials'
 import { isMaxwellFrontEdge, MAXWELL_ENTRANCE } from '../lib/maxwell'
 import { isEinsteinHallDoor, isHallTunnelMouthEdge } from '../lib/hallPassage'
 import { campusToHall, isHallFrontEdge } from '../lib/hall'
@@ -15,7 +16,8 @@ import { isGalileoFrontEdge, campusToGalileo, GALILEO_ENTRANCE } from '../lib/ga
 
 type Detail = { x: number; z: number; height: number; angle: number; width: number; tall: number; depth: number }
 
-function FacadeInstances({ items, color, glass = false, arched = false }: { items: Detail[]; color: string; glass?: boolean; arched?: boolean }) {
+/** `material` textures plaster trim; glass and dark mullions stay flat. Instances are tinted per item, not through the material. */
+function FacadeInstances({ items, color, glass = false, arched = false, material }: { items: Detail[]; color: string; glass?: boolean; arched?: boolean; material?: MeshStandardMaterial }) {
   const geometry = useMemo(() => {
     if (!arched) return new BoxGeometry(1, 1, 1)
     const arch = new Shape()
@@ -38,13 +40,15 @@ function FacadeInstances({ items, color, glass = false, arched = false }: { item
     })
     if (mesh.current) { mesh.current.instanceMatrix.needsUpdate = true; if (mesh.current.instanceColor) mesh.current.instanceColor.needsUpdate = true; mesh.current.computeBoundingSphere() }
   }, [items, color, glass])
-  return <instancedMesh ref={mesh} args={[geometry, undefined, items.length]} castShadow={!glass} receiveShadow raycast={() => null}>
-    <meshStandardMaterial color="white" roughness={glass ? 0.22 : 0.85} metalness={glass ? 0.45 : 0} />
+  return <instancedMesh ref={mesh} args={[geometry, material, items.length]} castShadow={!glass} receiveShadow raycast={() => null}>
+    {!material && <meshStandardMaterial color="white" roughness={glass ? 0.55 : 0.85} metalness={0} />}
   </instancedMesh>
 }
 
 /** Photo-inspired frames, glazing and cornices; openings are illustrative, not surveyed. */
-export function FacadeDetails({ buildings }: { buildings: CampusBuilding[] }) {
+export function FacadeDetails({ buildings, materials }: { buildings: CampusBuilding[]; materials: CampusMaterials }) {
+  // Frames and cornices vary in size per instance, so their plaster UVs are computed in world metres in the shader.
+  const trim = materials.worldUv(materials.surface('stucco', '#ffffff', { roughness: 0.85 }))
   const details = useMemo(() => {
     const archFrames: Detail[] = [], archPanes: Detail[] = [], frames: Detail[] = [], panes: Detail[] = [], mullions: Detail[] = [], cornices: Detail[] = []
     for (const building of buildings.filter((b) => b.onCampus && !['obelisco', 'pagoda', 'miguel-de-santiago', 'gobe', 'coliseo', 'banos-deportes'].includes(b.info?.id ?? ''))) {
@@ -110,11 +114,11 @@ export function FacadeDetails({ buildings }: { buildings: CampusBuilding[] }) {
     return { archFrames, archPanes, frames, panes, mullions, cornices }
   }, [buildings])
   return <group>
-    <FacadeInstances items={details.archFrames} color="#e8dfc9" arched />
+    <FacadeInstances items={details.archFrames} color="#e8dfc9" arched material={trim} />
     <FacadeInstances items={details.archPanes} color="#476164" glass arched />
-    <FacadeInstances items={details.frames} color="#e8dfc9" />
+    <FacadeInstances items={details.frames} color="#e8dfc9" material={trim} />
     <FacadeInstances items={details.panes} color="#476164" glass />
     <FacadeInstances items={details.mullions} color="#414844" />
-    <FacadeInstances items={details.cornices} color="#e3dbc8" />
+    <FacadeInstances items={details.cornices} color="#e3dbc8" material={trim} />
   </group>
 }

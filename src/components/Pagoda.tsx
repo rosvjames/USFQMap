@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { CatmullRomCurve3, DoubleSide, InstancedMesh, Object3D, Shape, Vector2, Vector3 } from 'three'
-import { palmFrond } from './LandscapeDetails'
+import { CatmullRomCurve3, DoubleSide, InstancedMesh, Matrix4, Object3D, Shape, ShapeGeometry, Vector2, Vector3 } from 'three'
+import { projectWorldUv, scaleUvToTiles } from '../lib/worldUv'
+import { Palm } from './CampusPlants'
 import type { ThreeEvent } from '@react-three/fiber'
 import { PAGODA, PAGODA_POND, PAGODA_POND_OUTLINE, createPagodaRoof, pagodaBridgeHeight, PAGODA_STAIRS, PAGODA_STAIR_LEVEL, pagodaStairWidthAt, createPagodaStairWall, isPagodaStairApproach } from '../lib/pagoda'
 import type { CampusMaterials } from '../lib/materials'
@@ -32,10 +33,15 @@ function CurvedTimber({ points, radius, material }: { points: Point[]; radius: n
 
 export function Pagoda({ materials, onSelect }: { materials: CampusMaterials; onSelect: () => void }) {
   const roof = useMemo(createPagodaRoof, [])
-  const walls = useMemo(() => [-1, 1].map(side => ({ red: createPagodaStairWall(side), green: createPagodaStairWall(side, true) })), [])
+  // The stair walls are built without UVs; they get metric ones in the pavilion's own frame.
+  const walls = useMemo(() => [-1, 1].map(side => ({ red: projectWorldUv(createPagodaStairWall(side), new Matrix4()), green: projectWorldUv(createPagodaStairWall(side, true), new Matrix4()) })), [])
+  // Timbers, stone and dark joinery are instanced boxes of every size, so their UVs are metric in the shader.
+  const wood = materials.worldUv(materials.pagodaWood), stone = materials.worldUv(materials.entranceStone), dark = materials.worldUv(materials.pagodaRoof)
   useEffect(() => () => walls.forEach(wall => { wall.red.dispose(); wall.green.dispose() }), [walls])
   useEffect(() => () => roof.dispose(), [roof])
-  const pond = useMemo(() => new Shape(PAGODA_POND.map(([x, y]) => new Vector2(x, y))), [])
+  // The pond is not batched, so its UVs are scaled here to the same 2.4 m tiles the batcher gives the lagoon.
+  const pond = useMemo(() => scaleUvToTiles(new ShapeGeometry(new Shape(PAGODA_POND.map(([x, y]) => new Vector2(x, y))))), [])
+  useEffect(() => () => pond.dispose(), [pond])
   const layout = useMemo(() => {
     const wood: Timber[] = [], dark: Timber[] = [], stone: Timber[] = []
     const add = (items: Timber[], p: Point, size: Point, angle = 0) => items.push({ p, size, angle })
@@ -110,17 +116,15 @@ export function Pagoda({ materials, onSelect }: { materials: CampusMaterials; on
     event.stopPropagation(); onSelect()
   }
   return <group>
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.33, 0]} material={materials.pondWater} receiveShadow raycast={() => null}>
-      <shapeGeometry args={[pond]} />
-    </mesh>
+    <mesh geometry={pond} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.33, 0]} material={materials.pondWater} receiveShadow raycast={() => null} />
     <group position={[PAGODA.center[0], 0, -PAGODA.center[1]]} rotation={[0, PAGODA.angle, 0]} onClick={select}>
-      <Timbers items={layout.wood} material={materials.pagodaWood} />
-      <Timbers items={layout.stone} material={materials.entranceStone} />
+      <Timbers items={layout.wood} material={wood} />
+      <Timbers items={layout.stone} material={stone} />
       {walls.map((wall, i) => <group key={`stair-wall-${i}`}>
         <mesh geometry={wall.red} material={materials.hallRed} castShadow receiveShadow />
         <mesh geometry={wall.green} material={materials.metalRoof} castShadow receiveShadow />
       </group>)}
-      <Timbers items={layout.dark} material={materials.pagodaRoof} />
+      <Timbers items={layout.dark} material={dark} />
       {layout.columns.map((p, i) => <mesh key={i} position={p} material={materials.pagodaWood} castShadow><cylinderGeometry args={[0.16, 0.2, 2.45, 12]} /></mesh>)}
       <Balusters positions={layout.balusters} material={materials.pagodaWood} />
       <mesh geometry={roof} material={materials.pagodaRoof} castShadow receiveShadow />
@@ -135,7 +139,7 @@ export function Pagoda({ materials, onSelect }: { materials: CampusMaterials; on
       <CurvedTimber points={[[-4.6, 6.55, 0], [-2, 6.45, 0], [2, 6.45, 0], [4.6, 6.55, 0]]} radius={0.105} material={materials.pagodaRoof} />
       {[-1, 1].map((side) => <CurvedTimber key={side} points={[[side * 4.3, 6.4, 0], [side * 4.65, 6.55, 0], [side * 4.82, 6.92, 0]]} radius={0.11} material={materials.pagodaRoof} />)}
       <PondBorder materials={materials} />
-      <PagodaPalm />
+      <group position={[1, 0, -10]} raycast={() => null}><Palm materials={materials} height={6.4} girth={2} crown={1.3} yaw={.9} /></group>
     </group>
   </group>
 }
@@ -182,18 +186,6 @@ function PondBorder({ materials }: { materials: CampusMaterials }) {
     </instancedMesh>
     {Array.from({ length: 20 }, (_, i) => i).filter(i => !isPagodaStairApproach([-13.5 + Math.sin(i * 11) * 1.25, (i % 2 ? -1 : 1) * (2 + Math.cos(i * 7) * 1.1)], .5)).map(i => <mesh key={i} position={[-13.5 + Math.sin(i * 11) * 1.25, 0.355, (i % 2 ? -1 : 1) * (2 + Math.cos(i * 7) * 1.1)]} rotation={[-Math.PI / 2, 0, i * 2]}>
       <circleGeometry args={[0.22 + i % 3 * 0.07, 12, 0, Math.PI * 1.85]} /><meshStandardMaterial color={i % 2 ? '#526b35' : '#718344'} roughness={0.6} side={DoubleSide} />
-    </mesh>)}
-  </group>
-}
-
-/** The spreading date palm on the lake-facing side is visible in the rear reference photo. */
-function PagodaPalm() {
-  const frond = useMemo(palmFrond, [])
-  useEffect(() => () => frond.dispose(), [frond])
-  return <group position={[1, 0, -10]} raycast={() => null}>
-    <mesh position={[0, 3.5, 0]} castShadow><cylinderGeometry args={[0.32, 0.48, 6.4, 14]} /><meshStandardMaterial color="#716143" roughness={1} /></mesh>
-    {Array.from({ length: 24 }, (_, i) => <mesh key={i} geometry={frond} position={[0, 6.3 + i % 3 * 0.4, 0]} rotation={[0, i * Math.PI * 2 / 24, i % 3 === 0 ? -0.34 : i % 3 === 1 ? 0.06 : 0.48]} scale={[1.25, 1.3, 0.85]} castShadow>
-      <meshStandardMaterial color={i % 4 ? '#4a6031' : '#777846'} roughness={0.95} side={DoubleSide} />
     </mesh>)}
   </group>
 }

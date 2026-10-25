@@ -1,5 +1,6 @@
-import { BufferGeometry, Group, Matrix3, Matrix4, Mesh, MeshStandardMaterial, Vector3 } from 'three'
+import { BufferGeometry, Group, Matrix3, Matrix4, Mesh, MeshPhysicalMaterial, MeshStandardMaterial, Vector3 } from 'three'
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
+import { projectWorldUv } from './worldUv'
 
 /** Only for immutable, non-interactive decorations. Original resources remain owned by React. */
 export function batchStaticMeshes(root: Group) {
@@ -13,9 +14,11 @@ export function batchStaticMeshes(root: Group) {
     const attributes = Object.keys(object.geometry.attributes).sort()
     // Equivalent local materials can share a draw, even if React created separate instances.
     const key = JSON.stringify([material.color.getHex(), material.emissive.getHex(), material.emissiveIntensity,
+      material instanceof MeshPhysicalMaterial ? material.uuid : null,
       material.roughness, material.metalness, material.side, material.vertexColors, material.opacity,
       material.map?.uuid, material.bumpMap?.uuid, material.bumpScale, material.normalMap?.uuid,
-      material.normalScale.toArray(), material.envMap?.uuid, material.envMapIntensity, material.flatShading,
+      material.normalScale.toArray(), material.roughnessMap?.uuid, material.metalnessMap?.uuid, material.aoMap?.uuid,
+      material.userData.worldUv, material.envMap?.uuid, material.envMapIntensity, material.flatShading,
       material.alphaTest, material.depthTest, material.depthWrite, material.wireframe, material.toneMapped, material.userData.groundSurface,
       object.castShadow, object.receiveShadow, object.renderOrder, attributes,
     ])
@@ -25,10 +28,12 @@ export function batchStaticMeshes(root: Group) {
   })
   const batches: Mesh[] = [], originals: Mesh[] = []
   for (const { source, meshes } of groups.values()) {
-    if (meshes.length < 2) continue
+    // A lone textured mesh is rebuilt too, so its UVs follow world metres like every other piece of that surface.
+    if (meshes.length < 2 && !(source.material as MeshStandardMaterial).userData.worldUv) continue
     const geometries: BufferGeometry[] = meshes.map((mesh) => {
-      const geometry = mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry.clone()
-      if ((mesh.material as MeshStandardMaterial).userData.groundSurface) {
+      let geometry = mesh.geometry.index ? mesh.geometry.toNonIndexed() : mesh.geometry.clone()
+      if ((mesh.material as MeshStandardMaterial).userData.worldUv) geometry = projectWorldUv(geometry, mesh.matrixWorld)
+      else if ((mesh.material as MeshStandardMaterial).userData.groundSurface) {
         const p = geometry.getAttribute('position'), n = geometry.getAttribute('normal'), uv = geometry.getAttribute('uv')
         const world = new Vector3(), normal = new Vector3(), normalMatrix = new Matrix3().getNormalMatrix(mesh.matrixWorld)
         if (uv && n) for (let i = 0; i < p.count; i++) {

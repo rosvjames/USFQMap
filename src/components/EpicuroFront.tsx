@@ -13,11 +13,10 @@ const basinProfile=[[0,0],[2.85,0],[2.85,.52],[2.63,.52],[2.63,.15],[0,.15]].map
 
 /** Raised Epicuro facade, square tower and low wall fountain, interpreted from the supplied photo. */
 export function EpicuroFront({materials}:{materials:CampusMaterials}) {
-  const finish=useMemo(()=>({
-    glass:new MeshStandardMaterial({color:'#2d3e3e',roughness:.25,metalness:.3}),
-    iron:new MeshStandardMaterial({color:'#324239',roughness:.65,metalness:.4}),
-    gold:new MeshStandardMaterial({color:'#c59b55',roughness:.94}),
-  }),[])
+  const iron=useMemo(()=>new MeshStandardMaterial({color:'#324239',roughness:.65,metalness:.4}),[])
+  // The shared pane belongs to the campus materials; only the iron is ours to dispose.
+  const finish={glass:materials.glass('#2d3e3e'),iron}
+  const gold=materials.surface('stucco','#c59b55',{roughness:.94})
   const arch=useMemo(()=>{
     const shape=new Shape();shape.moveTo(-1,0);shape.lineTo(1,0);shape.lineTo(1,1.35);shape.absarc(0,1.35,1,0,Math.PI,false);shape.closePath()
     return new ExtrudeGeometry(shape,{depth:.15,bevelEnabled:false,curveSegments:20})
@@ -31,7 +30,7 @@ export function EpicuroFront({materials}:{materials:CampusMaterials}) {
     return new ExtrudeGeometry(shape,{depth:.45,bevelEnabled:false})
   },[])
   const paving=useMemo(()=>createPavedShapes([EPICURO_FORECOURT],CAMPUS_BUILDINGS.map(b=>b.ring)),[])
-  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());arch.dispose();windowPediment.dispose();doorPediment.dispose()},[finish,arch,windowPediment,doorPediment])
+  useEffect(()=>()=>{iron.dispose();arch.dispose();windowPediment.dispose();doorPediment.dispose()},[iron,arch,windowPediment,doorPediment])
   return <group>
     <mesh position={[0,f.ground,0]} rotation={[-Math.PI/2,0,0]} material={materials.paving} receiveShadow raycast={noRaycast}><shapeGeometry args={[paving]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/></mesh>
     <group position={[f.start[0],0,-f.start[1]]} rotation={[0,f.angle,0]}>
@@ -76,11 +75,11 @@ export function EpicuroFront({materials}:{materials:CampusMaterials}) {
       <Block at={[f.towerX,22.9,-f.towerDepth/2]} size={[.05,1.7,.05]} material={finish.iron}/>
       {/* Arched wall fountain and stone cascade terminating in a low curved basin. */}
       <group position={[fountain.x,f.ground,0]}>
-        <Block at={[0,2.7,.6]} size={[6.25,4.4,.8]} material={finish.gold}/>
+        <Block at={[0,2.7,.6]} size={[6.25,4.4,.8]} material={gold}/>
         <mesh geometry={arch} position={[0,1.45,1.02]} scale={[1.88,1.35,1]} material={materials.cream} castShadow raycast={noRaycast}/>
         <mesh geometry={arch} position={[0,1.56,1.2]} scale={[1.6,1.2,1]} material={finish.iron} raycast={noRaycast}/>
         <Block at={[0,4.91,.65]} size={[6.65,.25,1.25]} material={materials.cream}/>
-        <Block at={[0,5.17,.65]} size={[6.25,.2,1]} material={finish.gold}/>
+        <Block at={[0,5.17,.65]} size={[6.25,.2,1]} material={gold}/>
         {[-2.15,2.15].map(x=><Block key={x} at={[x,2.25,1.28]} size={[.42,3.5,.62]} material={materials.cream}/>)}
         {Array.from({length:9},(_,i)=>{
           const top=2.1-i*.18

@@ -1,41 +1,29 @@
-import { VISUAL_PATH_WIDTHS } from '../data/siteAppearance'
 import { useEffect,useMemo } from 'react'
-import { DoubleSide,MeshStandardMaterial } from 'three'
+import { MeshStandardMaterial } from 'three'
 import type { Vec2 } from '../types'
 import type { CampusMaterials } from '../lib/materials'
-import { CAMPUS_BUILDINGS,CAMPUS_WALKWAYS } from '../lib/campus'
-import { createPavedShapes,createRoofGeometry,createWalkwayGeometry,walkwayOutlines } from '../lib/architecture'
-import { GALILEO_ENTRANCE as h,GALILEO_LAWNS,GALILEO_LAGOON,LAGOON_GARDEN,LAGOON_PALMS,GALILEO_ACCESS_PATH,galileoHeightAt,galileoToCampus,clearLagoonPlant } from '../lib/galileo'
-import { foliageTexture,palmFrond } from './LandscapeDetails'
+import { CAMPUS_BUILDINGS } from '../lib/campus'
+import { createPavedShapes,createWalkwayGeometry } from '../lib/architecture'
+import { LANDSCAPE_PATH_CUTOUTS,createGalileoLawn } from '../lib/raisedLawn'
+import { GALILEO_ENTRANCE as h,GALILEO_LAGOON,LAGOON_GARDEN,LAGOON_PALMS,GALILEO_ACCESS_PATH,galileoHeightAt,galileoToCampus,clearLagoonPlant } from '../lib/galileo'
+import { Bush,Palm,Tree } from './CampusPlants'
 
 type Point=[number,number,number]
 const noRaycast=()=>null
 function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMaterial}) {
   return <mesh position={at} material={material} castShadow receiveShadow raycast={noRaycast}><boxGeometry args={size}/></mesh>
 }
-const pathCutouts=CAMPUS_WALKWAYS.filter(w=>!w.bridge).flatMap(w=>walkwayOutlines(w.line,(w.mappedWidth ?? VISUAL_PATH_WIDTHS[w.osmId] ?? w.width)+.24))
 /** Raised Galileo portal and planted lake margin interpreted from the supplied photograph. */
 export function GalileoLagoon({materials}:{materials:CampusMaterials}) {
-  const foliage=useMemo(foliageTexture,[])
-  const finish=useMemo(()=>({
-    glass:new MeshStandardMaterial({color:'#354f55',metalness:.4,roughness:.24}),
+  const owned=useMemo(()=>({
     iron:new MeshStandardMaterial({color:'#364843',metalness:.35,roughness:.65}),
-    leaf:new MeshStandardMaterial({color:'#4c7138',roughness:1,side:DoubleSide}),
-    trunk:new MeshStandardMaterial({color:'#766244',roughness:1}),
-    hedge:new MeshStandardMaterial({color:'#657d3d',map:foliage,alphaTest:.45,side:DoubleSide,roughness:1}),
-    crown:new MeshStandardMaterial({color:'#50693b',map:foliage,alphaTest:.45,side:DoubleSide,roughness:1}),
     flower:new MeshStandardMaterial({color:'#d5bd3b',roughness:1}),
   }),[])
-  const frond=useMemo(palmFrond,[])
-  const obstacles=[...CAMPUS_BUILDINGS.map(b=>b.ring),...pathCutouts,GALILEO_LAGOON.ring]
+  // The pane is shared and owned by the campus materials, so it is not part of the set disposed below.
+  const finish={...owned,glass:materials.glass('#354f55')}
+  const obstacles=[...CAMPUS_BUILDINGS.map(b=>b.ring),...LANDSCAPE_PATH_CUTOUTS,GALILEO_LAGOON.ring]
   const gardens=useMemo(()=>createPavedShapes([LAGOON_GARDEN],obstacles),[])
-  const lawns=useMemo(()=>createPavedShapes(GALILEO_LAWNS,obstacles).map(shape=>{
-    const points=shape.extractPoints(1)
-    const g=createRoofGeometry(points.shape.map(p=>[p.x,p.y] as Vec2),0,0,points.holes.map(r=>r.map(p=>[p.x,p.y] as Vec2)))
-    const p=g.getAttribute('position')
-    for(let i=0;i<p.count;i++)p.setY(i,galileoHeightAt([p.getX(i),-p.getZ(i)])??h.ground)
-    g.computeVertexNormals();return g
-  }),[])
+  const lawn=useMemo(createGalileoLawn,[])
   const border=useMemo(()=>createWalkwayGeometry(GALILEO_LAGOON.ring,.22,.46),[])
   const approach=useMemo(()=>createWalkwayGeometry(GALILEO_ACCESS_PATH.slice(1),2.1,.565),[])
   const flowers=useMemo(()=>{
@@ -58,13 +46,14 @@ export function GalileoLagoon({materials}:{materials:CampusMaterials}) {
         width:.36+(Math.sin(phase)+1)*.18,height:.2+(Math.cos(phase*1.7)+1)*.12}
     })
   }),[])
-  useEffect(()=>()=>{foliage.dispose();Object.values(finish).forEach(m=>m.dispose());frond.dispose();lawns.forEach(g=>g.dispose());border.dispose();approach.dispose()},[finish,foliage,frond,lawns,border,approach])
+  useEffect(()=>()=>{Object.values(owned).forEach(m=>m.dispose());lawn.tops.forEach(g=>g.dispose());lawn.sides.dispose();border.dispose();approach.dispose()},[owned,lawn,border,approach])
   const palms=[...LAGOON_PALMS.filter(p=>clearLagoonPlant(p,1)),...([[-10,5], [5.7,5.5]] as Vec2[]).map(galileoToCampus)]
   return <group>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,.51,0]} material={materials.garden} receiveShadow raycast={noRaycast}>
       <shapeGeometry args={[gardens]} onUpdate={g=>{const uv=g.getAttribute('uv');for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/2.4,uv.getY(i)/2.4);uv.needsUpdate=true}}/>
     </mesh>
-    {lawns.map((g,i)=><mesh key={i} geometry={g} material={materials.grass} receiveShadow raycast={noRaycast}/>)}
+    {lawn.tops.map((g,i)=><mesh key={i} geometry={g} material={materials.grass} receiveShadow raycast={noRaycast}/>)}
+    <mesh geometry={lawn.sides} material={materials.soil} receiveShadow raycast={noRaycast}/>
     <mesh geometry={border} material={materials.pondRock} receiveShadow raycast={noRaycast}/>
     <mesh geometry={approach} material={materials.lakePaving} receiveShadow raycast={noRaycast}/>
     <group position={[h.center[0],0,-h.center[1]]} rotation={[0,h.angle,0]}>
@@ -98,13 +87,10 @@ export function GalileoLagoon({materials}:{materials:CampusMaterials}) {
     </group>
     {palms.map(([x,y],i)=>{
       const ground=galileoHeightAt([x,y])??.55,scale=i>=palms.length-2?.95:.85+i%3*.12,height=5.2*scale
-      return <group key={i} position={[x,ground,-y]}>
-        <mesh position={[0,height/2,0]} material={finish.trunk} castShadow raycast={noRaycast}><cylinderGeometry args={[.23*scale,.38*scale,height,10]}/></mesh>
-        {Array.from({length:16},(_,j)=><mesh key={j} position={[0,height+j%3*.17,0]} rotation={[0,j*Math.PI/8+i,j%3===0?-.2:j%3===1?.15:.4]} scale={[scale,scale,scale]} geometry={frond} material={finish.leaf} castShadow raycast={noRaycast}/>)}
-      </group>
+      return <Palm key={i} materials={materials} position={[x,ground,-y]} height={height} girth={scale*1.3} crown={scale} yaw={i*1.3}/>
     })}
     {flowers.map(([x,y],i)=><group key={i} position={[x,.72,-y]}>
-      <mesh scale={[.48,.28,.42]} material={finish.hedge} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>
+      <Bush materials={materials} scale={[.52,.3,.46]} rotation={i} tone="#d7e0a8"/>
       {[-1,1].map(s=><mesh key={s} position={[s*.18,.23,s*.1]} scale={[.1,.055,.1]} material={finish.flower} raycast={noRaycast}><icosahedronGeometry args={[1,0]}/></mesh>)}
     </group>)}
     {/* Irregular stones follow the existing water outline; no straight concrete rim. */}
@@ -116,10 +102,7 @@ export function GalileoLagoon({materials}:{materials:CampusMaterials}) {
         return <mesh key={i} position={[Math.cos(angle)*radius,.38+tier*.73,Math.sin(angle)*radius]} scale={[.67-tier*.08,.56,.62-tier*.06]} rotation={[i*.2,angle,.2]} material={materials.pondRock} castShadow receiveShadow raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>
       })}
     </group>
-    {([[3,-17],[34,-15.5]] as Vec2[]).filter(p=>clearLagoonPlant(p,.25)).map(([x,y],i)=><group key={'tree'+i} position={[x,.55,-y]}>
-      <mesh position={[0,2.6,0]} material={finish.trunk} castShadow raycast={noRaycast}><cylinderGeometry args={[.14,.26,5.2,9]}/></mesh>
-      {Array.from({length:6},(_,j)=><mesh key={j} position={[Math.cos(j*2.4)*1.1,5.2+Math.sin(j)*.6,Math.sin(j*2.4)*1.1]} scale={[1.6,1.5,1.7]} rotation={[0,j,0]} material={finish.crown} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,2]}/></mesh>)}
-    </group>)}
+    {([[3,-17],[34,-15.5]] as Vec2[]).filter(p=>clearLagoonPlant(p,.25)).map(([x,y],i)=><Tree key={'tree'+i} materials={materials} position={[x,.55,-y]} height={5.2} crown={2.7} rotation={i*2.3} tone={i?'#b2c29f':'#bdc9aa'}/>)}
     {/* Low rocks and planting at the bank, kept away from pedestrian paths. */}
     {[[-8,-29],[34.5,-35.2],[40.7,-20.5]].filter(p=>clearLagoonPlant(p as Vec2)).map(([x,y],i)=><mesh key={i} position={[x,.95,-y]} scale={[1.15,.8,.95]} rotation={[.1,i,0]} material={materials.pondRock} castShadow receiveShadow raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>)}
   </group>

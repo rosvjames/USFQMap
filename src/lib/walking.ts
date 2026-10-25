@@ -1,6 +1,6 @@
 import { CAMPUS_AREAS, CAMPUS_BOUNDARY, CAMPUS_BUILDINGS, CAMPUS_PATHS, CAMPUS_STREET_CUTOUTS, findCampusBuilding } from './campus'
 import { pointInPolygon } from './geo'
-import { boundarySegments, bridgeHeightAt, segmentProjection, SPORT_SEATING, SPORT_ZONES, terrainHeightAt, wallStepsOutline } from './terrain'
+import { sportFenceSegments, bridgeHeightAt, segmentProjection, SPORT_SEATING, SPORT_ZONES, terrainHeightAt, wallStepsOutline } from './terrain'
 import { hallToCampus } from './hall'
 import { HALL_TUNNEL_CUTOUT } from './hallPassage'
 import { CAMPUS_GATE_CUTOUT, MIGUEL_DRINKING_WALL, miguelToCampus, MIGUEL_FORECOURT_RAILS, MIGUEL_RAIL_Z } from './miguel'
@@ -31,7 +31,7 @@ const solids=[MIGUEL_ROCKET_BASE,HALL_MINI_WORLD_OUTLINE,
 ].map(ring=>({ring,minX:Math.min(...ring.map(p=>p[0])),maxX:Math.max(...ring.map(p=>p[0])),minY:Math.min(...ring.map(p=>p[1])),maxY:Math.max(...ring.map(p=>p[1]))}))
 const buildings=CAMPUS_BUILDINGS.map(b=>({...b,minX:Math.min(...b.ring.map(p=>p[0])),maxX:Math.max(...b.ring.map(p=>p[0])),minY:Math.min(...b.ring.map(p=>p[1])),maxY:Math.max(...b.ring.map(p=>p[1]))}))
 const fences:[Vec2,Vec2][]=[
-  ...SPORT_ZONES.filter(zone=>zone.kind==='synthetic').flatMap(boundarySegments),
+  ...SPORT_ZONES.flatMap(sportFenceSegments),
   ...MIGUEL_FORECOURT_RAILS.map(([a,b]):[Vec2,Vec2]=>[miguelToCampus([a,MIGUEL_RAIL_Z]),miguelToCampus([b,MIGUEL_RAIL_Z])]),
 ]
 const clearance:Vec2[]=[[0,0],[RADIUS,0],[-RADIUS,0],[0,RADIUS],[0,-RADIUS]]

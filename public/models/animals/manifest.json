@@ -1,0 +1,99 @@
+{
+  "author": "Innerscene (base meshes); MiCampus adaptations",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "variants": [
+    {
+      "kind": "pig",
+      "file": "pig.glb",
+      "texture": "pig-coat.webp",
+      "bytes": 685376,
+      "triangles": 10792,
+      "bones": 15,
+      "bounds": {
+        "min": [
+          -1.0167690515518188,
+          0,
+          -0.34800001978874207
+        ],
+        "max": [
+          1.0113247632980347,
+          0.9566149115562439,
+          0.34800001978874207
+        ]
+      },
+      "source": "https://www.innerscene.com/tools/library/3d-parts/farm-pig-85281eb9",
+      "sourceSha256": "58b8f8d228f6eb8e962512526f100b8bab7d5d043fd882a4ef6d8909733742de",
+      "license": "CC0-1.0"
+    },
+    {
+      "kind": "pig",
+      "file": "pig-mobile.glb",
+      "texture": "pig-coat-mobile.webp",
+      "bytes": 369756,
+      "triangles": 5264,
+      "bones": 15,
+      "bounds": {
+        "min": [
+          -1.0156484842300415,
+          0,
+          -0.34800001978874207
+        ],
+        "max": [
+          1.01045560836792,
+          0.9566149115562439,
+          0.34800001978874207
+        ]
+      },
+      "source": "https://www.innerscene.com/tools/library/3d-parts/farm-pig-85281eb9",
+      "sourceSha256": "58b8f8d228f6eb8e962512526f100b8bab7d5d043fd882a4ef6d8909733742de",
+      "license": "CC0-1.0"
+    },
+    {
+      "kind": "dog",
+      "file": "dog.glb",
+      "texture": "dog-coat.webp",
+      "bytes": 757292,
+      "triangles": 11584,
+      "bones": 17,
+      "bounds": {
+        "min": [
+          -1.2163546085357666,
+          -9.680551915636215e-10,
+          -0.1608823984861374
+        ],
+        "max": [
+          1.083169937133789,
+          1.390989065170288,
+          0.16051490604877472
+        ]
+      },
+      "source": "https://www.innerscene.com/tools/library/3d-parts/large-dog-standing-6d1b30be",
+      "sourceSha256": "168a27da95ecaa707c98c05c6fdacce0a788536c118acd5e9a031581a6a5b375",
+      "license": "CC0-1.0"
+    },
+    {
+      "kind": "dog",
+      "file": "dog-mobile.glb",
+      "texture": "dog-coat-mobile.webp",
+      "bytes": 452588,
+      "triangles": 6858,
+      "bones": 17,
+      "bounds": {
+        "min": [
+          -1.2163546085357666,
+          -9.680551915636215e-10,
+          -0.1608823984861374
+        ],
+        "max": [
+          1.083169937133789,
+          1.3904879093170166,
+          0.16051490604877472
+        ]
+      },
+      "source": "https://www.innerscene.com/tools/library/3d-parts/large-dog-standing-6d1b30be",
+      "sourceSha256": "168a27da95ecaa707c98c05c6fdacce0a788536c118acd5e9a031581a6a5b375",
+      "license": "CC0-1.0"
+    }
+  ]
+}

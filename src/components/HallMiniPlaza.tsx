@@ -3,7 +3,7 @@ import { MeshStandardMaterial,Vector2 } from 'three'
 import type { CampusMaterials } from '../lib/materials'
 import { HALL_ENTRANCE as hall } from '../lib/hall'
 import { HALL_MINI_PLAZA as plaza,HALL_MINI_CENTER as center,HALL_MINI_BEDS,HALL_MINI_TREES } from '../lib/hallMiniPlaza'
-import { foliageTexture } from './LandscapeDetails'
+import { Bush, Tree } from './CampusPlants'
 
 type Point=[number,number,number]
 const noRaycast=()=>null
@@ -19,16 +19,14 @@ function Block({at,size,material}:{at:Point;size:Point;material:MeshStandardMate
 }
 /** Symmetric, enclosed fountain garden in the pocket left of the main Hall portal. */
 export function HallMiniPlaza({materials}:{materials:CampusMaterials}) {
-  const texture=useMemo(foliageTexture,[])
-  const finish=useMemo(()=>({
+  const owned=useMemo(()=>({
     iron:new MeshStandardMaterial({color:'#344138',roughness:.65,metalness:.45}),
-    leaves:new MeshStandardMaterial({color:'#60753f',map:texture,alphaTest:.45,roughness:1}),
-    hedge:new MeshStandardMaterial({color:'#637b39',roughness:1}),
     flowers:new MeshStandardMaterial({color:'#9c426d',roughness:1}),
-    bark:new MeshStandardMaterial({color:'#7a715b',roughness:1}),
-    water:new MeshStandardMaterial({color:'#799b8e',roughness:.23,metalness:.25}),
-  }),[texture])
-  useEffect(()=>()=>{Object.values(finish).forEach(m=>m.dispose());texture.dispose()},[finish,texture])
+  }),[])
+  useEffect(()=>()=>{Object.values(owned).forEach(m=>m.dispose())},[owned])
+  // The fountain water is the campus pond material: shared, rippled and reflective, and owned by the campus materials.
+  const finish={...owned,water:materials.pondWater}
+  const hedge=materials.hedge
   const [cx,cz]=center,width=plaza.right-plaza.left,depth=plaza.front-plaza.back
   return <group position={[hall.center[0],0,-hall.center[1]]} rotation={[0,hall.angle,0]}>
     <Block at={[cx,plaza.ground-.04,cz]} size={[width,.08,depth]} material={materials.paving}/>
@@ -40,10 +38,10 @@ export function HallMiniPlaza({materials}:{materials:CampusMaterials}) {
         {[-1,1].map(s=><group key={s}>
           <Block at={[x+s*1.52,plaza.ground+.08,z]} size={[.09,.16,2.3]} material={materials.entranceStone}/>
           <Block at={[x,plaza.ground+.08,z+s*1.12]} size={[3.12,.16,.09]} material={materials.entranceStone}/>
-          <Block at={[x,plaza.ground+.24,z+s*.98]} size={[2.9,.36,.3]} material={finish.hedge}/>
+          <Block at={[x,plaza.ground+.24,z+s*.98]} size={[2.9,.36,.3]} material={hedge}/>
           {Array.from({length:9},(_,j)=><mesh key={j} position={[x-1.3+j*.325,plaza.ground+.39,z+s*.98]} scale={[.18,.12,.17]} material={finish.flowers} raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>)}
         </group>)}
-        {[-.85,0,.85].map(dx=><mesh key={dx} position={[x+dx,plaza.ground+.45,z]} scale={[.3,.45,.3]} material={finish.hedge} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>)}
+        {[-.85,0,.85].map(dx=><Bush key={dx} materials={materials} position={[x+dx,plaza.ground+.45,z]} scale={[.36,.46,.36]} rotation={dx*3} tone="#c9d49a"/>)}
       </group>
     })}
     <group position={[cx,plaza.ground,cz]}>
@@ -58,20 +56,13 @@ export function HallMiniPlaza({materials}:{materials:CampusMaterials}) {
       <mesh position={[0,2.6,0]} material={materials.cream} raycast={noRaycast}><cylinderGeometry args={[.065,.12,.55,20]}/></mesh>
       <mesh position={[0,2.88,0]} material={materials.cream} castShadow raycast={noRaycast}><sphereGeometry args={[.12,16,12]}/></mesh>
     </group>
-    {HALL_MINI_TREES.map(([x,z],i)=><group key={i} position={[x,plaza.ground,z]}>
-      <mesh position={[0,2.4,0]} material={finish.bark} castShadow raycast={noRaycast}><cylinderGeometry args={[.13,.24,4.8,12]}/></mesh>
-      {[-1,1].map(s=><mesh key={s} position={[s*.45,3.85,0]} rotation={[0,0,-s*.5]} material={finish.bark} castShadow raycast={noRaycast}><cylinderGeometry args={[.07,.12,2,8]}/></mesh>)}
-      {Array.from({length:7},(_,j)=>{
-        const angle=j*2.4,r=j?1.25:0
-        return <mesh key={j} position={[Math.cos(angle)*r,5.15+Math.sin(j*2)*.4,Math.sin(angle)*r]} scale={[1.5,1.1,1.4]} material={finish.leaves} castShadow raycast={noRaycast}><icosahedronGeometry args={[1,2]}/></mesh>
-      })}
-    </group>)}
+    {HALL_MINI_TREES.map(([x,z],i)=><Tree key={i} materials={materials} position={[x,plaza.ground,z]} height={4.8} girth={.9} crown={2.3} rotation={i*2.6} tone={i%2?'#c8d1ae':'#bdc9aa'}/>)}
     {/* Open central gate, mirrored iron fence and pale piers from the cropped photo. */}
     {[plaza.left+.25,cx-plaza.gateWidth/2-.28,cx+plaza.gateWidth/2+.28,plaza.right-.25].map(x=><group key={x}>
       <Block at={[x,plaza.ground+1.03,plaza.front]} size={[.5,2.06,.5]} material={materials.cream}/>
       <Block at={[x,plaza.ground+.18,plaza.front]} size={[.68,.36,.68]} material={materials.entranceStone}/>
       <Block at={[x,plaza.ground+2.08,plaza.front]} size={[.72,.18,.72]} material={materials.cream}/>
-      <mesh position={[x,plaza.ground+2.35,plaza.front]} scale={[.2,.2,.2]} material={finish.hedge} raycast={noRaycast}><icosahedronGeometry args={[1,1]}/></mesh>
+      <Bush materials={materials} position={[x,plaza.ground+2.35,plaza.front]} scale={.22} tone="#c9d49a"/>
     </group>)}
     {[[plaza.left+.5,cx-plaza.gateWidth/2-.53],[cx+plaza.gateWidth/2+.53,plaza.right-.5]].map(([from,to],i)=><Fence key={i} from={from} to={to} z={plaza.front} floor={plaza.ground} material={finish.iron}/>)}
   </group>

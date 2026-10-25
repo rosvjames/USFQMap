@@ -6,7 +6,7 @@ import { pointInPolygon } from './geo'
 import { hallToCampus } from './hall'
 import { HALL_PASSAGE } from './hallPassage'
 import { miguelGardenToCampus } from './miguelGarden'
-import { ELEVATED_WALKWAYS, terrainHeightAt } from './terrain'
+import { ELEVATED_WALKWAYS, SPORT_ZONES, terrainHeightAt } from './terrain'
 import { isWalkable, moveWalker, moveWalkerOnSurface, walkingStart } from './walking'
 import type { Vec2 } from '../types'
 
@@ -59,6 +59,32 @@ describe('exterior exploration', () => {
     const end=moveWalker(start,movement)
     expect(isWalkable(end)).toBe(true)
     expect(Math.hypot(end[0]-start[0],end[1]-start[1])).toBeLessThan(Math.hypot(...movement))
+  })
+
+  it('blocks both sides of the beach volleyball fences, including long movements', () => {
+    const ring = SPORT_ZONES.find(zone => zone.kind === 'sand')!.area.ring
+    // Sample away from the existing 3 m entrance in the middle of the west side.
+    for (let edge = 0; edge < ring.length - 1; edge++) for (const t of [.2, .8]) {
+      const a = ring[edge], b = ring[edge + 1], length = Math.hypot(b[0] - a[0], b[1] - a[1])
+      const mid: Vec2 = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]
+      const normal: Vec2 = [-(b[1] - a[1]) / length, (b[0] - a[0]) / length]
+      expect(isWalkable(mid), `fence at ${mid}`).toBe(false)
+      for (const side of [-1, 1]) {
+        const start: Vec2 = [mid[0] + normal[0] * side, mid[1] + normal[1] * side]
+        expect(isWalkable(start)).toBe(true)
+        const end = moveWalker(start, [-normal[0] * side * 2, -normal[1] * side * 2])
+        expect(Math.hypot(end[0] - start[0], end[1] - start[1])).toBeLessThan(.85)
+      }
+    }
+  })
+
+  it('leaves the west volleyball entrance open in both directions', () => {
+    const outside: Vec2 = [-43, -52.6], inside: Vec2 = [-40.8, -52.7]
+    for (const [a, b] of [[outside, inside], [inside, outside]]) {
+      expect(isWalkable(a)).toBe(true)
+      const end = moveWalker(a, [b[0] - a[0], b[1] - a[1]])
+      expect(Math.hypot(end[0] - b[0], end[1] - b[1])).toBeLessThan(.01)
+    }
   })
 
   it('reaches the natural football pitch by the stairs behind its north goal, not over the lane railing', () => {

@@ -1,5 +1,5 @@
 import { CAMPUS_WALKWAYS, findCampusBuilding } from './campus'
-import { pointInPolygon } from './geo'
+import { pointInPolygonTolerant } from './geo'
 import type { Vec2 } from '../types'
 
 // Photographic proportions on the existing OSM footprint, not surveyed dimensions.
@@ -23,10 +23,16 @@ export const NEWTON_LAWNS:Vec2[][]=[
   [[-width/2,.3],[h.x-h.stairWidth/2-.4,.3],[h.x-h.stairWidth/2-.4,3],[-width/2,3]],
   [[h.x+h.stairWidth/2+.4,.3],[width/2,.3],[width/2,3],[h.x+h.stairWidth/2+.4,3]],
 ].map(r=>r.map(p=>newtonToCampus(p as Vec2)))
+/** Absorbs the millimetre rounding of ground booleans and the Float32 vertices of the lawn meshes. */
+export const LAWN_EDGE_TOLERANCE=.002
+/** The lawn's own slope, defined everywhere so its mesh never depends on re-testing membership. */
+export function newtonLawnHeightAt(point:Vec2):number {
+  return h.ground+(h.level-h.ground)*Math.max(0,1-campusToNewton(point)[1]/3)
+}
 export function newtonHeightAt(point:Vec2):number|undefined {
   const [x,z]=campusToNewton(point)
   if(Math.abs(x-h.x)<=h.stairWidth/2&&z>=0&&z<=h.stairFront)return z<=h.platformFront?h.level:h.level+(h.ground-h.level)*(z-h.platformFront)/(h.stairFront-h.platformFront)
-  if(NEWTON_LAWNS.some(r=>pointInPolygon(point,r)))return h.ground+(h.level-h.ground)*Math.max(0,1-z/3)
+  if(NEWTON_LAWNS.some(r=>pointInPolygonTolerant(point,r,LAWN_EDGE_TOLERANCE)))return newtonLawnHeightAt(point)
 }
 export const NEWTON_DOOR_APPROACH=newtonToCampus([h.x,h.stairFront])
 // Attach to the nearest segment of the existing connected lagoon footway.
