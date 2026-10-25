@@ -17,7 +17,7 @@ import { WalkCamera } from './WalkCamera'
 import type { WalkInput } from '../lib/walkInput'
 import type { CampusAnimalId } from '../lib/campusAnimals'
 import { MapLabel } from './MapLabel'
-import { BendDot, DestinationMarker, OriginMarker, routeBends } from './RouteMarkers'
+import { DestinationMarker, OriginMarker } from './RouteMarkers'
 import { LabelCollision } from './LabelCollision'
 import { FacadeDetails } from './FacadeDetails'
 import { IllustratedRoof, LandmarkRoof } from './IllustratedRoof'
@@ -477,7 +477,6 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
   const at = (p: Vec2) => toScene(...p, terrainHeightAt(p) + lift)
   const start = route.links[0][0]
   const path = route.path.map(at)
-  const bends = useMemo(() => routeBends(route.path), [route.path])
   return (
     <group>
       {path.length > 1 && (
@@ -502,8 +501,6 @@ function OutdoorRouteLine({ route }: { route: OutdoorRoute }) {
           renderOrder={6}
         />
       ))}
-      {bends.map((i) => <BendDot key={i} position={path[i]} />)}
-      {path.length > 1 && <BendDot key="end" position={path[path.length - 1]} />}
       <OriginMarker position={at(start)} toward={path[Math.min(1, path.length - 1)] ?? at(start)} />
     </group>
   )

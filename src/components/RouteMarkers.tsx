@@ -2,37 +2,11 @@ import { Html } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
 import { Vector3 } from 'three'
-import type { Vec2 } from '../types'
 
 type Point = [number, number, number]
 
 // Below the sheets and the map controls (z-index 15 and up), so the markers never cover the interface.
 const BEHIND_UI: [number, number] = [10, 0]
-// The destination pin and its name stay above the route dots.
-const ABOVE_DOTS: [number, number] = [12, 11]
-
-/** Douglas–Peucker: the corners that remain once wiggles smaller than `tolerance` meters are ironed out. */
-function corners(path: Vec2[], tolerance: number, from = 0, to = path.length - 1): number[] {
-  const [a, b] = [path[from], path[to]]
-  const length = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1
-  let farthest = -1
-  let distance = tolerance
-  for (let i = from + 1; i < to; i++) {
-    const d = Math.abs((b[0] - a[0]) * (a[1] - path[i][1]) - (a[0] - path[i][0]) * (b[1] - a[1])) / length
-    if (d > distance) [farthest, distance] = [i, d]
-  }
-  return farthest < 0 ? [] : [...corners(path, tolerance, from, farthest), farthest, ...corners(path, tolerance, farthest, to)]
-}
-
-/** The real turns of the walk: corners of the simplified line that bend by more than 40°. */
-export function routeBends(path: Vec2[], tolerance = 8): number[] {
-  const kept = [0, ...corners(path, tolerance), path.length - 1]
-  return kept.slice(1, -1).filter((i, k) => {
-    const [a, b, c] = [path[kept[k]], path[i], path[kept[k + 2]]]
-    const turn = Math.abs(Math.atan2(c[1] - b[1], c[0] - b[0]) - Math.atan2(b[1] - a[1], b[0] - a[0]))
-    return Math.min(turn, 2 * Math.PI - turn) > (40 * Math.PI) / 180
-  })
-}
 
 /** "You are here": a white disc with a red arrow pointing along the first stretch of the walk, inside a pulsing red halo. */
 export function OriginMarker({ position, toward }: { position: Point; toward: Point }) {
@@ -51,14 +25,6 @@ export function OriginMarker({ position, toward }: { position: Point; toward: Po
       <span className="route-origin">
         <svg ref={arrow} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3 20 20 12 15.5 4 20Z" fill="currentColor" /></svg>
       </span>
-    </Html>
-  )
-}
-
-export function BendDot({ position }: { position: Point }) {
-  return (
-    <Html position={position} center zIndexRange={BEHIND_UI} style={{ pointerEvents: 'none' }}>
-      <span className="route-bend" />
     </Html>
   )
 }
@@ -85,7 +51,7 @@ export function DestinationMarker({ position, buildingId, name }: { position: Po
     marker.current.classList.toggle('name-left', point.set(...position).project(camera).x > 0.15)
   })
   return (
-    <Html position={position} zIndexRange={ABOVE_DOTS} style={{ pointerEvents: 'none' }}>
+    <Html position={position} zIndexRange={BEHIND_UI} style={{ pointerEvents: 'none' }}>
       <span ref={marker} className="route-destination">
         <svg className="route-pin" viewBox="0 0 44 54" width="44" height="54" aria-hidden="true">
           <path d="M22 52S4 34.5 4 21a18 18 0 0 1 36 0c0 13.5-18 31-18 31Z" fill="#e11b22" stroke="#fff" strokeWidth="3" />
