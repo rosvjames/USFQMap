@@ -170,6 +170,7 @@ export default function App() {
 
   // What the door sign would say, when the destination is a room rather than a whole building.
   const landmark = destination?.kind === 'building' && destination.landmark
+  const instruction = destination?.kind === 'building' ? destination.instruction : undefined
   const roomCode = destination?.kind === 'room' ? destination.node.code : destination?.floor !== undefined && !landmark ? destination.title : undefined
   const floor = destination?.kind === 'room' ? destination.node.floor : destination?.floor
   const floorLabel = floorName(floor ?? 1, building?.id).replace(/^./, (letter) => letter.toUpperCase())
@@ -190,15 +191,15 @@ export default function App() {
   }
   if (route) {
     steps.push(...(outdoorRoute ? route.steps.slice(1) : route.steps))
-  } else if (landmark) {
-    steps.push('Baja al piso 0 de Hayek, bajo la terraza del puente')
+  } else if (instruction) {
+    steps.push(instruction)
   } else if (floor !== undefined) {
     steps.push(`Busca ${roomCode ?? 'el aula'} en el ${floorName(floor, building?.id)}`)
   }
 
   const titleText = roomCode ?? heading ?? ''
   const kicker = roomCode ? `Aula · ${building?.name}` : landmark ? building?.name ?? '' : 'Edificio'
-  const sub = roomCode || landmark ? floorLabel : undefined
+  const sub = floor !== undefined && (roomCode || landmark) ? floorLabel : undefined
   const walk = outdoorRoute ? { minutes: outdoorRoute.minutes, meters: Math.round(outdoorRoute.distance / 10) * 10 } : undefined
   const notice = originId === GPS && !gps.position ? gps.error ?? 'Buscando tu ubicación…' : offCampus ? 'Estás fuera del campus: la ruta empieza en la entrada principal.' : plan?.placeholder ? 'Plano de ejemplo: las aulas y pasillos aún no son los reales.' : undefined
   const navigatingNow = navigating && steps.length > 0
@@ -302,6 +303,11 @@ export default function App() {
           onWalk={startWalk}
           onClose={closeDestination}
         >
+          {instruction && <div className="sheet-section">
+            <h2>Cómo llegar</h2>
+            <p>{instruction}</p>
+            {destination.kind === 'building' && destination.inferred && <p className="sub">Edificio y piso según el código; aula sin confirmar.</p>}
+          </div>}
           {COLISEO_INTERIOR_VISIBLE && building?.id === 'coliseo' && <button className="chip" aria-pressed={interiorOpen} onClick={() => {
             if (!interiorOpen) mapCamera.current?.flyTo({ center: COLISEO_CENTER, span: window.innerWidth < 760 ? 52 : 64, aboveThePanel: true, azimuth: 0, height: 1, tilt: 0.5 })
             setInteriorOpen(!interiorOpen)
