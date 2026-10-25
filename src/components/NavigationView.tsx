@@ -9,18 +9,12 @@ interface NavigationViewProps {
   onEnd: () => void
 }
 
-/** Long steps read "what to do: what you will see"; the part after the colon becomes a quieter detail line. */
-function splitStep(text: string): [string, string] {
-  const colon = text.indexOf(': ')
-  if (colon < 0) return [text, '']
-  const detail = text.slice(colon + 2)
-  return [text.slice(0, colon), detail.charAt(0).toUpperCase() + detail.slice(1)]
-}
+/** Steps are read at a glance while walking: only the action, without a closing period. */
+const short = (text: string) => text.replace(/\.$/, '')
 
 /** Turn-by-turn mode: the mascot reads out one step at a time; tapping the banner moves to the next one. */
 export function NavigationView({ steps, step, onStep, walk, destination, onEnd }: NavigationViewProps) {
   const last = step === steps.length - 1
-  const [instruction, detail] = splitStep(steps[step])
   return <>
     <section className="nav-banner" aria-label="Indicación actual" aria-live="polite">
       <p className="nav-brand" aria-hidden="true">Explora <span>USFQ</span></p>
@@ -31,8 +25,7 @@ export function NavigationView({ steps, step, onStep, walk, destination, onEnd }
             Paso {step + 1} de {steps.length}
             <span className="nav-dots" aria-hidden="true">{steps.map((_, i) => <i key={i} className={i === step ? 'current' : i < step ? 'done' : ''} />)}</span>
           </p>
-          <p className="nav-step">{instruction}</p>
-          {detail && <p className="nav-detail">{detail}</p>}
+          <p className="nav-step">{short(steps[step])}</p>
           {!last && <button className="nav-next" onClick={() => onStep(step + 1)}>Siguiente paso <ArrowIcon size={18} /></button>}
         </div>
       </div>

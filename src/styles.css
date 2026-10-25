@@ -986,13 +986,6 @@ button {
   line-height: 1.3;
 }
 
-.nav-detail {
-  margin: 6px 0 0;
-  font-size: 14px;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
 .nav-mascot {
   position: absolute;
   right: 0;

@@ -157,25 +157,23 @@ export default function App() {
   const floorLabel = floorName(floor ?? 1, building?.id).replace(/^./, (letter) => letter.toUpperCase())
   const heading = landmark ? destination.title : destination?.kind === 'room' ? (destination.node.label ?? destination.title) : reference ? reference.label : roomCode ? `Edificio ${building?.name}` : building?.name
 
+  // One short line per step: where to leave from, the landmarks the red line goes through, the arrival and the floor.
   const steps: string[] = []
   if (outdoorRoute && building) {
-    const from = originId === GPS ? 'Desde tu ubicación, sigue' : `Sal de ${BUILDING_BY_ID.get(originId)?.name} y sigue`
-    steps.push(`${from} la línea roja hasta ${building.name}.`)
-    if (outdoorRoute.unmapped > 0) {
-      steps.push('El tramo punteado no está en nuestro mapa de senderos: es una línea recta de guía, busca el camino más cercano.')
-    }
+    steps.push(originId === GPS ? 'Sigue la línea roja' : `Sal de ${BUILDING_BY_ID.get(originId)?.name} y sigue la línea roja`)
+    if (outdoorRoute.unmapped > 0) steps.push('En el tramo punteado, busca el sendero más cercano')
+    if (outdoorRoute.usesHallPassage) steps.push('Toma el pasillo entre el Hall y Einstein')
+    if (outdoorRoute.crossesHall) steps.push('Cruza el Hall Principal')
+    if (outdoorRoute.usesBridge) steps.push('Cruza el puente peatonal hacia Hayek')
+    const lakeEntrance = building.id === 'newton' || building.id === 'galileo'
+    if (!route) steps.push(`Llega a ${building.name}${lakeEntrance ? ', frente a la laguna' : ''}`)
   }
-  if (outdoorRoute?.usesHallPassage) steps.push('Recorre el pasillo exterior, con gradas a la derecha de la entrada del Hall. La puerta de Einstein está a la derecha del pasillo, justo antes del túnel.')
-  if (outdoorRoute?.crossesHall) steps.push('Atraviesa el Hall Principal desde su entrada y sal por el patio trasero: la plaza de Da Vinci queda al frente y el paso hacia el patio de Maxwell, a la derecha.')
-  if (outdoorRoute?.usesBridge) steps.push('Cruza por el puente peatonal elevado hacia Hayek; el recorrido pasa por encima de la vía.')
-  if (outdoorRoute && (building?.id === 'newton' || originId === 'newton')) steps.push('La entrada de Newton mira a la laguna, junto a Galileo.')
-  if (outdoorRoute && (building?.id === 'galileo' || originId === 'galileo')) steps.push('El acceso de Galileo está frente a la laguna: las gradas suben al portal acristalado.')
   if (route) {
     steps.push(...(outdoorRoute ? route.steps.slice(1) : route.steps))
   } else if (landmark) {
-    steps.push('Ápice es la cafetería y punto de encuentro del piso 0 de Hayek, debajo de la terraza del puente. Desde el acceso del puente hay que bajar a ese nivel; el recorrido interior aún no está trazado.')
+    steps.push('Baja al piso 0 de Hayek, bajo la terraza del puente')
   } else if (floor !== undefined) {
-    steps.push(`Busca el aula en el ${floorName(floor, building?.id)} de ${building?.name}: ${reference ? 'el piso viene de la referencia publicada' : 'el piso se deduce del código'}; la puerta exacta aún no está verificada.`)
+    steps.push(`Busca ${roomCode ?? 'el aula'} en el ${floorName(floor, building?.id)}`)
   }
 
   const titleText = roomCode ?? heading ?? ''
