@@ -13,12 +13,14 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/rosvjames/USFQMap/actions/workflows/ci.yml"><img src="https://github.com/rosvjames/USFQMap/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI: pruebas y compilación" /></a>
   <img src="https://img.shields.io/badge/React_19-20232A?logo=react&logoColor=61DAFB" alt="React 19" />
   <img src="https://img.shields.io/badge/Three.js-000000?logo=threedotjs&logoColor=white" alt="Three.js" />
   <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/Vitest-282_pruebas-6E9F18?logo=vitest&logoColor=white" alt="282 pruebas con Vitest" />
   <img src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white" alt="Desplegado en Vercel" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-blue" alt="Licencia MIT" /></a>
 </p>
 
 <p align="center">
@@ -28,6 +30,25 @@
   <br />
   <sub>▶ <a href="docs/media/explora-promo.mp4">Ver el video promocional completo con sonido</a> · hecho 100 % en código con la escena 3D real de la app</sub>
 </p>
+
+<details>
+<summary><b>🇬🇧 In English</b></summary>
+
+<br />
+
+**Explora | USFQ** is a mobile-first 3D campus navigator for Universidad San Francisco de Quito (Ecuador). Classrooms are identified by codes like **M302**, which don't tell newcomers where the building is. You type a room code or a place, see it on a 3D model of the campus, and get step-by-step walking directions with your phone's GPS.
+
+- **Stack:** React 19, React Three Fiber / Three.js, TypeScript (strict), Vite, Vitest, deployed on Vercel.
+- **Map data:** building footprints and walkways from OpenStreetMap, fetched by a reproducible script and projected to a local metric grid.
+- **Routing:** shortest path over a walkway graph, with on-site verified entrances and indoor shortcuts. Tests check that no route crosses a building.
+- **3D:** dozens of hand-modeled landmarks built from photos, a first-person walk mode with collisions, and animated campus animals.
+- **Mobile performance:** lightweight models and textures, instancing, static geometry batched by material, on-demand shadows and adaptive resolution.
+- **Quality:** 282 tests across 48 files, run on every push by GitHub Actions.
+- **Launch video:** fully code-animated (HTML scenes captured frame by frame with headless Chrome, sub-frame motion blur) using the app's real 3D scene.
+
+Built by two students in October 2026 and presented at the university's open house with a QR code. [Try it live →](https://usfq-campus-nav.vercel.app)
+
+</details>
 
 ---
 
@@ -107,4 +128,8 @@ Hecho por dos estudiantes de la USFQ en octubre de 2026:
 - Huellas y senderos: © colaboradores de [OpenStreetMap](https://www.openstreetmap.org/copyright), licencia ODbL.
 - Modelo del David: Scan the World @ MyMiniFactory, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Detalles en [docs/DETALLES-TECNICOS.md](docs/DETALLES-TECNICOS.md#modelo-3d-del-david).
 - Música del video: «Turn This Up a Little Louder!» de Michael Ramir C. ([Mixkit](https://mixkit.co)).
-- Proyecto estudiantil, no es una aplicación oficial de la Universidad San Francisco de Quito.
+- Proyecto estudiantil, no es una aplicación oficial de la Universidad San Francisco de Quito. El nombre y la marca USFQ pertenecen a la universidad.
+
+## Licencia
+
+El código fuente está bajo la [licencia MIT](LICENSE). Los datos y recursos de terceros conservan su propia licencia: OpenStreetMap (ODbL), el modelo del David (CC BY-SA 4.0), las fuentes tipográficas (SIL OFL, en `public/fonts/`) y la música del video.
